@@ -49,6 +49,13 @@
         {
           "microphonePermission": "Circle Up needs microphone access to send voice notes in chats."
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#FF0033"
+        }
       ]
     ],
     "extra": {

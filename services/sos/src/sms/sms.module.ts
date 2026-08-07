@@ -9,5 +9,6 @@ import { SmsController } from './sms.controller';
 @Module({
   controllers: [SmsController],
   providers: [{ provide: SMS_GATEWAY, useClass: MockSmsProvider }],
+  exports: [SMS_GATEWAY],
 })
 export class SmsModule {}

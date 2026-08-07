@@ -10,6 +10,11 @@ import CreatePostSheet from '../features/feed/CreatePostSheet';
 import PostDetailScreen from '../features/feed/PostDetailScreen';
 import NewChatScreen from '../features/chat/NewChatScreen';
 import ChatDetailScreen from '../features/chat/ChatDetailScreen';
+import GuardScreen from '../features/guard/GuardScreen';
+import TrustedContactsScreen from '../features/guard/TrustedContactsScreen';
+import ShareLocationScreen from '../features/guard/ShareLocationScreen';
+import FakeCallScreen from '../features/guard/FakeCallScreen';
+import SilentPhraseScreen from '../features/guard/SilentPhraseScreen';
 import { supabase } from '../shared/api/supabase';
 import type { RootStackParamList } from './types';
 
@@ -79,6 +84,11 @@ export default function RootNavigator() {
         <Stack.Screen name="PostDetail" component={PostDetailScreen} options={{ title: 'Post' }} />
         <Stack.Screen name="NewChat" component={NewChatScreen} options={{ title: 'New chat' }} />
         <Stack.Screen name="ChatDetail" component={ChatDetailScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Guard" component={GuardScreen} options={{ title: 'Circle Guard' }} />
+        <Stack.Screen name="TrustedContacts" component={TrustedContactsScreen} options={{ title: 'Trusted Contacts' }} />
+        <Stack.Screen name="ShareLocation" component={ShareLocationScreen} options={{ title: 'Share Location' }} />
+        <Stack.Screen name="FakeCall" component={FakeCallScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="SilentPhrase" component={SilentPhraseScreen} options={{ title: 'Silent Phrase' }} />
         {MODAL_SCREEN_NAMES.map((name) => (
           <Stack.Screen key={name} name={name}>
             {() => <PlaceholderScreen name={name} />}
