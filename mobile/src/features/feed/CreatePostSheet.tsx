@@ -39,17 +39,18 @@ export default function CreatePostSheet({ navigation }: Props) {
       return;
     }
 
-    const { data: membership } = await supabase
-      .from('society_memberships')
-      .select('neighbourhood_id')
-      .eq('user_id', user.id)
-      .eq('verification_status', 'verified')
-      .limit(1)
-      .maybeSingle();
+    // Phase 63 fix (edgecase.md §9.1 🟠): this used to be an arbitrary
+    // `.limit(1)` pick across ALL of a user's verified memberships — for
+    // someone verified in more than one neighbourhood (Phase 61), that's
+    // exactly the "ambiguous, no explicit user action" scoping bug the
+    // edge case warns about. Posts now go to whichever neighbourhood is
+    // actually active (set at signup, changed only via NeighbourhoodSheet).
+    const { data: profile } = await supabase.from('profiles').select('active_neighbourhood_id').eq('id', user.id).single();
+    const activeNeighbourhoodId = profile?.active_neighbourhood_id;
 
-    if (!membership) {
+    if (!activeNeighbourhoodId) {
       setSubmitting(false);
-      setError("You need a verified neighbourhood membership to post.");
+      setError('You need a verified neighbourhood membership to post.');
       return;
     }
 
@@ -67,7 +68,7 @@ export default function CreatePostSheet({ navigation }: Props) {
 
     const { error: insertError } = await supabase.from('posts').insert({
       author_id: user.id,
-      neighbourhood_id: membership.neighbourhood_id,
+      neighbourhood_id: activeNeighbourhoodId,
       category,
       caption: caption.trim(),
       media_urls: mediaUrls,

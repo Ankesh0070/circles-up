@@ -32,6 +32,8 @@ export type ModalStackParamList = {
   Settings: undefined;
   SettingsDetail: { section: string };
   UserProfile: { userId: string };
+  NeighbourhoodSheet: undefined;
+  AddNeighbourhood: undefined;
   NewChat: undefined;
   ChatDetail: { chatId: string };
   Bazaar: undefined;

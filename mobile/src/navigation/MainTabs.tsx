@@ -3,6 +3,7 @@ import PlaceholderScreen from './PlaceholderScreen';
 import BottomNav from './BottomNav';
 import HomeFeed from '../features/feed/HomeFeed';
 import ChatsTab from '../features/chat/ChatsTab';
+import ExploreTab from '../features/explore/ExploreTab';
 import type { MainTabsParamList } from './types';
 
 const Tab = createBottomTabNavigator<MainTabsParamList>();
@@ -14,7 +15,7 @@ export default function MainTabs() {
   return (
     <Tab.Navigator tabBar={(props) => <BottomNav {...props} />} screenOptions={{ headerShown: false }}>
       <Tab.Screen name="Home" component={HomeFeed} />
-      <Tab.Screen name="Explore">{() => <PlaceholderScreen name="Explore" />}</Tab.Screen>
+      <Tab.Screen name="Explore" component={ExploreTab} />
       <Tab.Screen name="Chats" component={ChatsTab} />
       <Tab.Screen name="Search">{() => <PlaceholderScreen name="Search" />}</Tab.Screen>
       <Tab.Screen name="Profile">{() => <PlaceholderScreen name="Profile" />}</Tab.Screen>

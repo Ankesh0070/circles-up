@@ -15,6 +15,10 @@ import TrustedContactsScreen from '../features/guard/TrustedContactsScreen';
 import ShareLocationScreen from '../features/guard/ShareLocationScreen';
 import FakeCallScreen from '../features/guard/FakeCallScreen';
 import SilentPhraseScreen from '../features/guard/SilentPhraseScreen';
+import UserProfileScreen from '../features/explore/UserProfileScreen';
+import NeighbourhoodSheet from '../features/explore/NeighbourhoodSheet';
+import AddNeighbourhoodScreen from '../features/explore/AddNeighbourhoodScreen';
+import TopicScreen from '../features/explore/TopicScreen';
 import { supabase } from '../shared/api/supabase';
 import type { RootStackParamList } from './types';
 
@@ -89,6 +93,10 @@ export default function RootNavigator() {
         <Stack.Screen name="ShareLocation" component={ShareLocationScreen} options={{ title: 'Share Location' }} />
         <Stack.Screen name="FakeCall" component={FakeCallScreen} options={{ headerShown: false }} />
         <Stack.Screen name="SilentPhrase" component={SilentPhraseScreen} options={{ title: 'Silent Phrase' }} />
+        <Stack.Screen name="UserProfile" component={UserProfileScreen} options={{ title: 'Profile' }} />
+        <Stack.Screen name="NeighbourhoodSheet" component={NeighbourhoodSheet} options={{ title: 'Your Neighbourhoods' }} />
+        <Stack.Screen name="AddNeighbourhood" component={AddNeighbourhoodScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Topic" component={TopicScreen} options={{ title: 'Topic' }} />
         {MODAL_SCREEN_NAMES.map((name) => (
           <Stack.Screen key={name} name={name}>
             {() => <PlaceholderScreen name={name} />}
