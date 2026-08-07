@@ -3,7 +3,6 @@
 // here (replacing PlaceholderScreen) as each one is implemented per
 // implementationplan.md.
 export const MODAL_SCREEN_NAMES = [
-  'Genie',
   'Notifications',
   'EditProfile',
   'Settings',

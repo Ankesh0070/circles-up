@@ -19,6 +19,7 @@ import UserProfileScreen from '../features/explore/UserProfileScreen';
 import NeighbourhoodSheet from '../features/explore/NeighbourhoodSheet';
 import AddNeighbourhoodScreen from '../features/explore/AddNeighbourhoodScreen';
 import TopicScreen from '../features/explore/TopicScreen';
+import GenieScreen from '../features/genie/GenieScreen';
 import { supabase } from '../shared/api/supabase';
 import type { RootStackParamList } from './types';
 
@@ -97,6 +98,7 @@ export default function RootNavigator() {
         <Stack.Screen name="NeighbourhoodSheet" component={NeighbourhoodSheet} options={{ title: 'Your Neighbourhoods' }} />
         <Stack.Screen name="AddNeighbourhood" component={AddNeighbourhoodScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Topic" component={TopicScreen} options={{ title: 'Topic' }} />
+        <Stack.Screen name="Genie" component={GenieScreen} options={{ title: 'Circle Genie' }} />
         {MODAL_SCREEN_NAMES.map((name) => (
           <Stack.Screen key={name} name={name}>
             {() => <PlaceholderScreen name={name} />}

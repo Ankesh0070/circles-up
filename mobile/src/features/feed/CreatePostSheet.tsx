@@ -6,6 +6,7 @@ import GradientButton from '../../shared/components/GradientButton';
 import { categories, type PostCategory } from '../../shared/data/categories';
 import { supabase } from '../../shared/api/supabase';
 import { uploadPostMedia } from '../../shared/api/uploadMedia';
+import { embedPostFireAndForget } from '../../shared/api/genie';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'CreatePost'>;
@@ -66,13 +67,17 @@ export default function CreatePostSheet({ navigation }: Props) {
       }
     }
 
-    const { error: insertError } = await supabase.from('posts').insert({
-      author_id: user.id,
-      neighbourhood_id: activeNeighbourhoodId,
-      category,
-      caption: caption.trim(),
-      media_urls: mediaUrls,
-    });
+    const { data: inserted, error: insertError } = await supabase
+      .from('posts')
+      .insert({
+        author_id: user.id,
+        neighbourhood_id: activeNeighbourhoodId,
+        category,
+        caption: caption.trim(),
+        media_urls: mediaUrls,
+      })
+      .select('id')
+      .single();
 
     setSubmitting(false);
     if (insertError) {
@@ -83,6 +88,10 @@ export default function CreatePostSheet({ navigation }: Props) {
         : insertError.message);
       return;
     }
+
+    // Phase 65: feed the new post into Genie's retrieval index. Fire-and-
+    // forget so a slow/down genie service never blocks the post itself.
+    if (inserted) embedPostFireAndForget(inserted.id);
 
     navigation.goBack();
   };

@@ -5,6 +5,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import HumanHeart from '../../shared/components/HumanHeart';
 import Avatar from '../../shared/components/Avatar';
 import { supabase } from '../../shared/api/supabase';
+import { embedCommentFireAndForget } from '../../shared/api/genie';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PostDetail'>;
@@ -71,12 +72,17 @@ export default function PostDetailScreen({ route }: Props) {
   const submitComment = async () => {
     if (!text.trim() || !userId) return;
     setPosting(true);
-    await supabase.from('comments').insert({
-      post_id: postId,
-      author_id: userId,
-      text: text.trim(),
-      parent_comment_id: replyTo?.id ?? null,
-    });
+    const { data: inserted } = await supabase
+      .from('comments')
+      .insert({
+        post_id: postId,
+        author_id: userId,
+        text: text.trim(),
+        parent_comment_id: replyTo?.id ?? null,
+      })
+      .select('id')
+      .single();
+    if (inserted) embedCommentFireAndForget(inserted.id);
     setText('');
     setReplyTo(null);
     setPosting(false);
