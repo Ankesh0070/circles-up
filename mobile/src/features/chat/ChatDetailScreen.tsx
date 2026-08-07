@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, TextInput, Pressable, FlatList, Image, ActivityIndicator, Modal, Alert } from 'react-native';
+import { View, Text, TextInput, Pressable, FlatList, Image, ActivityIndicator, Modal } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as ImagePicker from 'expo-image-picker';
 import { AudioModule, useAudioPlayer, useAudioRecorder, RecordingPresets } from 'expo-audio';
 import { Phone, Video, Camera, Mic, Send, MoreVertical } from 'lucide-react-native';
 import Avatar from '../../shared/components/Avatar';
+import AlertModal from '../../shared/components/AlertModal';
 import { supabase } from '../../shared/api/supabase';
 import { uploadChatImage, uploadChatVoiceNote, getChatMediaSignedUrl } from '../../shared/api/uploadChatMedia';
 import type { RootStackParamList } from '../../navigation/types';
@@ -42,6 +43,7 @@ export default function ChatDetailScreen({ route, navigation }: Props) {
   const [callActive, setCallActive] = useState<null | 'voice' | 'video'>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState<{ messageId: string } | null>(null);
+  const [alertInfo, setAlertInfo] = useState<{ title: string; message: string } | null>(null);
   const listRef = useRef<FlatList<Message> | null>(null);
 
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
@@ -134,7 +136,7 @@ export default function ChatDetailScreen({ route, navigation }: Props) {
       const path = await uploadChatImage(result.assets[0].uri, userId);
       await supabase.from('messages').insert({ chat_id: chatId, author_id: userId, kind: 'image', media_url: path });
     } catch (e) {
-      Alert.alert('Upload failed', e instanceof Error ? e.message : 'Please try again');
+      setAlertInfo({ title: 'Upload failed', message: e instanceof Error ? e.message : 'Please try again' });
     } finally {
       setUploading(false);
     }
@@ -159,7 +161,7 @@ export default function ChatDetailScreen({ route, navigation }: Props) {
           media_duration_ms: durationMs,
         });
       } catch (e) {
-        Alert.alert('Upload failed', e instanceof Error ? e.message : 'Please try again');
+        setAlertInfo({ title: 'Upload failed', message: e instanceof Error ? e.message : 'Please try again' });
       } finally {
         setUploading(false);
       }
@@ -168,7 +170,7 @@ export default function ChatDetailScreen({ route, navigation }: Props) {
 
     const status = await AudioModule.requestRecordingPermissionsAsync();
     if (!status.granted) {
-      Alert.alert('Microphone access needed', 'Enable microphone in Settings to send voice notes.');
+      setAlertInfo({ title: 'Microphone access needed', message: 'Enable microphone in Settings to send voice notes.' });
       return;
     }
     await recorder.prepareToRecordAsync();
@@ -279,6 +281,13 @@ export default function ChatDetailScreen({ route, navigation }: Props) {
         visible={!!reportOpen}
         messageId={reportOpen?.messageId ?? null}
         onClose={() => setReportOpen(null)}
+      />
+
+      <AlertModal
+        visible={!!alertInfo}
+        title={alertInfo?.title ?? ''}
+        message={alertInfo?.message ?? ''}
+        onClose={() => setAlertInfo(null)}
       />
 
       {/* Simulated call overlay (Phase 38) */}
