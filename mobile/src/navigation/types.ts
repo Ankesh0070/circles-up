@@ -37,6 +37,8 @@ export type ModalStackParamList = {
   NewChat: undefined;
   ChatDetail: { chatId: string };
   Bazaar: undefined;
+  CreateListing: undefined;
+  ListingDetail: { listingId: string };
   Scenes: undefined;
   Topic: { topic: string };
   Achievements: undefined;
@@ -46,6 +48,7 @@ export type ModalStackParamList = {
   ShareLocation: undefined;
   CreateEvent: undefined;
   MyEvents: undefined;
+  EventDetail: { eventId: string };
   CreatePage: undefined;
   PageTypeSelector: undefined;
   MyPages: undefined;
