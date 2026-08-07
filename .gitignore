@@ -1,0 +1,21 @@
+# Monorepo-wide ignores. Each sub-project (mobile/, services/) also has its
+# own .gitignore for tool-specific generated files.
+
+node_modules/
+.env
+.env.local
+.env.*.local
+*.log
+.DS_Store
+
+# Native build output (regenerated via `expo prebuild` / `eas build`)
+mobile/ios/
+mobile/android/
+mobile/.expo/
+
+# Supabase local dev
+supabase/.branches/
+supabase/.temp/
+
+# NestJS service build output
+services/*/dist/

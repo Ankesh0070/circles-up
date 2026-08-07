@@ -1,0 +1,60 @@
+{
+  "expo": {
+    "name": "Circle Up",
+    "slug": "circle-up",
+    "scheme": "circleup",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.circleup.app"
+    },
+    "android": {
+      "package": "com.circleup.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "@sentry/react-native",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Circle Up needs camera access to verify your identity with a live selfie during signup."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Circle Up needs your location to verify you actually live in the neighbourhood you're joining."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Circle Up needs photo access as a fallback if camera access isn't available."
+        }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Circle Up needs microphone access to send voice notes in chats."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "REPLACE_WITH_EAS_PROJECT_ID"
+      }
+    }
+  }
+}

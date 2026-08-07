@@ -1,0 +1,2 @@
+-- Local dev seed data. Empty for now — seed data (sample users, posts, etc.)
+-- gets added per-phase as each feature's tables land (see implementationplan.md).

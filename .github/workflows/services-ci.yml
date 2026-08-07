@@ -1,0 +1,29 @@
+name: services-ci
+
+on:
+  push:
+    paths:
+      - 'services/**'
+      - '.github/workflows/services-ci.yml'
+  pull_request:
+    paths:
+      - 'services/**'
+      - '.github/workflows/services-ci.yml'
+
+defaults:
+  run:
+    working-directory: services
+
+jobs:
+  build-and-typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: services/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck --workspaces
+      - run: npm run build --workspaces
