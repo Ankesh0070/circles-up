@@ -27,6 +27,13 @@ import ScenesScreen from '../features/scenes/ScenesScreen';
 import CreateEventScreen from '../features/scenes/CreateEventScreen';
 import MyEventsScreen from '../features/scenes/MyEventsScreen';
 import EventDetailScreen from '../features/scenes/EventDetailScreen';
+import PageTypeSelectorScreen from '../features/pages/PageTypeSelectorScreen';
+import CreatePageScreen from '../features/pages/CreatePageScreen';
+import MyPagesScreen from '../features/pages/MyPagesScreen';
+import PageDetailScreen from '../features/pages/PageDetailScreen';
+import DonateScreen from '../features/pages/DonateScreen';
+import AdsManagerScreen from '../features/ads/AdsManagerScreen';
+import CreateAdScreen from '../features/ads/CreateAdScreen';
 import { supabase } from '../shared/api/supabase';
 import type { RootStackParamList } from './types';
 
@@ -113,6 +120,13 @@ export default function RootNavigator() {
         <Stack.Screen name="CreateEvent" component={CreateEventScreen} options={{ title: 'Host a Scene' }} />
         <Stack.Screen name="MyEvents" component={MyEventsScreen} options={{ title: 'My Events' }} />
         <Stack.Screen name="EventDetail" component={EventDetailScreen} options={{ title: 'Event' }} />
+        <Stack.Screen name="PageTypeSelector" component={PageTypeSelectorScreen} options={{ title: 'New page' }} />
+        <Stack.Screen name="CreatePage" component={CreatePageScreen} options={{ title: 'Create page' }} />
+        <Stack.Screen name="MyPages" component={MyPagesScreen} options={{ title: 'Pages' }} />
+        <Stack.Screen name="PageDetail" component={PageDetailScreen} options={{ title: 'Page' }} />
+        <Stack.Screen name="Donate" component={DonateScreen} options={{ title: 'Donate' }} />
+        <Stack.Screen name="AdsManager" component={AdsManagerScreen} options={{ title: 'Ads Manager' }} />
+        <Stack.Screen name="CreateAd" component={CreateAdScreen} options={{ title: 'Create ad' }} />
         {MODAL_SCREEN_NAMES.map((name) => (
           <Stack.Screen key={name} name={name}>
             {() => <PlaceholderScreen name={name} />}

@@ -8,9 +8,4 @@ export const MODAL_SCREEN_NAMES = [
   'Settings',
   'SettingsDetail',
   'Achievements',
-  'CreatePage',
-  'PageTypeSelector',
-  'MyPages',
-  'AdsManager',
-  'CreateAd',
 ] as const;

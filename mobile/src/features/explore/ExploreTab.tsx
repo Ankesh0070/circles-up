@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { View, Text, TextInput, Pressable, FlatList, ActivityIndicator } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Search, ShoppingBag, PartyPopper, Sparkles, Shield } from 'lucide-react-native';
+import { Search, ShoppingBag, PartyPopper, Sparkles, Shield, Store } from 'lucide-react-native';
 import CircleCard from './CircleCard';
 import { supabase } from '../../shared/api/supabase';
 import type { RootStackParamList } from '../../navigation/types';
@@ -20,6 +20,10 @@ const FEATURE_CARDS = [
   { key: 'Scenes' as const, label: 'Scenes', icon: PartyPopper, color: '#A855F7' },
   { key: 'Genie' as const, label: 'Genie', icon: Sparkles, color: '#2196D6' },
   { key: 'Guard' as const, label: 'Guard', icon: Shield, color: '#FF0033' },
+  // Group I: pages hub (Personal/Business/NGO) — landing on MyPages rather
+  // than the type-selector directly, since most taps after the first visit
+  // are "manage what I already have", not "create a new one".
+  { key: 'MyPages' as const, label: 'Pages', icon: Store, color: '#059669' },
 ];
 
 // Ported from the prototype's ExploreTab (lines 2288–2543) — search + 4

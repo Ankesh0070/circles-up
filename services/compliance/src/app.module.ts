@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { HealthController } from './health/health.controller';
+import { NgoReviewModule } from './ngo-review/review.module';
+import { DonationsModule } from './donations/donations.module';
+import { ReceiptsModule } from './receipts/receipts.module';
 
-// Compliance Service — GST/Darpan validation, donation receipts (Group I)
-//
-// Empty skeleton — real endpoints land when this service's phase (see
-// implementationplan.md) is implemented. Only a health check exists for now,
-// proving the service builds, boots, and is wired into CI.
+// Compliance Service — NGO donation approval, Razorpay + receipts (Group I,
+// implementationplan.md phases 79-80).
 @Module({
-  imports: [],
+  imports: [NgoReviewModule, DonationsModule, ReceiptsModule],
   controllers: [HealthController],
   providers: [],
 })

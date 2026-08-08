@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 import { HealthController } from './health/health.controller';
+import { ServeModule } from './serve/serve.module';
+import { AdReviewModule } from './review/review.module';
 
-// Ads Targeting Service — geospatial ad targeting + budget pacing (Group I)
-//
-// Empty skeleton — real endpoints land when this service's phase (see
-// implementationplan.md) is implemented. Only a health check exists for now,
-// proving the service builds, boots, and is wired into CI.
+// Ads Targeting Service — geospatial ad targeting + budget pacing (Group I,
+// implementationplan.md phases 83-84).
 @Module({
-  imports: [],
+  imports: [ServeModule, AdReviewModule],
   controllers: [HealthController],
   providers: [],
 })

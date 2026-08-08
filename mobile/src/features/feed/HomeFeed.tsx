@@ -4,8 +4,10 @@ import { useFocusEffect } from '@react-navigation/native';
 import TopBar from './TopBar';
 import StoriesBar from './StoriesBar';
 import PostCard, { type FeedPost } from './PostCard';
+import SponsoredCard from './SponsoredCard';
 import { supabase } from '../../shared/api/supabase';
 import { getBlockedUserIds } from '../../shared/api/blocks';
+import { fetchServedAd, type ServedAd } from '../../shared/api/ads';
 import type { ReactionId } from './ReactionPicker';
 
 // Ported from the prototype's HomeFeed (lines 2273–2285) — TopBar + StoriesBar
@@ -22,12 +24,15 @@ import type { ReactionId } from './ReactionPicker';
 // edgecase.md §9.1 warns about.
 export default function HomeFeed() {
   const [posts, setPosts] = useState<FeedPost[] | null>(null);
+  const [ad, setAd] = useState<ServedAd | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     const {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) return;
+    setUserId(user.id);
 
     const { data: profile } = await supabase.from('profiles').select('active_neighbourhood_id').eq('id', user.id).single();
     const activeNeighbourhoodId = profile?.active_neighbourhood_id;
@@ -35,6 +40,8 @@ export default function HomeFeed() {
       setPosts([]);
       return;
     }
+
+    fetchServedAd(user.id, activeNeighbourhoodId).then(setAd);
 
     const [{ data: rows }, { data: hidden }, { data: muted }, blockedIds] = await Promise.all([
       supabase
@@ -90,7 +97,12 @@ export default function HomeFeed() {
         <FlatList
           data={posts}
           keyExtractor={(p) => p.id}
-          ListHeaderComponent={<StoriesBar />}
+          ListHeaderComponent={
+            <>
+              <StoriesBar />
+              {ad && userId && <SponsoredCard ad={ad} userId={userId} />}
+            </>
+          }
           renderItem={({ item }) => <PostCard post={item} onChanged={load} />}
           ListEmptyComponent={
             <Text className="text-center text-gray-400 mt-10 text-[13px]">

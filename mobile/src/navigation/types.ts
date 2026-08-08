@@ -49,9 +49,11 @@ export type ModalStackParamList = {
   CreateEvent: undefined;
   MyEvents: undefined;
   EventDetail: { eventId: string };
-  CreatePage: undefined;
+  CreatePage: { pageType: 'personal' | 'business' | 'ngo' };
   PageTypeSelector: undefined;
   MyPages: undefined;
+  PageDetail: { pageId: string };
+  Donate: { pageId: string };
   AdsManager: undefined;
   CreateAd: undefined;
 };
