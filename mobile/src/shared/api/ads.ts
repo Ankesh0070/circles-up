@@ -1,4 +1,6 @@
-const ADS_SERVICE_URL = process.env.EXPO_PUBLIC_ADS_SERVICE_URL ?? 'http://127.0.0.1:4004';
+import { resolveDevUrl } from './devHost';
+
+const ADS_SERVICE_URL = resolveDevUrl(process.env.EXPO_PUBLIC_ADS_SERVICE_URL ?? 'http://127.0.0.1:4004');
 
 export type ServedAd = { campaign_id: string; headline: string; body: string; image_url: string | null; cta_text: string };
 

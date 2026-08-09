@@ -3,11 +3,14 @@ import { View, Text, TextInput, Pressable, ActivityIndicator, ScrollView } from 
 import GradientButton from '../../shared/components/GradientButton';
 import GpsCameraModal, { type CaptureResult } from '../verification/GpsCameraModal';
 import { supabase } from '../../shared/api/supabase';
+import { resolveDevUrl } from '../../shared/api/devHost';
 
 type Neighbourhood = { id: string; name: string; city: string };
 export type SubmitOutcome = { status: 'verified' | 'pending'; reviewReason?: string };
 
-const VERIFICATION_SERVICE_URL = process.env.EXPO_PUBLIC_VERIFICATION_SERVICE_URL ?? 'http://127.0.0.1:4001';
+const VERIFICATION_SERVICE_URL = resolveDevUrl(
+  process.env.EXPO_PUBLIC_VERIFICATION_SERVICE_URL ?? 'http://127.0.0.1:4001'
+);
 
 const REVIEW_REASON_COPY: Record<string, string> = {
   gps_mocked: "we couldn't confirm your device's GPS signal was genuine",
