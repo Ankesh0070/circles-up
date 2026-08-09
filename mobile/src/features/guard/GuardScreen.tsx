@@ -16,7 +16,15 @@ export default function GuardScreen() {
   const [sosOpen, setSosOpen] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null));
+    // Phase 97 (network-degradation testing) found a real bug here:
+    // `getUser()` re-verifies the session against the server on every
+    // call, so with the network down, this promise never resolves and the
+    // SOS button stays permanently disabled — on the one screen that must
+    // work with zero connectivity. `getSession()` reads the already-valid
+    // session from local storage without a network round-trip, which is
+    // all this button actually needs (SosFlow re-derives everything else
+    // it needs from `userId` once network is available).
+    supabase.auth.getSession().then(({ data }) => setUserId(data.session?.user?.id ?? null));
   }, []);
 
   const quickActions = [

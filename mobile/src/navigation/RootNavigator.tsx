@@ -75,8 +75,19 @@ export default function RootNavigator() {
       .select('onboarding_completed')
       .eq('id', session.user.id)
       .single()
-      .then(({ data }) => {
-        if (!cancelled) setOnboarded(data?.onboarding_completed ?? false);
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        // Phase 97 (network-degradation testing) found a real bug here: a
+        // failed request (network down) fell through the same `?? false`
+        // as "row exists but onboarding_completed is false" — so a fully
+        // verified returning user reopening the app with no connectivity
+        // got routed straight back into the Address/live-selfie gauntlet
+        // instead of Main. A session existing at all means they signed in
+        // before; assume onboarded on a network error and let individual
+        // screens handle their own offline states, rather than routing
+        // the entire app on a request that never actually answered the
+        // question.
+        setOnboarded(error ? true : (data?.onboarding_completed ?? false));
       });
     return () => {
       cancelled = true;

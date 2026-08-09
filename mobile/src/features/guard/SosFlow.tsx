@@ -5,8 +5,10 @@ import { supabase } from '../../shared/api/supabase';
 import {
   EMERGENCY_CHANNELS,
   getBestEffortLocation,
+  generateSosEventId,
   createSosEvent,
-  dialEmergencyChannel,
+  dialTelOnly,
+  logDispatchAttempt,
   dispatchToBackend,
   resolveSosEvent,
   cancelSosEvent,
@@ -98,22 +100,29 @@ export default function SosFlow({
 
   const fire = async () => {
     setStage('dispatching');
+    const id = generateSosEventId();
+
+    // Dial native tel: FIRST, unconditionally, before anything that touches
+    // the network or waits on a GPS fix — edgecase.md §3.1: this is the one
+    // channel that must work with zero connectivity, so nothing gets to sit
+    // in front of it. (Phase 97 network-degradation testing found the
+    // previous ordering — create the DB record, THEN dial — meant a dead
+    // network blocked the phone dial entirely, exactly backwards.)
+    const dialResults = await Promise.all(EMERGENCY_CHANNELS.map((c) => dialTelOnly(c)));
+    setEventId(id);
+    startedAtRef.current = Date.now();
+    setStage('active');
+
     try {
       const loc: SosLocation = await getBestEffortLocation();
-      const id = await createSosEvent(userId, loc, triggeredVia);
-      setEventId(id);
-      startedAtRef.current = Date.now();
-      setStage('active');
-
-      // Client-dialed channels (native tel:, works without data) fire in
-      // parallel with the backend fan-out — neither blocks the other.
+      await createSosEvent(id, userId, loc, triggeredVia);
       await Promise.all([
-        ...EMERGENCY_CHANNELS.map((c) => dialEmergencyChannel(id, c)),
+        ...EMERGENCY_CHANNELS.map((c, i) => logDispatchAttempt(id, c, dialResults[i])),
         dispatchToBackend(userId, id, loc).catch((e) => setError(e instanceof Error ? e.message : 'Dispatch failed')),
       ]);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Something went wrong');
-      setStage('active'); // still show whatever succeeded rather than getting stuck
+      // stage stays 'active' regardless — the dial already happened above.
     }
   };
 

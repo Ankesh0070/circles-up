@@ -35,7 +35,7 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Circle Up needs your location to verify you actually live in the neighbourhood you're joining."
+          "locationWhenInUsePermission": "Circle Up needs your location to verify you live in the neighbourhood you're joining, to attach a location to an SOS alert, and to share your live location with trusted contacts while the app is open."
         }
       ],
       [
@@ -47,7 +47,7 @@
       [
         "expo-audio",
         {
-          "microphonePermission": "Circle Up needs microphone access to send voice notes in chats."
+          "microphonePermission": "Circle Up needs microphone access to send voice notes in chats, and — only if you turn on Silent Phrase in Circle Guard settings — to listen for your chosen safety phrase while the app is open in the foreground."
         }
       ],
       [

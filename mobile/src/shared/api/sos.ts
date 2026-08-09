@@ -1,5 +1,6 @@
 import { Linking, Platform } from 'react-native';
 import * as Location from 'expo-location';
+import * as Crypto from 'expo-crypto';
 import { supabase } from './supabase';
 
 const SOS_SERVICE_URL = process.env.EXPO_PUBLIC_SOS_SERVICE_URL ?? 'http://127.0.0.1:4002';
@@ -37,40 +38,64 @@ export async function getBestEffortLocation(): Promise<SosLocation> {
   }
 }
 
-export async function createSosEvent(userId: string, loc: SosLocation, triggeredVia: 'button' | 'silent_phrase') {
-  const { data, error } = await supabase
-    .from('sos_events')
-    .insert({ user_id: userId, lat: loc.lat, lng: loc.lng, accuracy: loc.accuracy, triggered_via: triggeredVia })
-    .select('id')
-    .single();
-  if (error) throw error;
-  return data.id as string;
+// Phase 97 (edgecase.md §11.6, network-degradation testing) found a real
+// bug here: this used to generate the sos_events id server-side (via
+// `.select('id').single()` after insert), which meant the ONE channel
+// documented above as needing to survive zero connectivity (native tel:)
+// could never fire until AFTER a successful network round-trip had
+// already completed — exactly backwards from "works without data".
+// Generating the id client-side lets the caller dial the phone first and
+// durably record the event afterward, whenever the network comes back.
+export function generateSosEventId(): string {
+  return Crypto.randomUUID();
 }
 
-// Dials via the device's native telephony (works without data) and
-// self-reports the attempt into the audit trail (edgecase.md §3.9/§3.13).
-// `dialed` records only that the OS call/SMS composer was opened — we have
-// no way to confirm the call actually connected, which is an honest
-// limitation of native tel:/sms: deep links, not something this code can
-// paper over.
-export async function dialEmergencyChannel(
-  sosEventId: string,
-  channel: (typeof EMERGENCY_CHANNELS)[number]
-): Promise<boolean> {
+export async function createSosEvent(
+  id: string,
+  userId: string,
+  loc: SosLocation,
+  triggeredVia: 'button' | 'silent_phrase'
+) {
+  const { error } = await supabase
+    .from('sos_events')
+    .insert({ id, user_id: userId, lat: loc.lat, lng: loc.lng, accuracy: loc.accuracy, triggered_via: triggeredVia });
+  if (error) throw error;
+  return id;
+}
+
+// The actual phone dial — no network, no database, nothing that can be
+// slow or fail due to connectivity. Split out from the audit-log write
+// below so a dead network can never delay or block this call.
+export async function dialTelOnly(channel: (typeof EMERGENCY_CHANNELS)[number]): Promise<boolean> {
   const url = `tel:${channel.number}`;
   const can = await Linking.canOpenURL(url);
-  if (can) {
-    await Linking.openURL(url);
-  }
-  await supabase.from('sos_dispatch_log').insert({
-    sos_event_id: sosEventId,
-    channel: channel.id,
-    recipient_phone: channel.number,
-    recipient_name: channel.label,
-    delivery_status: can ? 'dialed' : 'failed',
-    delivery_detail: can ? null : 'device could not open tel: URL',
-  });
+  if (can) await Linking.openURL(url);
   return can;
+}
+
+// Self-reports a dial attempt into the audit trail (edgecase.md §3.9/§3.13).
+// Best-effort and non-throwing on purpose: by the time this runs, the
+// actual dial (dialTelOnly, above) has already happened — losing this log
+// row to a dead network is an acceptable, honest trade-off, not something
+// that should make the SOS flow look like it failed when the part that
+// actually matters (getting a real call placed) already succeeded.
+export async function logDispatchAttempt(
+  sosEventId: string,
+  channel: (typeof EMERGENCY_CHANNELS)[number],
+  dialed: boolean
+): Promise<void> {
+  try {
+    await supabase.from('sos_dispatch_log').insert({
+      sos_event_id: sosEventId,
+      channel: channel.id,
+      recipient_phone: channel.number,
+      recipient_name: channel.label,
+      delivery_status: dialed ? 'dialed' : 'failed',
+      delivery_detail: dialed ? null : 'device could not open tel: URL',
+    });
+  } catch {
+    // best-effort — see comment above.
+  }
 }
 
 export type DispatchResult = { trustedContactsDispatched: number; neighboursAlerted: number; errors: string[] };
