@@ -5,3 +5,6 @@ export { default as Avatar } from './Avatar';
 export { default as HumanHeart } from './HumanHeart';
 export { default as PremiumShareIcon } from './PremiumShareIcon';
 export { default as GradientText } from './GradientText';
+export { default as Card } from './Card';
+export { default as TextField } from './TextField';
+export { default as Chip } from './Chip';

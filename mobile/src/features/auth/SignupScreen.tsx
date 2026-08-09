@@ -1,12 +1,26 @@
 import { useState } from 'react';
-import { View, Text, TextInput, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { ArrowLeft, Mail, Lock, Smartphone, Check, ChevronRight } from 'lucide-react-native';
 import GradientButton from '../../shared/components/GradientButton';
 import GradientText from '../../shared/components/GradientText';
 import CircleUpLogo from '../../shared/components/CircleUpLogo';
+import TextField from '../../shared/components/TextField';
+import Card from '../../shared/components/Card';
 import GoogleLogo from './GoogleLogo';
 import GoogleAccountSheet from './GoogleAccountSheet';
 import { supabase } from '../../shared/api/supabase';
+import {
+  SURFACE,
+  ON_SURFACE,
+  ON_SURFACE_MUTED,
+  OUTLINE_VARIANT,
+  PRIMARY,
+  ERROR,
+  ERROR_CONTAINER,
+  SUCCESS,
+  RADIUS,
+} from '../../shared/theme/tokens';
 import type { AuthStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Signup'>;
@@ -34,95 +48,132 @@ export default function SignupScreen({ navigation }: Props) {
   if (picked === 'email') return <EmailSignupForm onBack={() => setPicked(null)} />;
   if (picked === 'phone') return <PhoneSignupForm onBack={() => setPicked(null)} navigation={navigation} />;
 
+  const methods = [
+    { key: 'gmail' as const, title: 'Continue with Gmail', sub: 'Fastest — use your Google account', primary: true },
+    { key: 'email' as const, title: 'Sign up with Email', sub: 'Use any email + a password', icon: Mail },
+    { key: 'phone' as const, title: 'Sign up with Phone', sub: '+91 number + OTP verification', icon: Smartphone },
+  ];
+
   return (
-    <View className="flex-1 bg-white px-6 pt-16">
+    <ScrollView
+      style={{ flex: 1, backgroundColor: SURFACE }}
+      contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 64, paddingBottom: 32, flexGrow: 1 }}
+      keyboardShouldPersistTaps="handled"
+    >
       <GoogleAccountSheet
         visible={googleOpen}
         mode="signup"
         onClose={() => setGoogleOpen(false)}
         onContinue={() => setGoogleOpen(false)}
       />
-      <Pressable onPress={() => navigation.goBack()} hitSlop={8} className="self-start -ml-1 mb-4">
-        <Text className="text-[22px] text-[#262626]">←</Text>
+      <Pressable onPress={() => navigation.goBack()} hitSlop={8} style={{ alignSelf: 'flex-start', marginBottom: 20 }}>
+        <ArrowLeft size={24} color={ON_SURFACE} />
       </Pressable>
-      <CircleUpLogo size={52} />
-      <Text className="text-[26px] font-bold text-[#262626] mt-6 tracking-tight">Create your account</Text>
-      <Text className="text-[13px] text-gray-500 mt-1.5 leading-relaxed">
+
+      <CircleUpLogo size={54} />
+      <Text style={{ fontSize: 28, fontWeight: '700', color: ON_SURFACE, marginTop: 20, letterSpacing: -0.5 }}>
+        Create your account
+      </Text>
+      <Text style={{ fontSize: 14.5, color: ON_SURFACE_MUTED, marginTop: 8, lineHeight: 21 }}>
         Choose how you want to sign up. You can always link other methods later.
       </Text>
 
+      {/* 18+ gate. Nothing below is tappable until this is ticked (Phase 21 /
+          edgecase.md §1.9) — the warning state makes that explicit rather
+          than leaving the taps silently inert. */}
       <Pressable
         onPress={() => {
           setAgeConfirmed((v) => !v);
           setAgeWarning(false);
         }}
-        className="flex-row items-start gap-2.5 mt-6 p-3 rounded-xl"
-        style={{ backgroundColor: ageWarning ? '#FEF2F2' : '#F9FAFB', borderWidth: 1, borderColor: ageWarning ? '#FCA5A5' : '#E5E7EB' }}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'flex-start',
+          gap: 12,
+          marginTop: 24,
+          padding: 16,
+          borderRadius: RADIUS.card,
+          backgroundColor: ageWarning ? ERROR_CONTAINER : '#F0F4F9',
+          borderWidth: 1.5,
+          borderColor: ageWarning ? ERROR : 'transparent',
+        }}
       >
         <View
-          className="w-5 h-5 rounded items-center justify-center mt-0.5"
-          style={{ backgroundColor: ageConfirmed ? '#2196D6' : 'transparent', borderWidth: ageConfirmed ? 0 : 1.5, borderColor: '#9CA3AF' }}
+          style={{
+            width: 22,
+            height: 22,
+            borderRadius: 6,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginTop: 1,
+            backgroundColor: ageConfirmed ? PRIMARY : 'transparent',
+            borderWidth: ageConfirmed ? 0 : 1.5,
+            borderColor: ON_SURFACE_MUTED,
+          }}
         >
-          {ageConfirmed && <Text className="text-white text-[12px]">✓</Text>}
+          {ageConfirmed && <Check size={14} color="#fff" strokeWidth={3} />}
         </View>
-        <Text className="text-[12.5px] text-gray-600 flex-1 leading-relaxed">
-          I confirm I'm 18 years or older. (Circle Up verifies your address and identity — false age declarations violate our Terms.)
+        <Text style={{ fontSize: 13, color: ON_SURFACE, flex: 1, lineHeight: 19 }}>
+          I confirm I'm 18 years or older. (Circle Up verifies your address and identity — false age declarations violate
+          our Terms.)
         </Text>
       </Pressable>
-      {ageWarning && <Text className="text-[11px] text-red-600 mt-1.5">Please confirm you're 18+ to continue.</Text>}
+      {ageWarning && (
+        <Text style={{ fontSize: 12.5, color: ERROR, marginTop: 8, marginLeft: 4, fontWeight: '600' }}>
+          Please confirm you're 18+ to continue.
+        </Text>
+      )}
 
-      <View className="mt-6 gap-3">
-        <Pressable
-          onPress={() => requireAgeGate(() => setGoogleOpen(true))}
-          className="rounded-2xl p-4 flex-row items-center gap-3.5 bg-white"
-          style={{ borderWidth: 2, borderColor: '#262626' }}
-        >
-          <View className="w-11 h-11 rounded-full bg-white border border-gray-200 items-center justify-center">
-            <GoogleLogo size={22} />
-          </View>
-          <View className="flex-1">
-            <Text className="text-[14px] font-bold text-[#262626]">Continue with Gmail</Text>
-            <Text className="text-[11.5px] text-gray-500 mt-0.5">Fastest — use your Google account</Text>
-          </View>
-          <Text className="text-gray-400">›</Text>
-        </Pressable>
-
-        <Pressable onPress={() => requireAgeGate(() => setPicked('email'))} className="rounded-2xl p-4 flex-row items-center gap-3.5 bg-[#FAFAFA] border border-gray-200">
-          <View className="w-11 h-11 rounded-full bg-white border border-gray-200 items-center justify-center">
-            <Text className="text-[16px]">✉️</Text>
-          </View>
-          <View className="flex-1">
-            <Text className="text-[14px] font-bold text-[#262626]">Sign up with Email</Text>
-            <Text className="text-[11.5px] text-gray-500 mt-0.5">Use any email + a password</Text>
-          </View>
-          <Text className="text-gray-400">›</Text>
-        </Pressable>
-
-        <Pressable onPress={() => requireAgeGate(() => setPicked('phone'))} className="rounded-2xl p-4 flex-row items-center gap-3.5 bg-[#FAFAFA] border border-gray-200">
-          <View className="w-11 h-11 rounded-full bg-white border border-gray-200 items-center justify-center">
-            <Text className="text-[16px]">📱</Text>
-          </View>
-          <View className="flex-1">
-            <Text className="text-[14px] font-bold text-[#262626]">Sign up with Phone</Text>
-            <Text className="text-[11.5px] text-gray-500 mt-0.5">+91 number + OTP verification</Text>
-          </View>
-          <Text className="text-gray-400">›</Text>
-        </Pressable>
+      <View style={{ marginTop: 24, gap: 12 }}>
+        {methods.map((m) => (
+          <Card
+            key={m.key}
+            onPress={() =>
+              requireAgeGate(() => (m.key === 'gmail' ? setGoogleOpen(true) : setPicked(m.key as 'email' | 'phone')))
+            }
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 14,
+              ...(m.primary ? { borderWidth: 2, borderColor: ON_SURFACE } : {}),
+            }}
+          >
+            <View
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: 22,
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: m.primary ? SURFACE : `${PRIMARY}14`,
+                borderWidth: m.primary ? 1 : 0,
+                borderColor: OUTLINE_VARIANT,
+              }}
+            >
+              {m.primary ? <GoogleLogo size={22} /> : m.icon ? <m.icon size={20} color={PRIMARY} strokeWidth={2.1} /> : null}
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 15, fontWeight: '700', color: ON_SURFACE }}>{m.title}</Text>
+              <Text style={{ fontSize: 12.5, color: ON_SURFACE_MUTED, marginTop: 2 }}>{m.sub}</Text>
+            </View>
+            <ChevronRight size={18} color={ON_SURFACE_MUTED} />
+          </Card>
+        ))}
       </View>
 
-      <View className="mt-auto mb-10 items-center">
-        <Text className="text-[13px] text-gray-500">
-          Already on Circle Up?{' '}
-          <Text onPress={() => navigation.goBack()} className="font-bold" style={{ color: '#2196D6' }}>
-            Log in
-          </Text>
-        </Text>
-        <Text className="text-[11px] text-gray-400 mt-4 leading-relaxed text-center">
-          By continuing, you agree to Circle Up's <Text className="text-[#262626] font-medium">Terms</Text> &{' '}
-          <Text className="text-[#262626] font-medium">Privacy</Text>
+      <View style={{ marginTop: 'auto', paddingTop: 32, alignItems: 'center' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <Text style={{ fontSize: 14, color: ON_SURFACE_MUTED }}>Already on Circle Up?</Text>
+          <Pressable onPress={() => navigation.goBack()} hitSlop={6}>
+            <GradientText style={{ fontSize: 15, fontWeight: '700' }}>Log in</GradientText>
+          </Pressable>
+        </View>
+        <Text style={{ fontSize: 11.5, color: ON_SURFACE_MUTED, marginTop: 18, textAlign: 'center', lineHeight: 17 }}>
+          By continuing, you agree to Circle Up's <Text style={{ color: ON_SURFACE, fontWeight: '600' }}>Terms</Text> &{' '}
+          <Text style={{ color: ON_SURFACE, fontWeight: '600' }}>Privacy</Text>
         </Text>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -149,46 +200,48 @@ function EmailSignupForm({ onBack }: { onBack: () => void }) {
   };
 
   return (
-    <View className="flex-1 bg-white px-6 pt-16 pb-8">
-      <Pressable onPress={onBack} hitSlop={8} className="self-start -ml-1 mb-4">
-        <Text className="text-[22px] text-[#262626]">←</Text>
+    <View style={{ flex: 1, backgroundColor: SURFACE, paddingHorizontal: 24, paddingTop: 64, paddingBottom: 32 }}>
+      <Pressable onPress={onBack} hitSlop={8} style={{ alignSelf: 'flex-start', marginBottom: 20 }}>
+        <ArrowLeft size={24} color={ON_SURFACE} />
       </Pressable>
-      <Text className="text-[24px] font-bold text-[#262626] tracking-tight">Sign up with Email</Text>
-      <Text className="text-[13px] text-gray-500 mt-1.5">We'll create your account right away.</Text>
+      <Text style={{ fontSize: 28, fontWeight: '700', color: ON_SURFACE, letterSpacing: -0.5 }}>Sign up with Email</Text>
+      <Text style={{ fontSize: 14.5, color: ON_SURFACE_MUTED, marginTop: 8 }}>We'll create your account right away.</Text>
 
-      <Text className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mt-8">Email</Text>
-      <TextInput
-        value={email}
-        onChangeText={(t) => {
-          setEmail(t);
-          setErr('');
-        }}
-        placeholder="you@example.com"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        autoCorrect={false}
-        className="mt-2 text-[17px] text-[#262626] font-medium border-b border-gray-200 pb-3"
-      />
-      <Text className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mt-5">Create password</Text>
-      <TextInput
-        value={password}
-        onChangeText={(t) => {
-          setPassword(t);
-          setErr('');
-        }}
-        placeholder="At least 6 characters"
-        secureTextEntry
-        className="mt-2 text-[17px] text-[#262626] font-medium border-b border-gray-200 pb-3"
-      />
-      <Text className="text-[11px] mt-3" style={{ color: err ? '#DC2626' : '#9CA3AF' }}>
+      <View style={{ marginTop: 32, gap: 18 }}>
+        <TextField
+          label="Email"
+          value={email}
+          onChangeText={(t) => {
+            setEmail(t);
+            setErr('');
+          }}
+          placeholder="you@example.com"
+          icon={Mail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+        <TextField
+          label="Create password"
+          value={password}
+          onChangeText={(t) => {
+            setPassword(t);
+            setErr('');
+          }}
+          placeholder="At least 6 characters"
+          icon={Lock}
+          secure
+          autoCapitalize="none"
+        />
+      </View>
+
+      <Text style={{ fontSize: 12.5, marginTop: 14, marginLeft: 4, color: err ? ERROR : emailOk && passOk ? SUCCESS : ON_SURFACE_MUTED }}>
         {err || (emailOk && passOk ? '✓ Looks good — ready to continue' : 'Email + password (6+ chars) needed')}
       </Text>
 
-      <View className="mt-auto pt-6">
-        <GradientButton onPress={submit} disabled={loading}>
-          {loading ? '' : 'Create account'}
+      <View style={{ marginTop: 'auto', paddingTop: 24 }}>
+        <GradientButton onPress={submit} loading={loading} showArrow>
+          Create account
         </GradientButton>
-        {loading && <ActivityIndicator style={{ marginTop: -38 }} color="#fff" />}
       </View>
     </View>
   );
@@ -213,17 +266,33 @@ function PhoneSignupForm({ onBack, navigation }: { onBack: () => void; navigatio
   };
 
   return (
-    <View className="flex-1 bg-white px-6 pt-16 pb-8">
-      <Pressable onPress={onBack} hitSlop={8} className="self-start -ml-1 mb-4">
-        <Text className="text-[22px] text-[#262626]">←</Text>
+    <View style={{ flex: 1, backgroundColor: SURFACE, paddingHorizontal: 24, paddingTop: 64, paddingBottom: 32 }}>
+      <Pressable onPress={onBack} hitSlop={8} style={{ alignSelf: 'flex-start', marginBottom: 20 }}>
+        <ArrowLeft size={24} color={ON_SURFACE} />
       </Pressable>
-      <Text className="text-[24px] font-bold text-[#262626] tracking-tight">Sign up with Phone</Text>
-      <Text className="text-[13px] text-gray-500 mt-1.5">We'll text you a 6-digit OTP to verify your number.</Text>
+      <Text style={{ fontSize: 28, fontWeight: '700', color: ON_SURFACE, letterSpacing: -0.5 }}>Sign up with Phone</Text>
+      <Text style={{ fontSize: 14.5, color: ON_SURFACE_MUTED, marginTop: 8 }}>
+        We'll text you a 6-digit OTP to verify your number.
+      </Text>
 
-      <Text className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mt-8">Phone number</Text>
-      <View className="mt-2 flex-row items-center gap-3 border-b border-gray-200 pb-3">
-        <Text className="text-[#262626] font-semibold text-[17px]">🇮🇳 +91</Text>
-        <View className="w-px h-6 bg-gray-200" />
+      <Text style={{ fontSize: 13, fontWeight: '600', color: ON_SURFACE_MUTED, marginTop: 32, marginBottom: 8, marginLeft: 4 }}>
+        Phone number
+      </Text>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 12,
+          backgroundColor: SURFACE,
+          borderWidth: 1.5,
+          borderColor: OUTLINE_VARIANT,
+          borderRadius: RADIUS.input,
+          paddingHorizontal: 18,
+          minHeight: 54,
+        }}
+      >
+        <Text style={{ color: ON_SURFACE, fontWeight: '700', fontSize: 15 }}>🇮🇳 +91</Text>
+        <View style={{ width: 1, height: 24, backgroundColor: OUTLINE_VARIANT }} />
         <TextInput
           value={phone}
           onChangeText={(t) => {
@@ -231,19 +300,19 @@ function PhoneSignupForm({ onBack, navigation }: { onBack: () => void; navigatio
             setErr('');
           }}
           placeholder="98765 43210"
+          placeholderTextColor={ON_SURFACE_MUTED}
           keyboardType="number-pad"
-          className="flex-1 text-[17px] text-[#262626] font-medium"
+          style={{ flex: 1, fontSize: 15, color: ON_SURFACE, paddingVertical: 14 }}
         />
       </View>
-      <Text className="text-[11px] mt-3" style={{ color: err ? '#DC2626' : '#9CA3AF' }}>
+      <Text style={{ fontSize: 12.5, marginTop: 10, marginLeft: 4, color: err ? ERROR : phoneOk ? SUCCESS : ON_SURFACE_MUTED }}>
         {err || (phoneOk ? '✓ Looks good — ready to send OTP' : `Enter ${10 - phone.length} more digit${10 - phone.length === 1 ? '' : 's'}`)}
       </Text>
 
-      <View className="mt-auto pt-6">
-        <GradientButton onPress={submit} disabled={loading}>
-          {loading ? '' : 'Send OTP'}
+      <View style={{ marginTop: 'auto', paddingTop: 24 }}>
+        <GradientButton onPress={submit} loading={loading} showArrow>
+          Send OTP
         </GradientButton>
-        {loading && <ActivityIndicator style={{ marginTop: -38 }} color="#fff" />}
       </View>
     </View>
   );

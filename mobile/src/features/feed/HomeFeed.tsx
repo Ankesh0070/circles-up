@@ -8,6 +8,7 @@ import SponsoredCard from './SponsoredCard';
 import { supabase } from '../../shared/api/supabase';
 import { getBlockedUserIds } from '../../shared/api/blocks';
 import { fetchServedAd, type ServedAd } from '../../shared/api/ads';
+import { BACKGROUND, PRIMARY, ON_SURFACE_MUTED } from '../../shared/theme/tokens';
 import type { ReactionId } from './ReactionPicker';
 
 // Ported from the prototype's HomeFeed (lines 2273–2285) — TopBar + StoriesBar
@@ -89,14 +90,15 @@ export default function HomeFeed() {
   );
 
   return (
-    <View className="flex-1 bg-white">
+    <View style={{ flex: 1, backgroundColor: BACKGROUND }}>
       <TopBar />
       {posts === null ? (
-        <ActivityIndicator className="mt-10" color="#2196D6" />
+        <ActivityIndicator style={{ marginTop: 40 }} color={PRIMARY} />
       ) : (
         <FlatList
           data={posts}
           keyExtractor={(p) => p.id}
+          contentContainerStyle={{ padding: 16, paddingBottom: 32, gap: 14 }}
           ListHeaderComponent={
             <>
               <StoriesBar />
@@ -105,7 +107,7 @@ export default function HomeFeed() {
           }
           renderItem={({ item }) => <PostCard post={item} onChanged={load} />}
           ListEmptyComponent={
-            <Text className="text-center text-gray-400 mt-10 text-[13px]">
+            <Text style={{ textAlign: 'center', color: ON_SURFACE_MUTED, marginTop: 40, fontSize: 13.5 }}>
               No posts yet — be the first to share something with your circle.
             </Text>
           }

@@ -3,9 +3,22 @@ import { View, Text, Pressable, Image, FlatList, ActivityIndicator, Linking } fr
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Settings as SettingsIcon, Plus, Link as LinkIcon, Trophy, MessageSquare } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import Avatar from '../../shared/components/Avatar';
+import Card from '../../shared/components/Card';
 import { supabase } from '../../shared/api/supabase';
 import { categoryMeta } from '../../shared/data/categories';
+import {
+  BACKGROUND,
+  ON_SURFACE,
+  ON_SURFACE_MUTED,
+  OUTLINE_VARIANT,
+  SURFACE_CONTAINER,
+  PRIMARY,
+  RADIUS,
+  IG_GRADIENT_COLORS,
+  IG_GRADIENT_ANGLE,
+} from '../../shared/theme/tokens';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Profile = {
@@ -78,15 +91,26 @@ export default function ProfileScreen() {
   }
 
   return (
-    <View className="flex-1 bg-white">
-      <View className="flex-row items-center justify-between px-4 pt-12 pb-2">
-        <Text className="text-[18px] font-bold text-[#1F1B17]">{profile.username ? `@${profile.username}` : 'Profile'}</Text>
-        <View className="flex-row items-center gap-4">
+    <View style={{ flex: 1, backgroundColor: BACKGROUND }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingHorizontal: 20,
+          paddingTop: 52,
+          paddingBottom: 10,
+        }}
+      >
+        <Text style={{ fontSize: 20, fontWeight: '700', color: ON_SURFACE }}>
+          {profile.username ? `@${profile.username}` : 'Profile'}
+        </Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 18 }}>
           <Pressable onPress={() => navigation.navigate('ProfileMenu')} hitSlop={8}>
-            <Plus size={22} color="#1F1B17" />
+            <Plus size={22} color={ON_SURFACE} />
           </Pressable>
           <Pressable onPress={() => navigation.navigate('Settings')} hitSlop={8}>
-            <SettingsIcon size={22} color="#1F1B17" />
+            <SettingsIcon size={22} color={ON_SURFACE} />
           </Pressable>
         </View>
       </View>
@@ -95,66 +119,120 @@ export default function ProfileScreen() {
         data={posts ?? []}
         keyExtractor={(p) => p.id}
         numColumns={3}
+        contentContainerStyle={{ paddingBottom: 32 }}
         ListHeaderComponent={
-          <View className="px-4 pb-4">
-            <View className="items-center mt-2">
-              <Avatar name={profile.name ?? '?'} size={84} />
-              <Text className="text-[19px] font-bold text-[#1F1B17] mt-3">{profile.name}</Text>
-              {profile.pronouns && <Text className="text-[12px] text-gray-400 mt-0.5">{profile.pronouns}</Text>}
-              {profile.bio && <Text className="text-[13px] text-gray-600 mt-2 text-center">{profile.bio}</Text>}
+          <View style={{ paddingHorizontal: 16, paddingBottom: 16 }}>
+            {/* Hero card — the design groups identity, stats, actions and
+                vibes into one raised card rather than stacking bare rows. */}
+            <Card radius={RADIUS.hero} style={{ alignItems: 'center', paddingVertical: 24 }}>
+              <Avatar name={profile.name ?? '?'} size={92} />
+              <Text style={{ fontSize: 23, fontWeight: '700', color: ON_SURFACE, marginTop: 14 }}>{profile.name}</Text>
+              {profile.pronouns && (
+                <Text style={{ fontSize: 13, color: ON_SURFACE_MUTED, marginTop: 2 }}>{profile.pronouns}</Text>
+              )}
+              {profile.bio && (
+                <Text style={{ fontSize: 14, color: ON_SURFACE_MUTED, marginTop: 10, textAlign: 'center', lineHeight: 20 }}>
+                  {profile.bio}
+                </Text>
+              )}
               {profile.link && (
-                <Pressable onPress={() => Linking.openURL(profile.link!)} className="flex-row items-center gap-1 mt-1.5">
-                  <LinkIcon size={12} color="#2196D6" />
-                  <Text className="text-[12px] text-[#2196D6] font-medium">{profile.link}</Text>
+                <Pressable
+                  onPress={() => Linking.openURL(profile.link!)}
+                  style={{ flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 8 }}
+                >
+                  <LinkIcon size={13} color={PRIMARY} />
+                  <Text style={{ fontSize: 13, color: PRIMARY, fontWeight: '600' }}>{profile.link}</Text>
                 </Pressable>
               )}
-            </View>
 
-            <View className="flex-row justify-around mt-5 py-3 border-y border-gray-100">
-              <View className="items-center">
-                <Text className="text-[16px] font-bold text-[#1F1B17]">{posts?.length ?? 0}</Text>
-                <Text className="text-[11px] text-gray-400">Posts</Text>
-              </View>
-              <View className="items-center">
-                <Text className="text-[16px] font-bold text-[#1F1B17]">{profile.vibes.length}</Text>
-                <Text className="text-[11px] text-gray-400">Vibes</Text>
-              </View>
-              <View className="items-center">
-                <Text className="text-[16px] font-bold text-[#1F1B17]">{streak}🔥</Text>
-                <Text className="text-[11px] text-gray-400">Day streak</Text>
-              </View>
-            </View>
-
-            <View className="flex-row gap-2 mt-4">
-              <Pressable onPress={() => navigation.navigate('EditProfile')} className="flex-1 py-2.5 rounded-xl bg-gray-100 items-center">
-                <Text className="text-[13px] font-bold text-gray-700">Edit Profile</Text>
-              </Pressable>
-              <Pressable onPress={() => navigation.navigate('ShareProfile')} className="flex-1 py-2.5 rounded-xl bg-gray-100 items-center">
-                <Text className="text-[13px] font-bold text-gray-700">Share Profile</Text>
-              </Pressable>
-            </View>
-
-            {achievements && (
-              <Pressable
-                onPress={() => navigation.navigate('Achievements')}
-                className="flex-row items-center justify-center gap-1.5 mt-3 py-2 rounded-xl bg-[#FFFBEB]"
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-around',
+                  alignSelf: 'stretch',
+                  marginTop: 20,
+                  paddingVertical: 16,
+                  borderTopWidth: 1,
+                  borderBottomWidth: 1,
+                  borderColor: OUTLINE_VARIANT,
+                }}
               >
-                <Trophy size={13} color="#B45309" />
-                <Text className="text-[12px] font-semibold text-[#B45309]">
-                  {achievements.total_points} pts · #{achievements.city_rank} in your city
-                </Text>
-              </Pressable>
-            )}
-
-            {profile.vibes.length > 0 && (
-              <View className="flex-row flex-wrap gap-2 justify-center mt-4">
-                {profile.vibes.map((v) => (
-                  <View key={v} className="px-2.5 py-1 rounded-full bg-[#EBF6FD]">
-                    <Text className="text-[11px] font-medium text-[#2196D6]">{v}</Text>
+                {[
+                  { value: String(posts?.length ?? 0), label: 'Posts' },
+                  { value: String(profile.vibes.length), label: 'Vibes' },
+                  { value: `${streak}🔥`, label: 'Day streak' },
+                ].map((s) => (
+                  <View key={s.label} style={{ alignItems: 'center' }}>
+                    <Text style={{ fontSize: 19, fontWeight: '700', color: ON_SURFACE }}>{s.value}</Text>
+                    <Text style={{ fontSize: 12, color: ON_SURFACE_MUTED, marginTop: 2 }}>{s.label}</Text>
                   </View>
                 ))}
               </View>
-            )}
+
+              <View style={{ flexDirection: 'row', gap: 10, marginTop: 18, alignSelf: 'stretch' }}>
+                <Pressable
+                  onPress={() => navigation.navigate('EditProfile')}
+                  style={{
+                    flex: 1,
+                    paddingVertical: 12,
+                    borderRadius: RADIUS.chip,
+                    backgroundColor: SURFACE_CONTAINER,
+                    alignItems: 'center',
+                  }}
+                >
+                  <Text style={{ fontSize: 13.5, fontWeight: '700', color: ON_SURFACE }}>Edit Profile</Text>
+                </Pressable>
+                <Pressable onPress={() => navigation.navigate('ShareProfile')} style={{ flex: 1 }}>
+                  <LinearGradient
+                    colors={IG_GRADIENT_COLORS}
+                    start={IG_GRADIENT_ANGLE.start}
+                    end={IG_GRADIENT_ANGLE.end}
+                    style={{ paddingVertical: 12, borderRadius: RADIUS.chip, alignItems: 'center' }}
+                  >
+                    <Text style={{ fontSize: 13.5, fontWeight: '700', color: '#fff' }}>Share</Text>
+                  </LinearGradient>
+                </Pressable>
+              </View>
+
+              {achievements && (
+                <Pressable
+                  onPress={() => navigation.navigate('Achievements')}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 6,
+                    marginTop: 14,
+                    paddingHorizontal: 14,
+                    paddingVertical: 8,
+                    borderRadius: RADIUS.chip,
+                    backgroundColor: '#FFFBEB',
+                  }}
+                >
+                  <Trophy size={14} color="#B45309" />
+                  <Text style={{ fontSize: 12.5, fontWeight: '700', color: '#B45309' }}>
+                    {achievements.total_points} pts · #{achievements.city_rank} in your city
+                  </Text>
+                </Pressable>
+              )}
+
+              {profile.vibes.length > 0 && (
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginTop: 16 }}>
+                  {profile.vibes.map((v) => (
+                    <View
+                      key={v}
+                      style={{
+                        paddingHorizontal: 12,
+                        paddingVertical: 6,
+                        borderRadius: RADIUS.chip,
+                        backgroundColor: SURFACE_CONTAINER,
+                      }}
+                    >
+                      <Text style={{ fontSize: 12, fontWeight: '600', color: ON_SURFACE }}>{v}</Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+            </Card>
           </View>
         }
         renderItem={({ item }) => {

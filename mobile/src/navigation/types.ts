@@ -12,11 +12,14 @@ export type AuthStackParamList = {
   ProfileSetup: undefined;
 };
 
+// Stitch design system tab set. `Search` was removed (never implemented, and
+// absent from the design); `Chats` moved to a Feed header action so its
+// fully-built flow stays reachable — see MainTabs.tsx.
 export type MainTabsParamList = {
-  Home: undefined;
   Explore: undefined;
-  Chats: undefined;
-  Search: undefined;
+  Feed: undefined;
+  Guard: undefined;
+  Bazaar: undefined;
   Profile: undefined;
 };
 
@@ -24,7 +27,6 @@ export type MainTabsParamList = {
 // `subScreen` state machine — see architecture.md §4.2).
 export type ModalStackParamList = {
   CreatePost: undefined;
-  Guard: undefined;
   Genie: undefined;
   Notifications: undefined;
   PostDetail: { postId: string };
@@ -34,9 +36,11 @@ export type ModalStackParamList = {
   UserProfile: { userId: string };
   NeighbourhoodSheet: undefined;
   AddNeighbourhood: undefined;
+  // Chats left the tab bar in the Stitch redesign (see MainTabs) — it lives
+  // here now, opened from the Feed header.
+  Chats: undefined;
   NewChat: undefined;
   ChatDetail: { chatId: string };
-  Bazaar: undefined;
   CreateListing: undefined;
   ListingDetail: { listingId: string };
   Scenes: undefined;

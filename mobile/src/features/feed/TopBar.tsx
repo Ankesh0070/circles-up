@@ -1,17 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useCallback } from 'react';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Plus, AlertTriangle, Bell, ChevronDown } from 'lucide-react-native';
+import { Plus, Bell, ChevronDown, MessageCircle } from 'lucide-react-native';
 import GradientText from '../../shared/components/GradientText';
 import { supabase } from '../../shared/api/supabase';
+import { SURFACE, ON_SURFACE_MUTED, ON_SURFACE, SOS_RED, OUTLINE_VARIANT } from '../../shared/theme/tokens';
 import type { RootStackParamList } from '../../navigation/types';
 
-// Ported from the prototype's TopBar (lines 1863–1903) — wordmark, create
-// button, SOS button, notification bell. Phase 61 addition: an active-
-// neighbourhood pill (tap to open NeighbourhoodSheet) — otherwise switching
-// neighbourhoods has no visible entry point anywhere in the app.
+// Stitch design system top bar: create button, gradient wordmark, and an
+// outlined SOS pill on the right.
+//
+// Chats sits here too. The design's tab bar is Explore/Feed/Guard/Bazaar/
+// Profile, which drops Chats — but chat is a fully-built feature, so rather
+// than stranding it behind no entry point at all, it gets a header icon.
 export default function TopBar({ hasUnread = false }: { hasUnread?: boolean }) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [neighbourhoodName, setNeighbourhoodName] = useState<string | null>(null);
@@ -34,7 +36,6 @@ export default function TopBar({ hasUnread = false }: { hasUnread?: boolean }) {
     loadActiveNeighbourhood();
   }, [loadActiveNeighbourhood]);
 
-  // Refresh after returning from NeighbourhoodSheet (switched neighbourhoods).
   useFocusEffect(
     useCallback(() => {
       loadActiveNeighbourhood();
@@ -42,38 +43,73 @@ export default function TopBar({ hasUnread = false }: { hasUnread?: boolean }) {
   );
 
   return (
-    <View className="px-4 py-3 bg-white border-b border-gray-100">
-      <View className="flex-row items-center justify-between">
-        <GradientText style={{ fontSize: 22, fontWeight: '700', letterSpacing: -0.3 }}>Circle Up</GradientText>
+    <View
+      style={{
+        paddingHorizontal: 16,
+        paddingTop: 52,
+        paddingBottom: 12,
+        backgroundColor: SURFACE,
+        borderBottomWidth: 1,
+        borderBottomColor: OUTLINE_VARIANT,
+      }}
+    >
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Pressable onPress={() => navigation.navigate('ProfileMenu')} hitSlop={8}>
+          <Plus size={24} color={ON_SURFACE} strokeWidth={2.2} />
+        </Pressable>
 
-        <View className="flex-row items-center gap-4">
-          <Pressable onPress={() => navigation.navigate('CreatePost')} hitSlop={8}>
-            <Plus size={24} color="#1F1B17" strokeWidth={2.2} />
+        <GradientText style={{ fontSize: 22, fontWeight: '700', letterSpacing: -0.4 }}>Circle Up</GradientText>
+
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+          <Pressable onPress={() => navigation.navigate('Chats')} hitSlop={8}>
+            <MessageCircle size={21} color={ON_SURFACE} strokeWidth={2} />
           </Pressable>
 
-          <Pressable
-            onPress={() => navigation.navigate('Guard')}
-            hitSlop={8}
-            className="flex-row items-center gap-1 px-2.5 py-1 rounded-full"
-            style={{ backgroundColor: '#FFF1F1' }}
-          >
-            <AlertTriangle size={14} color="#FF0033" strokeWidth={2.4} />
-            <GradientText style={{ fontSize: 11, fontWeight: '800' }}>SOS</GradientText>
-          </Pressable>
-
-          <Pressable onPress={() => navigation.navigate('Notifications')} hitSlop={8} className="relative">
-            <Bell size={22} color="#1F1B17" strokeWidth={2} />
+          <Pressable onPress={() => navigation.navigate('Notifications')} hitSlop={8}>
+            <Bell size={21} color={ON_SURFACE} strokeWidth={2} />
             {hasUnread && (
-              <View className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-red-500 border border-white" />
+              <View
+                style={{
+                  position: 'absolute',
+                  top: -2,
+                  right: -2,
+                  width: 9,
+                  height: 9,
+                  borderRadius: 5,
+                  backgroundColor: SOS_RED,
+                  borderWidth: 1.5,
+                  borderColor: SURFACE,
+                }}
+              />
             )}
+          </Pressable>
+
+          {/* Outlined, not filled — the design keeps solid safety red for the
+              Guard screen's own SOS button so this stays a shortcut, not a
+              trigger. */}
+          <Pressable
+            onPress={() => navigation.navigate('Main', { screen: 'Guard' } as never)}
+            hitSlop={8}
+            style={{
+              paddingHorizontal: 13,
+              paddingVertical: 5,
+              borderRadius: 999,
+              borderWidth: 1.5,
+              borderColor: SOS_RED,
+            }}
+          >
+            <Text style={{ fontSize: 11.5, fontWeight: '800', color: SOS_RED, letterSpacing: 0.3 }}>SOS</Text>
           </Pressable>
         </View>
       </View>
 
       {neighbourhoodName && (
-        <Pressable onPress={() => navigation.navigate('NeighbourhoodSheet')} className="flex-row items-center gap-1 mt-1.5">
-          <Text className="text-[12px] font-medium text-gray-500">{neighbourhoodName}</Text>
-          <ChevronDown size={12} color="#9CA3AF" />
+        <Pressable
+          onPress={() => navigation.navigate('NeighbourhoodSheet')}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 8 }}
+        >
+          <Text style={{ fontSize: 12.5, fontWeight: '600', color: ON_SURFACE_MUTED }}>{neighbourhoodName}</Text>
+          <ChevronDown size={13} color={ON_SURFACE_MUTED} />
         </Pressable>
       )}
     </View>

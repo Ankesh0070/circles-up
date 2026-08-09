@@ -1,60 +1,77 @@
-import Svg, { Defs, LinearGradient, RadialGradient, Stop, Rect, Ellipse, Line, Circle } from 'react-native-svg';
+import Svg, { Defs, LinearGradient, Stop, Circle, Path, G } from 'react-native-svg';
+import { PRIMARY, SECONDARY, TERTIARY } from '../theme/tokens';
 
-// Ported from the prototype (lines 47–105): sky-blue squircle, white
-// hub-and-5-nodes network mark. Node positions are pre-computed on a circle
-// of radius 26 around (50,52), 5 nodes evenly spaced starting at -90deg (top).
+// Stitch design-system mark: three overlapping circles reading as a
+// neighbourhood radius / a small group standing together. The circles are
+// stroked (not filled) so the overlaps stay visible as the "belonging" idea,
+// and the shared centre is filled to anchor the mark at small sizes.
+//
+// Geometry: three circles of radius R arranged on a triangle around (50,50),
+// two on the bottom and one on top — matching the design's lockup.
+const R = 20;
 const CX = 50;
-const CY = 52;
-const R = 26;
-const NODES = [0, 1, 2, 3, 4].map((i) => {
-  const angle = (-90 + i * 72) * (Math.PI / 180);
-  return { x: CX + R * Math.cos(angle), y: CY + R * Math.sin(angle) };
-});
+const CY = 50;
+const SPREAD = 13;
 
-export default function CircleUpLogo({ size = 80 }: { size?: number }) {
+const CIRCLES = [
+  { cx: CX, cy: CY - SPREAD, stroke: 'url(#cuTop)' }, // top
+  { cx: CX - SPREAD * 1.15, cy: CY + SPREAD * 0.75, stroke: 'url(#cuLeft)' }, // bottom-left
+  { cx: CX + SPREAD * 1.15, cy: CY + SPREAD * 0.75, stroke: 'url(#cuRight)' }, // bottom-right
+];
+
+export default function CircleUpLogo({
+  size = 80,
+  mono,
+}: {
+  size?: number;
+  /** Single-colour version for tab bars / dark surfaces. */
+  mono?: string;
+}) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 100 100">
+    <Svg width={size} height={size} viewBox="0 0 100 100" fill="none">
       <Defs>
-        <LinearGradient id="cuLogoBg" x1="50%" y1="0%" x2="50%" y2="100%">
-          <Stop offset="0%" stopColor="#5DBEEC" />
-          <Stop offset="55%" stopColor="#2196D6" />
-          <Stop offset="100%" stopColor="#1B86C4" />
+        <LinearGradient id="cuTop" x1="0%" y1="0%" x2="100%" y2="100%">
+          <Stop offset="0%" stopColor={PRIMARY} />
+          <Stop offset="100%" stopColor={SECONDARY} />
         </LinearGradient>
-        <RadialGradient id="cuLogoGloss" cx="30%" cy="20%" r="60%">
-          <Stop offset="0%" stopColor="#FFFFFF" stopOpacity={0.22} />
-          <Stop offset="70%" stopColor="#FFFFFF" stopOpacity={0} />
-        </RadialGradient>
-        <RadialGradient id="cuLogoShade" cx="70%" cy="90%" r="65%">
-          <Stop offset="0%" stopColor="#000000" stopOpacity={0.14} />
-          <Stop offset="100%" stopColor="#000000" stopOpacity={0} />
-        </RadialGradient>
+        <LinearGradient id="cuLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+          <Stop offset="0%" stopColor={PRIMARY} />
+          <Stop offset="100%" stopColor="#4A47B8" />
+        </LinearGradient>
+        <LinearGradient id="cuRight" x1="0%" y1="0%" x2="100%" y2="100%">
+          <Stop offset="0%" stopColor={SECONDARY} />
+          <Stop offset="100%" stopColor={TERTIARY} />
+        </LinearGradient>
+        <LinearGradient id="cuCore" x1="0%" y1="0%" x2="100%" y2="100%">
+          <Stop offset="0%" stopColor={PRIMARY} />
+          <Stop offset="100%" stopColor={SECONDARY} />
+        </LinearGradient>
       </Defs>
 
-      <Ellipse cx={50} cy={95} rx={34} ry={2.5} fill="#000" opacity={0.1} />
+      <G>
+        {CIRCLES.map((c, i) => (
+          <Circle
+            key={i}
+            cx={c.cx}
+            cy={c.cy}
+            r={R}
+            stroke={mono ?? c.stroke}
+            strokeWidth={6}
+            strokeLinejoin="round"
+            fill="none"
+            opacity={mono ? 1 : 0.95}
+          />
+        ))}
 
-      <Rect x={6} y={6} width={88} height={88} rx={24} ry={24} fill="url(#cuLogoBg)" />
-      <Rect x={6} y={6} width={88} height={88} rx={24} ry={24} fill="url(#cuLogoShade)" />
-      <Rect x={6} y={6} width={88} height={88} rx={24} ry={24} fill="url(#cuLogoGloss)" />
-
-      {NODES.map((n, i) => (
-        <Line
-          key={`line-${i}`}
-          x1={CX}
-          y1={CY}
-          x2={n.x}
-          y2={n.y}
-          stroke="#FFFFFF"
-          strokeWidth={3}
-          strokeLinecap="round"
-          opacity={0.98}
+        {/* Shared centre — the overlap where all three circles meet. Reads as
+            a pin head at large sizes and keeps the mark legible at 24px. */}
+        <Path
+          d={`M ${CX} ${CY - 6.5}
+              C ${CX + 6} ${CY - 11}, ${CX + 12} ${CY - 3}, ${CX} ${CY + 7}
+              C ${CX - 12} ${CY - 3}, ${CX - 6} ${CY - 11}, ${CX} ${CY - 6.5} Z`}
+          fill={mono ?? 'url(#cuCore)'}
         />
-      ))}
-
-      {NODES.map((n, i) => (
-        <Circle key={`node-${i}`} cx={n.x} cy={n.y} r={6} fill="#FFFFFF" />
-      ))}
-
-      <Circle cx={CX} cy={CY} r={8.5} fill="#FFFFFF" />
+      </G>
     </Svg>
   );
 }

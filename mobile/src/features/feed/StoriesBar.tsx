@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
+import { Plus } from 'lucide-react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import GradientRing from '../../shared/components/GradientRing';
 import Avatar from '../../shared/components/Avatar';
 import { supabase } from '../../shared/api/supabase';
 import StoryViewer from './StoryViewer';
+import { SURFACE, ON_SURFACE, ON_SURFACE_MUTED, PRIMARY, RADIUS, CARD_SHADOW } from '../../shared/theme/tokens';
 import type { RootStackParamList } from '../../navigation/types';
 
 export type StoryGroup = {
@@ -79,27 +81,51 @@ export default function StoriesBar() {
 
   return (
     <>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-4 py-3 bg-white border-b border-gray-100">
-        <Pressable onPress={() => navigation.navigate('ProfileMenu')} className="items-center mr-4" style={{ width: 64 }}>
-          <GradientRing size={64} hasStory={false}>
-            <Avatar name="You" size={58} />
-          </GradientRing>
-          <Text className="text-[11px] text-gray-500 mt-1" numberOfLines={1}>
-            Your Story
-          </Text>
-        </Pressable>
-
-        {groups.map((g) => (
-          <Pressable key={g.authorId} onPress={() => setViewerGroup(g)} className="items-center mr-4" style={{ width: 64 }}>
-            <GradientRing size={64} active={!g.allViewed}>
-              <Avatar name={g.authorName} size={58} />
-            </GradientRing>
-            <Text className="text-[11px] text-gray-700 mt-1" numberOfLines={1}>
-              {g.authorName.split(' ')[0]}
+      <View style={[{ backgroundColor: SURFACE, borderRadius: RADIUS.card, paddingVertical: 14 }, CARD_SHADOW]}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 14 }}>
+          <Pressable onPress={() => navigation.navigate('ProfileMenu')} style={{ alignItems: 'center', marginRight: 16, width: 66 }}>
+            <View>
+              <GradientRing size={64} hasStory={false}>
+                <Avatar name="You" size={58} />
+              </GradientRing>
+              <View
+                style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  right: 0,
+                  width: 20,
+                  height: 20,
+                  borderRadius: 10,
+                  backgroundColor: PRIMARY,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderWidth: 2,
+                  borderColor: SURFACE,
+                }}
+              >
+                <Plus size={12} color="#fff" strokeWidth={3} />
+              </View>
+            </View>
+            <Text style={{ fontSize: 11.5, color: ON_SURFACE, marginTop: 6 }} numberOfLines={1}>
+              You
             </Text>
           </Pressable>
-        ))}
-      </ScrollView>
+
+          {groups.map((g) => (
+            <Pressable key={g.authorId} onPress={() => setViewerGroup(g)} style={{ alignItems: 'center', marginRight: 16, width: 66 }}>
+              <GradientRing size={64} active={!g.allViewed}>
+                <Avatar name={g.authorName} size={58} />
+              </GradientRing>
+              <Text
+                style={{ fontSize: 11.5, color: g.allViewed ? ON_SURFACE_MUTED : ON_SURFACE, marginTop: 6 }}
+                numberOfLines={1}
+              >
+                {g.authorName.split(' ')[0]}
+              </Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+      </View>
 
       {viewerGroup && userId && (
         <StoryViewer group={viewerGroup} viewerId={userId} onClose={() => setViewerGroup(null)} />

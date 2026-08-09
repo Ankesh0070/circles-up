@@ -8,9 +8,9 @@ import PlaceholderScreen from './PlaceholderScreen';
 import { MODAL_SCREEN_NAMES } from './modals/modalScreens';
 import CreatePostSheet from '../features/feed/CreatePostSheet';
 import PostDetailScreen from '../features/feed/PostDetailScreen';
+import ChatsTab from '../features/chat/ChatsTab';
 import NewChatScreen from '../features/chat/NewChatScreen';
 import ChatDetailScreen from '../features/chat/ChatDetailScreen';
-import GuardScreen from '../features/guard/GuardScreen';
 import TrustedContactsScreen from '../features/guard/TrustedContactsScreen';
 import ShareLocationScreen from '../features/guard/ShareLocationScreen';
 import FakeCallScreen from '../features/guard/FakeCallScreen';
@@ -20,7 +20,6 @@ import NeighbourhoodSheet from '../features/explore/NeighbourhoodSheet';
 import AddNeighbourhoodScreen from '../features/explore/AddNeighbourhoodScreen';
 import TopicScreen from '../features/explore/TopicScreen';
 import GenieScreen from '../features/genie/GenieScreen';
-import BazaarScreen from '../features/bazaar/BazaarScreen';
 import CreateListingScreen from '../features/bazaar/CreateListingScreen';
 import ListingDetailScreen from '../features/bazaar/ListingDetailScreen';
 import ScenesScreen from '../features/scenes/ScenesScreen';
@@ -120,9 +119,13 @@ export default function RootNavigator() {
       <Stack.Group screenOptions={{ presentation: 'modal', headerShown: true }}>
         <Stack.Screen name="CreatePost" component={CreatePostSheet} options={{ title: 'New post' }} />
         <Stack.Screen name="PostDetail" component={PostDetailScreen} options={{ title: 'Post' }} />
+        <Stack.Screen name="Chats" component={ChatsTab} options={{ title: 'Chats' }} />
         <Stack.Screen name="NewChat" component={NewChatScreen} options={{ title: 'New chat' }} />
         <Stack.Screen name="ChatDetail" component={ChatDetailScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="Guard" component={GuardScreen} options={{ title: 'Circle Guard' }} />
+        {/* Guard and Bazaar are TABS now (see MainTabs), not modals — keeping
+            duplicate routes here would shadow the tabs, because a
+            navigate('Guard') from a tab screen bubbles up to this stack and
+            opens the modal copy instead of switching tabs. */}
         <Stack.Screen name="TrustedContacts" component={TrustedContactsScreen} options={{ title: 'Trusted Contacts' }} />
         <Stack.Screen name="ShareLocation" component={ShareLocationScreen} options={{ title: 'Share Location' }} />
         <Stack.Screen name="FakeCall" component={FakeCallScreen} options={{ headerShown: false }} />
@@ -132,7 +135,6 @@ export default function RootNavigator() {
         <Stack.Screen name="AddNeighbourhood" component={AddNeighbourhoodScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Topic" component={TopicScreen} options={{ title: 'Topic' }} />
         <Stack.Screen name="Genie" component={GenieScreen} options={{ title: 'Circle Genie' }} />
-        <Stack.Screen name="Bazaar" component={BazaarScreen} options={{ title: 'Bazaar' }} />
         <Stack.Screen name="CreateListing" component={CreateListingScreen} options={{ title: 'New listing' }} />
         <Stack.Screen name="ListingDetail" component={ListingDetailScreen} options={{ title: 'Listing' }} />
         <Stack.Screen name="Scenes" component={ScenesScreen} options={{ title: 'Scenes' }} />

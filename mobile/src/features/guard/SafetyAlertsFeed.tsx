@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../../shared/api/supabase';
+import { SURFACE, ON_SURFACE, ON_SURFACE_MUTED, RADIUS, CARD_SHADOW } from '../../shared/theme/tokens';
 
 type Alert = { id: string; severity: 'info' | 'warning' | 'critical'; source: string; title: string; body: string | null; created_at: string };
 
@@ -42,23 +43,43 @@ export default function SafetyAlertsFeed() {
 
   if (alerts === null) return null;
   if (alerts.length === 0) {
-    return <Text className="text-[12px] text-gray-400 px-1">No safety alerts right now.</Text>;
+    return (
+      <Text style={{ fontSize: 13, color: ON_SURFACE_MUTED, paddingHorizontal: 4 }}>No safety alerts right now.</Text>
+    );
   }
 
   return (
-    <View className="gap-2">
+    <View style={{ gap: 10 }}>
       {alerts.map((a) => {
         const style = SEVERITY_STYLE[a.severity];
         return (
-          <View key={a.id} className="rounded-xl p-3" style={{ backgroundColor: style.bg }}>
-            <View className="flex-row items-center gap-2">
-              <Text className="text-[10px] font-bold" style={{ color: style.text }}>
-                {style.label}
+          <View
+            key={a.id}
+            style={[
+              {
+                backgroundColor: SURFACE,
+                borderRadius: RADIUS.card,
+                padding: 14,
+                // Design signature: a solid severity-coloured spine on the
+                // leading edge so urgency is readable at a glance.
+                borderLeftWidth: 4,
+                borderLeftColor: style.text,
+              },
+              CARD_SHADOW,
+            ]}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <View style={{ backgroundColor: style.bg, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999 }}>
+                <Text style={{ fontSize: 10, fontWeight: '800', color: style.text, letterSpacing: 0.4 }}>
+                  {style.label}
+                </Text>
+              </View>
+              <Text style={{ fontSize: 11.5, color: ON_SURFACE_MUTED }}>
+                {a.source === 'police' ? '👮 Police' : '🏢 Society'}
               </Text>
-              <Text className="text-[10px] text-gray-500">{a.source === 'police' ? '👮 Police' : '🏢 Society'}</Text>
             </View>
-            <Text className="text-[13px] font-semibold text-[#1F1B17] mt-1">{a.title}</Text>
-            {a.body && <Text className="text-[12px] text-gray-600 mt-0.5">{a.body}</Text>}
+            <Text style={{ fontSize: 14.5, fontWeight: '700', color: ON_SURFACE, marginTop: 8 }}>{a.title}</Text>
+            {a.body && <Text style={{ fontSize: 13, color: ON_SURFACE_MUTED, marginTop: 3, lineHeight: 19 }}>{a.body}</Text>}
           </View>
         );
       })}
