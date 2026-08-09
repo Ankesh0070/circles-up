@@ -88,10 +88,10 @@ export default function SettingsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   return (
-    <ScrollView className="flex-1 bg-[#FAFAFA]" contentContainerStyle={{ paddingBottom: 40 }}>
+    <ScrollView className="flex-1 bg-[#F6F9FF]" contentContainerStyle={{ paddingBottom: 40 }}>
       {SECTIONS.map((section) => (
         <View key={section.title} className="mt-5">
-          <Text className="text-[12px] font-semibold text-gray-400 px-5 mb-1.5 uppercase tracking-wide">{section.title}</Text>
+          <Text className="text-[12px] font-semibold text-ink-muted px-5 mb-1.5 uppercase tracking-wide">{section.title}</Text>
           <View className="bg-white">
             {section.rows.map((row, i) => {
               const Icon = row.icon;
@@ -100,11 +100,11 @@ export default function SettingsScreen() {
                   key={row.label}
                   onPress={() => row.onPress(navigation)}
                   className="flex-row items-center gap-3 px-5 py-3.5"
-                  style={{ borderTopWidth: i === 0 ? 0 : 1, borderTopColor: '#F3F4F6' }}
+                  style={{ borderTopWidth: i === 0 ? 0 : 1, borderTopColor: '#EBEEF4' }}
                 >
-                  <Icon size={18} color="#374151" />
-                  <Text className="flex-1 text-[14px] text-[#1F1B17]">{row.label}</Text>
-                  <ChevronRight size={16} color="#D1D5DB" />
+                  <Icon size={18} color="#181C20" />
+                  <Text className="flex-1 text-[14px] text-[#181C20]">{row.label}</Text>
+                  <ChevronRight size={16} color="#BEC7D1" />
                 </Pressable>
               );
             })}

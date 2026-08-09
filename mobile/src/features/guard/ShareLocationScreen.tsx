@@ -137,7 +137,7 @@ export default function ShareLocationScreen() {
   if (contacts === null) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator color="#2196D6" />
+        <ActivityIndicator color="#006290" />
       </View>
     );
   }
@@ -148,14 +148,14 @@ export default function ShareLocationScreen() {
     return (
       <View className="flex-1 bg-white items-center px-6 pt-16">
         <View className="w-20 h-20 rounded-full items-center justify-center" style={{ backgroundColor: '#EFF6FF' }}>
-          <MapPinned size={32} color="#2196D6" />
+          <MapPinned size={32} color="#006290" />
         </View>
-        <Text className="text-[18px] font-bold text-[#1F1B17] mt-4">Sharing your live location</Text>
-        <Text className="text-[13px] text-gray-500 mt-1">
+        <Text className="text-[18px] font-bold text-[#181C20] mt-4">Sharing your live location</Text>
+        <Text className="text-[13px] text-ink-muted mt-1">
           Auto-stops in {mins}:{String(secs).padStart(2, '0')}
         </Text>
         {active.last_lat != null && (
-          <Text className="text-[11px] text-gray-400 mt-2">
+          <Text className="text-[11px] text-ink-muted mt-2">
             Last update: {active.last_lat.toFixed(4)}, {active.last_lng?.toFixed(4)}
           </Text>
         )}
@@ -168,36 +168,36 @@ export default function ShareLocationScreen() {
 
   return (
     <ScrollView className="flex-1 bg-white px-5 pt-6" contentContainerStyle={{ paddingBottom: 40 }}>
-      <Text className="text-[18px] font-bold text-[#1F1B17]">Share live location</Text>
-      <Text className="text-[13px] text-gray-500 mt-1">Auto-stops after the duration you pick — no manual reminder needed.</Text>
+      <Text className="text-[18px] font-bold text-[#181C20]">Share live location</Text>
+      <Text className="text-[13px] text-ink-muted mt-1">Auto-stops after the duration you pick — no manual reminder needed.</Text>
 
-      <Text className="text-[12px] font-bold text-gray-400 uppercase mt-6 mb-2">Duration</Text>
+      <Text className="text-[12px] font-bold text-ink-muted uppercase mt-6 mb-2">Duration</Text>
       <View className="flex-row flex-wrap gap-2">
         {DURATIONS.map((d) => (
           <Pressable
             key={d.minutes}
             onPress={() => setDuration(d.minutes)}
             className="px-4 py-2 rounded-full"
-            style={{ backgroundColor: duration === d.minutes ? '#2196D6' : '#F3F4F6' }}
+            style={{ backgroundColor: duration === d.minutes ? '#006290' : '#EBEEF4' }}
           >
-            <Text style={{ color: duration === d.minutes ? '#fff' : '#374151', fontSize: 13, fontWeight: '600' }}>{d.label}</Text>
+            <Text style={{ color: duration === d.minutes ? '#fff' : '#181C20', fontSize: 13, fontWeight: '600' }}>{d.label}</Text>
           </Pressable>
         ))}
       </View>
 
-      <Text className="text-[12px] font-bold text-gray-400 uppercase mt-6 mb-2">Share with</Text>
+      <Text className="text-[12px] font-bold text-ink-muted uppercase mt-6 mb-2">Share with</Text>
       {contacts.length === 0 ? (
-        <Text className="text-[13px] text-gray-400">Add a trusted contact first from Guard → Trusted Contacts.</Text>
+        <Text className="text-[13px] text-ink-muted">Add a trusted contact first from Guard → Trusted Contacts.</Text>
       ) : (
         contacts.map((c) => (
-          <Pressable key={c.id} onPress={() => toggleContact(c.id)} className="flex-row items-center gap-3 py-2.5 border-b border-gray-50">
+          <Pressable key={c.id} onPress={() => toggleContact(c.id)} className="flex-row items-center gap-3 py-2.5 border-b border-outline-variant">
             <View
               className="w-5 h-5 rounded items-center justify-center"
-              style={{ borderWidth: 1.5, borderColor: selected.has(c.id) ? '#2196D6' : '#D1D5DB', backgroundColor: selected.has(c.id) ? '#2196D6' : 'transparent' }}
+              style={{ borderWidth: 1.5, borderColor: selected.has(c.id) ? '#006290' : '#BEC7D1', backgroundColor: selected.has(c.id) ? '#006290' : 'transparent' }}
             >
               {selected.has(c.id) && <Text className="text-white text-[11px]">✓</Text>}
             </View>
-            <Text className="text-[14px] text-[#1F1B17]">{c.name}</Text>
+            <Text className="text-[14px] text-[#181C20]">{c.name}</Text>
           </Pressable>
         ))
       )}

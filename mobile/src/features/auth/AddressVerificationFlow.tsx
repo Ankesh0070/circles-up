@@ -1,6 +1,20 @@
 import { useState } from 'react';
 import { View, Text, TextInput, Pressable, ActivityIndicator, ScrollView } from 'react-native';
+import { MapPin, Building2, CheckCircle2, Clock } from 'lucide-react-native';
 import GradientButton from '../../shared/components/GradientButton';
+import TextField from '../../shared/components/TextField';
+import Card from '../../shared/components/Card';
+import {
+  SURFACE,
+  ON_SURFACE,
+  ON_SURFACE_MUTED,
+  OUTLINE_VARIANT,
+  PRIMARY,
+  SUCCESS,
+  WARNING,
+  ERROR,
+  RADIUS,
+} from '../../shared/theme/tokens';
 import GpsCameraModal, { type CaptureResult } from '../verification/GpsCameraModal';
 import { supabase } from '../../shared/api/supabase';
 import { resolveDevUrl } from '../../shared/api/devHost';
@@ -106,86 +120,116 @@ export default function AddressVerificationFlow({
   };
 
   if (outcome) {
+    const ok = outcome.status === 'verified';
     return (
-      <View className="flex-1 bg-white items-center justify-center px-8">
-        <Text className="text-[48px]">{outcome.status === 'verified' ? '✅' : '🕒'}</Text>
-        <Text className="text-[22px] font-bold text-[#1F1B17] mt-4 text-center">
-          {outcome.status === 'verified' ? "You're verified!" : 'Submitted for review'}
+      <View style={{ flex: 1, backgroundColor: SURFACE, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 }}>
+        <View
+          style={{
+            width: 96,
+            height: 96,
+            borderRadius: 48,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: ok ? `${SUCCESS}1A` : `${WARNING}1A`,
+          }}
+        >
+          {ok ? <CheckCircle2 size={46} color={SUCCESS} strokeWidth={2} /> : <Clock size={46} color={WARNING} strokeWidth={2} />}
+        </View>
+        <Text style={{ fontSize: 25, fontWeight: '700', color: ON_SURFACE, marginTop: 22, textAlign: 'center' }}>
+          {ok ? "You're verified!" : 'Submitted for review'}
         </Text>
-        <Text className="text-[14px] text-gray-500 mt-3 text-center leading-relaxed">
-          {outcome.status === 'verified'
+        <Text style={{ fontSize: 14.5, color: ON_SURFACE_MUTED, marginTop: 12, textAlign: 'center', lineHeight: 21 }}>
+          {ok
             ? 'Your neighbourhood membership is confirmed.'
             : `We couldn't auto-verify this because ${REVIEW_REASON_COPY[outcome.reviewReason ?? ''] ?? 'of an issue with your submission'}. A real person will review it — you can keep going in the meantime.`}
         </Text>
-        <View className="mt-8 w-full">
-          <GradientButton onPress={() => onDone(outcome)}>{continueLabel}</GradientButton>
+        <View style={{ marginTop: 36, width: '100%' }}>
+          <GradientButton onPress={() => onDone(outcome)} showArrow>
+            {continueLabel}
+          </GradientButton>
         </View>
       </View>
     );
   }
 
   return (
-    <ScrollView className="flex-1 bg-white px-6 pt-16" contentContainerStyle={{ paddingBottom: 40 }}>
-      <Text className="text-[24px] font-bold text-[#1F1B17] tracking-tight">{heading}</Text>
-      <Text className="text-[13px] text-gray-500 mt-1.5">{subheading}</Text>
+    <ScrollView
+      style={{ flex: 1, backgroundColor: SURFACE }}
+      contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 64, paddingBottom: 40 }}
+      keyboardShouldPersistTaps="handled"
+    >
+      <Text style={{ fontSize: 28, fontWeight: '700', color: ON_SURFACE, letterSpacing: -0.5 }}>{heading}</Text>
+      <Text style={{ fontSize: 14.5, color: ON_SURFACE_MUTED, marginTop: 8, lineHeight: 21 }}>{subheading}</Text>
 
-      <Text className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mt-8">Neighbourhood</Text>
-      <TextInput
-        value={query}
-        onChangeText={search}
-        placeholder="Search e.g. HSR Layout"
-        className="mt-2 text-[16px] text-[#1F1B17] border-b border-gray-200 pb-3"
-      />
-      {searching && <ActivityIndicator className="mt-2" />}
-      {results.map((n) => (
-        <Pressable
-          key={n.id}
-          onPress={() => {
-            setNeighbourhood(n);
-            setQuery(n.name);
-            setResults([]);
-          }}
-          className="py-3 border-b border-gray-100"
-        >
-          <Text className="text-[15px] text-[#1F1B17]">{n.name}</Text>
-          <Text className="text-[12px] text-gray-400">{n.city}</Text>
-        </Pressable>
-      ))}
+      <View style={{ marginTop: 28 }}>
+        <TextField label="Neighbourhood" value={query} onChangeText={search} placeholder="Search e.g. HSR Layout" icon={MapPin} />
+      </View>
+
+      {searching && <ActivityIndicator style={{ marginTop: 10 }} color={PRIMARY} />}
+
+      {results.length > 0 && (
+        <Card padded={false} style={{ marginTop: 10, overflow: 'hidden' }}>
+          {results.map((n, i) => (
+            <Pressable
+              key={n.id}
+              onPress={() => {
+                setNeighbourhood(n);
+                setQuery(n.name);
+                setResults([]);
+              }}
+              style={{
+                paddingHorizontal: 16,
+                paddingVertical: 14,
+                borderTopWidth: i === 0 ? 0 : 1,
+                borderTopColor: OUTLINE_VARIANT,
+              }}
+            >
+              <Text style={{ fontSize: 15, fontWeight: '600', color: ON_SURFACE }}>{n.name}</Text>
+              <Text style={{ fontSize: 12.5, color: ON_SURFACE_MUTED, marginTop: 2 }}>{n.city}</Text>
+            </Pressable>
+          ))}
+        </Card>
+      )}
+
       {neighbourhood && (
-        <View className="mt-2 bg-[#EBF6FD] rounded-lg px-3 py-2">
-          <Text className="text-[13px] text-[#2196D6] font-semibold">✓ {neighbourhood.name} selected</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 7,
+            alignSelf: 'flex-start',
+            marginTop: 12,
+            paddingHorizontal: 14,
+            paddingVertical: 9,
+            borderRadius: RADIUS.chip,
+            backgroundColor: `${SUCCESS}1A`,
+          }}
+        >
+          <CheckCircle2 size={15} color={SUCCESS} strokeWidth={2.4} />
+          <Text style={{ fontSize: 13, color: SUCCESS, fontWeight: '700' }}>{neighbourhood.name} selected</Text>
         </View>
       )}
 
       {neighbourhood && (
-        <>
-          <Text className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mt-6">Society / Apartment</Text>
-          <TextInput
-            value={society}
-            onChangeText={setSociety}
-            placeholder="e.g. Brigade Meadows"
-            className="mt-2 text-[16px] text-[#1F1B17] border-b border-gray-200 pb-3"
-          />
-          <View className="flex-row gap-4 mt-6">
-            <View className="flex-1">
-              <Text className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Tower (optional)</Text>
-              <TextInput value={tower} onChangeText={setTower} placeholder="B" className="mt-2 text-[16px] text-[#1F1B17] border-b border-gray-200 pb-3" />
+        <View style={{ marginTop: 22, gap: 18 }}>
+          <TextField label="Society / Apartment" value={society} onChangeText={setSociety} placeholder="e.g. Brigade Meadows" icon={Building2} />
+          <View style={{ flexDirection: 'row', gap: 12 }}>
+            <View style={{ flex: 1 }}>
+              <TextField label="Tower (optional)" value={tower} onChangeText={setTower} placeholder="B" />
             </View>
-            <View className="flex-1">
-              <Text className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">Flat</Text>
-              <TextInput value={flat} onChangeText={setFlat} placeholder="602" className="mt-2 text-[16px] text-[#1F1B17] border-b border-gray-200 pb-3" />
+            <View style={{ flex: 1 }}>
+              <TextField label="Flat" value={flat} onChangeText={setFlat} placeholder="602" />
             </View>
           </View>
-        </>
+        </View>
       )}
 
-      {error !== '' && <Text className="text-[12px] text-red-600 mt-4">{error}</Text>}
+      {error !== '' && <Text style={{ fontSize: 13, color: ERROR, marginTop: 16, marginLeft: 4 }}>{error}</Text>}
 
-      <View className="mt-10">
-        <GradientButton onPress={() => setCameraOpen(true)} disabled={!detailsOk || submitting}>
-          {submitting ? '' : 'Verify with a live selfie'}
+      <View style={{ marginTop: 36 }}>
+        <GradientButton onPress={() => setCameraOpen(true)} disabled={!detailsOk} loading={submitting} showArrow>
+          Verify with a live selfie
         </GradientButton>
-        {submitting && <ActivityIndicator style={{ marginTop: -38 }} color="#fff" />}
       </View>
 
       <GpsCameraModal visible={cameraOpen} onClose={() => setCameraOpen(false)} onCapture={handleCapture} />

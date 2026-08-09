@@ -94,7 +94,7 @@ export default function ScenesScreen() {
   };
 
   return (
-    <View className="flex-1 bg-[#FAFAFA]">
+    <View className="flex-1 bg-[#F6F9FF]">
       <View className="flex-row items-center justify-end px-4 pt-3">
         <Pressable onPress={() => navigation.navigate('MyEvents')} className="flex-row items-center gap-1.5">
           <CalendarDays size={14} color="#A855F7" />
@@ -107,9 +107,9 @@ export default function ScenesScreen() {
             key={t}
             onPress={() => setTab(t)}
             className="px-3 py-1.5 rounded-full"
-            style={{ backgroundColor: tab === t ? '#A855F7' : '#F3F4F6' }}
+            style={{ backgroundColor: tab === t ? '#A855F7' : '#EBEEF4' }}
           >
-            <Text style={{ color: tab === t ? '#fff' : '#374151', fontSize: 12, fontWeight: '700' }}>
+            <Text style={{ color: tab === t ? '#fff' : '#181C20', fontSize: 12, fontWeight: '700' }}>
               {t === 'upcoming' ? 'Upcoming' : t === 'week' ? 'This week' : 'Hosting'}
             </Text>
           </Pressable>
@@ -130,12 +130,12 @@ export default function ScenesScreen() {
               style={{ shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 6, shadowOffset: { width: 0, height: 2 } }}
             >
               <Text className="text-[11px] font-semibold text-[#A855F7]">{formatWhen(item.starts_at)}</Text>
-              <Text className="text-[15px] font-bold text-[#1F1B17] mt-1">{item.title}</Text>
+              <Text className="text-[15px] font-bold text-[#181C20] mt-1">{item.title}</Text>
               <View className="flex-row items-center gap-1 mt-1">
-                <MapPin size={12} color="#9CA3AF" />
-                <Text className="text-[12px] text-gray-500">{item.location}</Text>
+                <MapPin size={12} color="#6F7881" />
+                <Text className="text-[12px] text-ink-muted">{item.location}</Text>
               </View>
-              <Text className="text-[11px] text-gray-400 mt-1">
+              <Text className="text-[11px] text-ink-muted mt-1">
                 Hosted by {item.host?.name ?? 'a neighbour'} · {item.goingCount} going
                 {item.guest_limit ? ` / ${item.guest_limit}` : ''}
               </Text>
@@ -148,9 +148,9 @@ export default function ScenesScreen() {
                       rsvp(item.id, 'going');
                     }}
                     className="px-3 py-1.5 rounded-full"
-                    style={{ backgroundColor: item.myRsvp === 'going' ? '#A855F7' : item.myRsvp === 'waitlisted' ? '#FEF3C7' : '#F3F4F6' }}
+                    style={{ backgroundColor: item.myRsvp === 'going' ? '#A855F7' : item.myRsvp === 'waitlisted' ? '#FEF3C7' : '#EBEEF4' }}
                   >
-                    <Text style={{ fontSize: 11, fontWeight: '700', color: item.myRsvp === 'going' ? '#fff' : item.myRsvp === 'waitlisted' ? '#92400E' : '#374151' }}>
+                    <Text style={{ fontSize: 11, fontWeight: '700', color: item.myRsvp === 'going' ? '#fff' : item.myRsvp === 'waitlisted' ? '#92400E' : '#181C20' }}>
                       {item.myRsvp === 'waitlisted' ? 'Waitlisted' : 'Going'}
                     </Text>
                   </Pressable>
@@ -160,9 +160,9 @@ export default function ScenesScreen() {
                       rsvp(item.id, 'maybe');
                     }}
                     className="px-3 py-1.5 rounded-full"
-                    style={{ backgroundColor: item.myRsvp === 'maybe' ? '#A855F7' : '#F3F4F6' }}
+                    style={{ backgroundColor: item.myRsvp === 'maybe' ? '#A855F7' : '#EBEEF4' }}
                   >
-                    <Text style={{ fontSize: 11, fontWeight: '700', color: item.myRsvp === 'maybe' ? '#fff' : '#374151' }}>Maybe</Text>
+                    <Text style={{ fontSize: 11, fontWeight: '700', color: item.myRsvp === 'maybe' ? '#fff' : '#181C20' }}>Maybe</Text>
                   </Pressable>
                 </View>
               )}
@@ -173,7 +173,7 @@ export default function ScenesScreen() {
               )}
             </Pressable>
           )}
-          ListEmptyComponent={<Text className="text-center text-gray-400 text-[13px] mt-6">No events here yet.</Text>}
+          ListEmptyComponent={<Text className="text-center text-ink-muted text-[13px] mt-6">No events here yet.</Text>}
         />
       )}
 

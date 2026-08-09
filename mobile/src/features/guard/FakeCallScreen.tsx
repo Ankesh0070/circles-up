@@ -45,29 +45,29 @@ export default function FakeCallScreen() {
   if (stage === 'setup') {
     return (
       <View className="flex-1 bg-white px-6 pt-10">
-        <Text className="text-[18px] font-bold text-[#1F1B17]">Fake Check-in Call</Text>
-        <Text className="text-[13px] text-gray-500 mt-1.5 leading-relaxed">
+        <Text className="text-[18px] font-bold text-[#181C20]">Fake Check-in Call</Text>
+        <Text className="text-[13px] text-ink-muted mt-1.5 leading-relaxed">
           Schedule a simulated incoming call to give yourself a reason to leave a situation.
         </Text>
 
-        <Text className="text-[12px] font-bold text-gray-400 uppercase mt-6 mb-2">Caller name</Text>
+        <Text className="text-[12px] font-bold text-ink-muted uppercase mt-6 mb-2">Caller name</Text>
         {['Mom', 'Dad', 'Boss'].map((name) => (
           <Pressable key={name} onPress={() => setCallerName(name)} className="flex-row items-center gap-3 py-2">
             <View
               className="w-5 h-5 rounded-full items-center justify-center"
-              style={{ borderWidth: 1.5, borderColor: callerName === name ? '#2196D6' : '#D1D5DB' }}
+              style={{ borderWidth: 1.5, borderColor: callerName === name ? '#006290' : '#BEC7D1' }}
             >
-              {callerName === name && <View className="w-2.5 h-2.5 rounded-full bg-[#2196D6]" />}
+              {callerName === name && <View className="w-2.5 h-2.5 rounded-full bg-[#006290]" />}
             </View>
-            <Text className="text-[14px] text-[#1F1B17]">{name}</Text>
+            <Text className="text-[14px] text-[#181C20]">{name}</Text>
           </Pressable>
         ))}
 
-        <Text className="text-[12px] font-bold text-gray-400 uppercase mt-6 mb-2">Call me in</Text>
+        <Text className="text-[12px] font-bold text-ink-muted uppercase mt-6 mb-2">Call me in</Text>
         <View className="flex-row flex-wrap gap-2">
           {DELAYS.map((d) => (
-            <Pressable key={d.label} onPress={() => trigger(d.seconds)} className="px-4 py-2.5 rounded-full bg-gray-100">
-              <Text className="text-[13px] font-semibold text-[#1F1B17]">{d.label}</Text>
+            <Pressable key={d.label} onPress={() => trigger(d.seconds)} className="px-4 py-2.5 rounded-full bg-surface-container">
+              <Text className="text-[13px] font-semibold text-[#181C20]">{d.label}</Text>
             </Pressable>
           ))}
         </View>
@@ -78,9 +78,9 @@ export default function FakeCallScreen() {
   if (stage === 'waiting') {
     return (
       <View className="flex-1 items-center justify-center bg-white px-8">
-        <Text className="text-[15px] text-gray-500">Fake call from {callerName} incoming shortly…</Text>
-        <Pressable onPress={cancelWaiting} className="mt-5 bg-gray-100 rounded-xl px-6 py-2.5">
-          <Text className="font-semibold text-[#1F1B17]">Cancel</Text>
+        <Text className="text-[15px] text-ink-muted">Fake call from {callerName} incoming shortly…</Text>
+        <Pressable onPress={cancelWaiting} className="mt-5 bg-surface-container rounded-xl px-6 py-2.5">
+          <Text className="font-semibold text-[#181C20]">Cancel</Text>
         </Pressable>
       </View>
     );

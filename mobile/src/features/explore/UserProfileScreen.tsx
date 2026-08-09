@@ -81,7 +81,7 @@ export default function UserProfileScreen({ route }: Props) {
   if (profile === null) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator color="#2196D6" />
+        <ActivityIndicator color="#006290" />
       </View>
     );
   }
@@ -89,7 +89,7 @@ export default function UserProfileScreen({ route }: Props) {
   if (profile === 'blocked-or-not-found') {
     return (
       <View className="flex-1 items-center justify-center bg-white px-8">
-        <Text className="text-[14px] text-gray-500 text-center">This profile isn't available.</Text>
+        <Text className="text-[14px] text-ink-muted text-center">This profile isn't available.</Text>
       </View>
     );
   }
@@ -98,24 +98,24 @@ export default function UserProfileScreen({ route }: Props) {
     <ScrollView className="flex-1 bg-white px-6 pt-8" contentContainerStyle={{ paddingBottom: 40 }}>
       <View className="items-center">
         <Avatar name={profile.name} size={88} />
-        <Text className="text-[20px] font-bold text-[#1F1B17] mt-3">{profile.name}</Text>
-        <Text className="text-[12px] text-gray-400 mt-1">
+        <Text className="text-[20px] font-bold text-[#181C20] mt-3">{profile.name}</Text>
+        <Text className="text-[12px] text-ink-muted mt-1">
           {profile.neighbourhood_name}
           {profile.is_same_neighbourhood && profile.flat ? ` · ${profile.flat}` : ''}
         </Text>
         {!profile.is_same_neighbourhood && (
-          <View className="mt-1.5 px-2 py-0.5 rounded-full bg-gray-100">
-            <Text className="text-[10px] text-gray-500 font-medium">From your city</Text>
+          <View className="mt-1.5 px-2 py-0.5 rounded-full bg-surface-container">
+            <Text className="text-[10px] text-ink-muted font-medium">From your city</Text>
           </View>
         )}
-        {profile.bio && <Text className="text-[13px] text-gray-600 mt-3 text-center">{profile.bio}</Text>}
+        {profile.bio && <Text className="text-[13px] text-ink-muted mt-3 text-center">{profile.bio}</Text>}
       </View>
 
       {profile.vibes.length > 0 && (
         <View className="flex-row flex-wrap gap-2 justify-center mt-4">
           {profile.vibes.map((v) => (
-            <View key={v} className="px-2.5 py-1 rounded-full bg-[#EBF6FD]">
-              <Text className="text-[11px] font-medium text-[#2196D6]">{v}</Text>
+            <View key={v} className="px-2.5 py-1 rounded-full bg-[#E4F0F8]">
+              <Text className="text-[11px] font-medium text-[#006290]">{v}</Text>
             </View>
           ))}
         </View>
@@ -123,7 +123,7 @@ export default function UserProfileScreen({ route }: Props) {
 
       {mutuals.length > 0 && (
         <View className="flex-row items-center justify-center gap-1.5 mt-4">
-          <Text className="text-[12px] text-gray-500">
+          <Text className="text-[12px] text-ink-muted">
             {mutuals.length} mutual{mutuals.length === 1 ? '' : 's'}: {mutuals.map((m) => m.name).join(', ')}
           </Text>
         </View>
@@ -134,22 +134,22 @@ export default function UserProfileScreen({ route }: Props) {
           onPress={addToCircle}
           disabled={connected || connecting}
           className="flex-1 flex-row items-center justify-center gap-1.5 py-3 rounded-2xl"
-          style={{ backgroundColor: connected ? '#F3F4F6' : '#2196D6' }}
+          style={{ backgroundColor: connected ? '#EBEEF4' : '#006290' }}
         >
           {connecting ? (
-            <ActivityIndicator size="small" color={connected ? '#374151' : '#fff'} />
+            <ActivityIndicator size="small" color={connected ? '#181C20' : '#fff'} />
           ) : (
             <>
-              {connected && <Check size={16} color="#374151" />}
-              <Text style={{ color: connected ? '#374151' : '#fff', fontWeight: '700', fontSize: 13 }}>
+              {connected && <Check size={16} color="#181C20" />}
+              <Text style={{ color: connected ? '#181C20' : '#fff', fontWeight: '700', fontSize: 13 }}>
                 {connected ? 'Added to Circle' : 'Add to Circle'}
               </Text>
             </>
           )}
         </Pressable>
-        <Pressable onPress={message} disabled={opening} className="flex-1 flex-row items-center justify-center gap-1.5 py-3 rounded-2xl bg-gray-100">
-          {opening ? <ActivityIndicator size="small" color="#374151" /> : <MessageCircle size={16} color="#374151" />}
-          <Text className="text-[13px] font-bold text-gray-700">Message</Text>
+        <Pressable onPress={message} disabled={opening} className="flex-1 flex-row items-center justify-center gap-1.5 py-3 rounded-2xl bg-surface-container">
+          {opening ? <ActivityIndicator size="small" color="#181C20" /> : <MessageCircle size={16} color="#181C20" />}
+          <Text className="text-[13px] font-bold text-ink">Message</Text>
         </Pressable>
       </View>
     </ScrollView>

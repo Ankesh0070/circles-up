@@ -136,13 +136,13 @@ export default function SosFlow({
       <Modal visible transparent animationType="fade">
         <View className="flex-1 bg-black/60 items-center justify-center px-8">
           <View className="bg-white rounded-2xl p-6 w-full">
-            <Text className="text-[16px] font-bold text-[#1F1B17]">Adjust SOS sensitivity?</Text>
-            <Text className="text-[13px] text-gray-500 mt-2 leading-relaxed">
+            <Text className="text-[16px] font-bold text-[#181C20]">Adjust SOS sensitivity?</Text>
+            <Text className="text-[13px] text-ink-muted mt-2 leading-relaxed">
               You've cancelled the SOS countdown a few times recently. If it's triggering by accident, you can
               adjust it from Settings → Safety later.
             </Text>
-            <Pressable onPress={onClose} className="mt-4 bg-gray-100 rounded-xl py-3 items-center">
-              <Text className="font-semibold text-[#1F1B17]">Got it</Text>
+            <Pressable onPress={onClose} className="mt-4 bg-surface-container rounded-xl py-3 items-center">
+              <Text className="font-semibold text-[#181C20]">Got it</Text>
             </Pressable>
           </View>
         </View>
@@ -156,8 +156,8 @@ export default function SosFlow({
         <View className="flex-1 bg-black/70 items-center justify-center">
           <View className="bg-white rounded-3xl p-8 items-center w-[85%]">
             <AlertTriangle size={40} color="#FF0033" strokeWidth={2} />
-            <Text className="text-[18px] font-bold text-[#1F1B17] mt-3">Sending SOS in {secondsLeft}…</Text>
-            <Text className="text-[13px] text-gray-500 mt-1 text-center">
+            <Text className="text-[18px] font-bold text-[#181C20] mt-3">Sending SOS in {secondsLeft}…</Text>
+            <Text className="text-[13px] text-ink-muted mt-1 text-center">
               Police, your trusted contacts, and nearby neighbours will be alerted.
             </Text>
             <View className="w-20 h-20 rounded-full items-center justify-center mt-5" style={{ backgroundColor: '#FFF1F1' }}>
@@ -165,8 +165,8 @@ export default function SosFlow({
                 {secondsLeft}
               </Text>
             </View>
-            <Pressable onPress={cancel} className="mt-6 px-6 py-3 rounded-xl bg-gray-100">
-              <Text className="font-semibold text-[#1F1B17]">Cancel</Text>
+            <Pressable onPress={cancel} className="mt-6 px-6 py-3 rounded-xl bg-surface-container">
+              <Text className="font-semibold text-[#181C20]">Cancel</Text>
             </Pressable>
           </View>
         </View>
@@ -194,28 +194,28 @@ export default function SosFlow({
             <ScrollView className="flex-1 mt-6 bg-white rounded-t-3xl px-5 pt-6">
               {error !== '' && <Text className="text-[12px] text-red-600 mb-3">{error}</Text>}
 
-              <Text className="text-[13px] font-bold text-gray-400 uppercase tracking-wide mb-2">Emergency services (dialed)</Text>
+              <Text className="text-[13px] font-bold text-ink-muted uppercase tracking-wide mb-2">Emergency services (dialed)</Text>
               {EMERGENCY_CHANNELS.map((c) => (
-                <StatusRow key={c.id} icon={<Phone size={16} color="#1F1B17" />} label={c.label} status="dialed" />
+                <StatusRow key={c.id} icon={<Phone size={16} color="#181C20" />} label={c.label} status="dialed" />
               ))}
 
-              <Text className="text-[13px] font-bold text-gray-400 uppercase tracking-wide mt-5 mb-2">Your circle</Text>
+              <Text className="text-[13px] font-bold text-ink-muted uppercase tracking-wide mt-5 mb-2">Your circle</Text>
               {dispatchRows.filter((r) => r.channel === 'trusted_contact' || r.channel === 'nearby_neighbour').length === 0 ? (
-                <Text className="text-[13px] text-gray-400">Notifying your trusted contacts and nearby neighbours…</Text>
+                <Text className="text-[13px] text-ink-muted">Notifying your trusted contacts and nearby neighbours…</Text>
               ) : (
                 dispatchRows
                   .filter((r) => r.channel === 'trusted_contact' || r.channel === 'nearby_neighbour')
                   .map((r) => (
                     <StatusRow
                       key={r.id}
-                      icon={<Users size={16} color="#1F1B17" />}
+                      icon={<Users size={16} color="#181C20" />}
                       label={r.recipient_name ?? (r.channel === 'nearby_neighbour' ? 'Neighbour' : 'Contact')}
                       status={r.delivery_status}
                     />
                   ))
               )}
 
-              <Pressable onPress={markSafe} className="mt-8 mb-10 bg-[#1F1B17] rounded-2xl py-4 items-center">
+              <Pressable onPress={markSafe} className="mt-8 mb-10 bg-[#181C20] rounded-2xl py-4 items-center">
                 <Text className="text-white font-bold text-[15px]">I'm safe now</Text>
               </Pressable>
             </ScrollView>
@@ -229,9 +229,9 @@ export default function SosFlow({
 function StatusRow({ icon, label, status }: { icon: React.ReactNode; label: string; status: string }) {
   const ok = status === 'dialed' || status === 'sent';
   return (
-    <View className="flex-row items-center gap-2.5 py-2 border-b border-gray-50">
+    <View className="flex-row items-center gap-2.5 py-2 border-b border-outline-variant">
       {icon}
-      <Text className="flex-1 text-[13px] text-[#1F1B17]">{label}</Text>
+      <Text className="flex-1 text-[13px] text-[#181C20]">{label}</Text>
       {ok ? <CheckCircle2 size={16} color="#10B981" /> : <XCircle size={16} color="#EF4444" />}
     </View>
   );

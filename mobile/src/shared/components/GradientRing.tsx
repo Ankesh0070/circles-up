@@ -40,7 +40,7 @@ export default function GradientRing({
           height: size,
           borderRadius: size / 2,
           padding: ringPadding,
-          backgroundColor: '#E5E7EB',
+          backgroundColor: '#BEC7D1',
         }}
       >
         {inner}

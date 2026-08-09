@@ -48,23 +48,31 @@ export default function BazaarScreen() {
   );
 
   return (
-    <View className="flex-1 bg-[#FAFAFA]">
+    <View className="flex-1 bg-[#F6F9FF]">
+      {/* Bazaar is a bottom tab now (it used to be a modal, which supplied
+          this title bar for free) — so it owns its own header and
+          status-bar inset. */}
+      <View style={{ paddingHorizontal: 20, paddingTop: 52, paddingBottom: 12, backgroundColor: '#FFFFFF' }}>
+        <Text style={{ fontSize: 24, fontWeight: '700', color: '#181C20' }}>Bazaar</Text>
+        <Text style={{ fontSize: 13, color: '#6F7881', marginTop: 2 }}>Buy and sell with verified neighbours</Text>
+      </View>
+
       <View className="flex-row px-4 py-3 gap-2">
         <Pressable
           onPress={() => setCategory(null)}
           className="px-3 py-1.5 rounded-full"
-          style={{ backgroundColor: category === null ? '#F59E0B' : '#F3F4F6' }}
+          style={{ backgroundColor: category === null ? '#F59E0B' : '#EBEEF4' }}
         >
-          <Text style={{ color: category === null ? '#fff' : '#374151', fontSize: 12, fontWeight: '700' }}>All</Text>
+          <Text style={{ color: category === null ? '#fff' : '#181C20', fontSize: 12, fontWeight: '700' }}>All</Text>
         </Pressable>
         {bazaarCategories.map((c) => (
           <Pressable
             key={c.value}
             onPress={() => setCategory(c.value)}
             className="px-3 py-1.5 rounded-full"
-            style={{ backgroundColor: category === c.value ? c.color : '#F3F4F6' }}
+            style={{ backgroundColor: category === c.value ? c.color : '#EBEEF4' }}
           >
-            <Text style={{ color: category === c.value ? '#fff' : '#374151', fontSize: 12, fontWeight: '700' }}>{c.name}</Text>
+            <Text style={{ color: category === c.value ? '#fff' : '#181C20', fontSize: 12, fontWeight: '700' }}>{c.name}</Text>
           </Pressable>
         ))}
       </View>
@@ -96,15 +104,15 @@ export default function BazaarScreen() {
                   </View>
                 )}
                 <View className="p-2.5">
-                  <Text className="text-[13px] font-semibold text-[#1F1B17]" numberOfLines={1}>
+                  <Text className="text-[13px] font-semibold text-[#181C20]" numberOfLines={1}>
                     {item.title}
                   </Text>
-                  <Text className="text-[12px] text-gray-500 mt-0.5">
+                  <Text className="text-[12px] text-ink-muted mt-0.5">
                     {item.price ? `₹${item.price}` : 'Free'}
                   </Text>
                   {item.status === 'sold' && (
-                    <View className="mt-1.5 px-1.5 py-0.5 rounded bg-gray-100 self-start">
-                      <Text className="text-[9px] font-semibold text-gray-500">SOLD</Text>
+                    <View className="mt-1.5 px-1.5 py-0.5 rounded bg-surface-container self-start">
+                      <Text className="text-[9px] font-semibold text-ink-muted">SOLD</Text>
                     </View>
                   )}
                   {item.status === 'active' && isStale && (
@@ -117,7 +125,7 @@ export default function BazaarScreen() {
             );
           }}
           ListEmptyComponent={
-            <Text className="text-center text-gray-400 text-[13px] mt-6">No listings yet — be the first to post one.</Text>
+            <Text className="text-center text-ink-muted text-[13px] mt-6">No listings yet — be the first to post one.</Text>
           }
         />
       )}

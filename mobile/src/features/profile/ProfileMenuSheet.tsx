@@ -11,10 +11,10 @@ import type { RootStackParamList } from '../../navigation/types';
 type Option = { key: string; label: string; desc: string; icon: LucideIcon; color: string; enabled: boolean };
 
 const OPTIONS: Option[] = [
-  { key: 'post', label: 'Post', desc: 'Share with your Circle', icon: FileText, color: '#2196D6', enabled: true },
+  { key: 'post', label: 'Post', desc: 'Share with your Circle', icon: FileText, color: '#006290', enabled: true },
   { key: 'story', label: 'Story', desc: 'Disappears in 24 hours', icon: Circle, color: '#A855F7', enabled: true },
-  { key: 'highlight', label: 'Highlight', desc: 'Coming soon', icon: Sparkles, color: '#9CA3AF', enabled: false },
-  { key: 'live', label: 'Live', desc: 'Coming soon', icon: Radio, color: '#9CA3AF', enabled: false },
+  { key: 'highlight', label: 'Highlight', desc: 'Coming soon', icon: Sparkles, color: '#6F7881', enabled: false },
+  { key: 'live', label: 'Live', desc: 'Coming soon', icon: Radio, color: '#6F7881', enabled: false },
 ];
 
 // Phase 92 — Post/Story/Highlight/Live creation picker. Post and Story are
@@ -75,8 +75,8 @@ export default function ProfileMenuSheet() {
     <View className="flex-1 bg-white px-5 pt-6">
       {posting && (
         <View className="items-center py-3">
-          <ActivityIndicator color="#2196D6" />
-          <Text className="text-[12px] text-gray-400 mt-1">Uploading your story…</Text>
+          <ActivityIndicator color="#006290" />
+          <Text className="text-[12px] text-ink-muted mt-1">Uploading your story…</Text>
         </View>
       )}
       {error !== '' && <Text className="text-[12px] text-red-600 mb-3 text-center">{error}</Text>}
@@ -90,14 +90,14 @@ export default function ProfileMenuSheet() {
               onPress={() => opt.enabled && onSelect(opt.key)}
               disabled={!opt.enabled || posting}
               className="flex-row items-center gap-3.5 rounded-2xl p-4"
-              style={{ backgroundColor: '#FAFAFA', opacity: opt.enabled ? 1 : 0.55 }}
+              style={{ backgroundColor: '#F6F9FF', opacity: opt.enabled ? 1 : 0.55 }}
             >
               <View className="w-11 h-11 rounded-full items-center justify-center" style={{ backgroundColor: `${opt.color}1A` }}>
                 <Icon size={20} color={opt.color} />
               </View>
               <View>
-                <Text className="text-[15px] font-bold text-[#1F1B17]">{opt.label}</Text>
-                <Text className="text-[12px] text-gray-400">{opt.desc}</Text>
+                <Text className="text-[15px] font-bold text-[#181C20]">{opt.label}</Text>
+                <Text className="text-[12px] text-ink-muted">{opt.desc}</Text>
               </View>
             </Pressable>
           );

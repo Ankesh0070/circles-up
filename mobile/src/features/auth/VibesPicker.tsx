@@ -1,5 +1,6 @@
 import { View, Text, Pressable } from 'react-native';
 import { vibeCategories, MIN_VIBES } from '../../shared/data/vibeCategories';
+import { ON_SURFACE, ON_SURFACE_MUTED, PRIMARY, SUCCESS, SURFACE_CONTAINER, RADIUS } from '../../shared/theme/tokens';
 
 // Ported from the prototype's vibe-picker section of ProfileSetup (lines
 // 1746–1860) — categorized chip grid, minimum 3 selections, no upper limit.
@@ -17,37 +18,46 @@ export default function VibesPicker({
   selected: string[];
   onToggle: (vibe: string) => void;
 }) {
+  const enough = selected.length >= MIN_VIBES;
+
   return (
     <View>
-      <View className="flex-row items-center justify-between">
-        <Text className="text-[15px] font-bold text-[#1F1B17]">Pick your vibes</Text>
-        <Text className="text-[12px]" style={{ color: selected.length >= MIN_VIBES ? '#4A7C59' : '#9CA3AF' }}>
-          {selected.length}/{MIN_VIBES} min
-        </Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Text style={{ fontSize: 17, fontWeight: '700', color: ON_SURFACE }}>Pick your vibes</Text>
+        <View
+          style={{
+            paddingHorizontal: 10,
+            paddingVertical: 4,
+            borderRadius: RADIUS.chip,
+            backgroundColor: enough ? `${SUCCESS}1A` : SURFACE_CONTAINER,
+          }}
+        >
+          <Text style={{ fontSize: 12, fontWeight: '700', color: enough ? SUCCESS : ON_SURFACE_MUTED }}>
+            {selected.length}/{MIN_VIBES} min
+          </Text>
+        </View>
       </View>
 
       {vibeCategories.map((cat) => (
-        <View key={cat.name} className="mt-5">
-          <Text className="text-[12px] font-semibold text-gray-500 mb-2">
+        <View key={cat.name} style={{ marginTop: 22 }}>
+          <Text style={{ fontSize: 13, fontWeight: '700', color: ON_SURFACE_MUTED, marginBottom: 10 }}>
             {cat.icon} {cat.name}
           </Text>
-          <View className="flex-row flex-wrap gap-2">
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
             {cat.vibes.map((vibe) => {
               const active = selected.includes(vibe);
               return (
                 <Pressable
                   key={vibe}
                   onPress={() => onToggle(vibe)}
-                  className="px-3.5 py-2 rounded-full"
                   style={{
-                    backgroundColor: active ? '#2196D6' : '#F3F4F6',
-                    borderWidth: active ? 0 : 1,
-                    borderColor: '#E5E7EB',
+                    paddingHorizontal: 14,
+                    paddingVertical: 9,
+                    borderRadius: RADIUS.chip,
+                    backgroundColor: active ? PRIMARY : SURFACE_CONTAINER,
                   }}
                 >
-                  <Text className="text-[13px] font-medium" style={{ color: active ? '#fff' : '#374151' }}>
-                    {vibe}
-                  </Text>
+                  <Text style={{ fontSize: 13, fontWeight: '600', color: active ? '#fff' : ON_SURFACE }}>{vibe}</Text>
                 </Pressable>
               );
             })}

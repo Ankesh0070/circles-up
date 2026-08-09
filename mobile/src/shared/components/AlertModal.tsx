@@ -23,10 +23,10 @@ export default function AlertModal({
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <Pressable className="flex-1 bg-black/40 justify-end" onPress={onClose}>
         <Pressable className="bg-white rounded-t-2xl px-5 pt-5 pb-8" onPress={(e) => e.stopPropagation()}>
-          <Text className="text-[16px] font-bold text-[#1F1B17]">{title}</Text>
-          <Text className="text-[13px] text-gray-500 mt-2">{message}</Text>
-          <Pressable onPress={onClose} className="mt-5 bg-gray-100 rounded-xl py-3 items-center">
-            <Text className="text-[#1F1B17] font-semibold text-[14px]">OK</Text>
+          <Text className="text-[16px] font-bold text-[#181C20]">{title}</Text>
+          <Text className="text-[13px] text-ink-muted mt-2">{message}</Text>
+          <Pressable onPress={onClose} className="mt-5 bg-surface-container rounded-xl py-3 items-center">
+            <Text className="text-[#181C20] font-semibold text-[14px]">OK</Text>
           </Pressable>
         </Pressable>
       </Pressable>

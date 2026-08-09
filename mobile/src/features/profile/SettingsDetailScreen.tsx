@@ -60,7 +60,7 @@ export default function SettingsDetailScreen({ route }: Props) {
     default:
       return (
         <View className="flex-1 items-center justify-center bg-white px-8">
-          <Text className="text-[13px] text-gray-400 text-center">Unknown section.</Text>
+          <Text className="text-[13px] text-ink-muted text-center">Unknown section.</Text>
         </View>
       );
   }
@@ -69,8 +69,8 @@ export default function SettingsDetailScreen({ route }: Props) {
 function StaticSection({ title, body }: { title: string; body: string }) {
   return (
     <View className="flex-1 bg-white px-5 pt-5">
-      <Text className="text-[16px] font-bold text-[#1F1B17] mb-2">{title}</Text>
-      <Text className="text-[13px] text-gray-600 leading-5">{body}</Text>
+      <Text className="text-[16px] font-bold text-[#181C20] mb-2">{title}</Text>
+      <Text className="text-[13px] text-ink-muted leading-5">{body}</Text>
     </View>
   );
 }
@@ -107,7 +107,7 @@ function VerificationSection() {
   if (!rows) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator color="#2196D6" />
+        <ActivityIndicator color="#006290" />
       </View>
     );
   }
@@ -119,11 +119,11 @@ function VerificationSection() {
       keyExtractor={(r) => r.neighbourhood_id}
       contentContainerStyle={{ padding: 16, gap: 10 }}
       renderItem={({ item }) => (
-        <View className="flex-row items-center gap-3 bg-[#FAFAFA] rounded-xl p-3.5">
+        <View className="flex-row items-center gap-3 bg-[#F6F9FF] rounded-xl p-3.5">
           <ShieldCheck size={18} color={item.verification_status === 'verified' ? '#10B981' : '#F59E0B'} />
           <View className="flex-1">
-            <Text className="text-[13px] font-semibold text-[#1F1B17]">{item.neighbourhood?.name ?? 'Unknown'}</Text>
-            <Text className="text-[11px] text-gray-500">
+            <Text className="text-[13px] font-semibold text-[#181C20]">{item.neighbourhood?.name ?? 'Unknown'}</Text>
+            <Text className="text-[11px] text-ink-muted">
               {item.society}
               {item.tower ? ` · ${item.tower}` : ''} · {item.flat}
             </Text>
@@ -136,7 +136,7 @@ function VerificationSection() {
           </Text>
         </View>
       )}
-      ListEmptyComponent={<Text className="text-center text-gray-400 text-[13px] mt-8">No membership submissions yet.</Text>}
+      ListEmptyComponent={<Text className="text-center text-ink-muted text-[13px] mt-8">No membership submissions yet.</Text>}
     />
   );
 }
@@ -145,10 +145,10 @@ function NeighbourhoodSection() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   return (
     <View className="flex-1 bg-white px-5 pt-5">
-      <Text className="text-[13px] text-gray-600 leading-5 mb-4">
+      <Text className="text-[13px] text-ink-muted leading-5 mb-4">
         Switch which verified neighbourhood your posts, alerts, and events go to, or verify a new one.
       </Text>
-      <Pressable onPress={() => navigation.navigate('NeighbourhoodSheet')} className="py-3 rounded-xl bg-[#2196D6] items-center">
+      <Pressable onPress={() => navigation.navigate('NeighbourhoodSheet')} className="py-3 rounded-xl bg-[#006290] items-center">
         <Text className="text-[13px] font-bold text-white">Manage neighbourhoods</Text>
       </Pressable>
     </View>
@@ -194,7 +194,7 @@ function SavedSection() {
   if (!rows) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator color="#2196D6" />
+        <ActivityIndicator color="#006290" />
       </View>
     );
   }
@@ -208,9 +208,9 @@ function SavedSection() {
       renderItem={({ item }) => (
         <Pressable
           onPress={() => navigation.navigate('PostDetail', { postId: item.post_id })}
-          className="flex-row items-center justify-between bg-[#FAFAFA] rounded-xl p-3.5"
+          className="flex-row items-center justify-between bg-[#F6F9FF] rounded-xl p-3.5"
         >
-          <Text className="flex-1 text-[13px] text-[#1F1B17] mr-3" numberOfLines={2}>
+          <Text className="flex-1 text-[13px] text-[#181C20] mr-3" numberOfLines={2}>
             {item.caption}
           </Text>
           <Pressable onPress={() => unsave(item.post_id)} hitSlop={8}>
@@ -218,7 +218,7 @@ function SavedSection() {
           </Pressable>
         </Pressable>
       )}
-      ListEmptyComponent={<Text className="text-center text-gray-400 text-[13px] mt-8">Nothing saved yet.</Text>}
+      ListEmptyComponent={<Text className="text-center text-ink-muted text-[13px] mt-8">Nothing saved yet.</Text>}
     />
   );
 }
@@ -260,7 +260,7 @@ function BlockedSection() {
   if (!rows) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator color="#2196D6" />
+        <ActivityIndicator color="#006290" />
       </View>
     );
   }
@@ -272,14 +272,14 @@ function BlockedSection() {
       keyExtractor={(r) => r.blocked_id}
       contentContainerStyle={{ padding: 16, gap: 10 }}
       renderItem={({ item }) => (
-        <View className="flex-row items-center justify-between bg-[#FAFAFA] rounded-xl p-3.5">
-          <Text className="text-[13px] font-semibold text-[#1F1B17]">{item.name ?? 'Neighbour'}</Text>
+        <View className="flex-row items-center justify-between bg-[#F6F9FF] rounded-xl p-3.5">
+          <Text className="text-[13px] font-semibold text-[#181C20]">{item.name ?? 'Neighbour'}</Text>
           <Pressable onPress={() => unblock(item.blocked_id)}>
-            <Text className="text-[12px] font-semibold text-[#2196D6]">Unblock</Text>
+            <Text className="text-[12px] font-semibold text-[#006290]">Unblock</Text>
           </Pressable>
         </View>
       )}
-      ListEmptyComponent={<Text className="text-center text-gray-400 text-[13px] mt-8">No one blocked.</Text>}
+      ListEmptyComponent={<Text className="text-center text-ink-muted text-[13px] mt-8">No one blocked.</Text>}
     />
   );
 }
@@ -321,7 +321,7 @@ function CloseFriendsSection() {
   if (!rows) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator color="#2196D6" />
+        <ActivityIndicator color="#006290" />
       </View>
     );
   }
@@ -333,14 +333,14 @@ function CloseFriendsSection() {
       keyExtractor={(r) => r.connected_user_id}
       contentContainerStyle={{ padding: 16, gap: 10 }}
       renderItem={({ item }) => (
-        <View className="flex-row items-center justify-between bg-[#FAFAFA] rounded-xl p-3.5">
-          <Text className="text-[13px] font-semibold text-[#1F1B17]">{item.name ?? 'Neighbour'}</Text>
+        <View className="flex-row items-center justify-between bg-[#F6F9FF] rounded-xl p-3.5">
+          <Text className="text-[13px] font-semibold text-[#181C20]">{item.name ?? 'Neighbour'}</Text>
           <Pressable onPress={() => remove(item.connected_user_id)}>
             <Text className="text-[12px] font-semibold text-red-500">Remove</Text>
           </Pressable>
         </View>
       )}
-      ListEmptyComponent={<Text className="text-center text-gray-400 text-[13px] mt-8">No Circle connections yet.</Text>}
+      ListEmptyComponent={<Text className="text-center text-ink-muted text-[13px] mt-8">No Circle connections yet.</Text>}
     />
   );
 }
@@ -377,7 +377,7 @@ function NotificationPrefsSection() {
   if (!prefs) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator color="#2196D6" />
+        <ActivityIndicator color="#006290" />
       </View>
     );
   }
@@ -391,12 +391,12 @@ function NotificationPrefsSection() {
   return (
     <View className="flex-1 bg-white px-5 pt-5">
       {rows.map((r) => (
-        <View key={r.key} className="flex-row items-center justify-between py-3 border-b border-gray-100">
+        <View key={r.key} className="flex-row items-center justify-between py-3 border-b border-outline-variant">
           <View className="flex-1 mr-3">
-            <Text className="text-[14px] font-semibold text-[#1F1B17]">{r.label}</Text>
-            <Text className="text-[11px] text-gray-400 mt-0.5">{r.desc}</Text>
+            <Text className="text-[14px] font-semibold text-[#181C20]">{r.label}</Text>
+            <Text className="text-[11px] text-ink-muted mt-0.5">{r.desc}</Text>
           </View>
-          <Switch value={prefs[r.key]} onValueChange={() => toggle(r.key)} trackColor={{ true: '#2196D6' }} />
+          <Switch value={prefs[r.key]} onValueChange={() => toggle(r.key)} trackColor={{ true: '#006290' }} />
         </View>
       ))}
     </View>
@@ -418,19 +418,19 @@ function DeleteAccountSection() {
 
   return (
     <View className="flex-1 bg-white px-5 pt-5">
-      <Text className="text-[15px] font-bold text-[#1F1B17] mb-2">Delete your account</Text>
-      <Text className="text-[13px] text-gray-600 leading-5 mb-4">
+      <Text className="text-[15px] font-bold text-[#181C20] mb-2">Delete your account</Text>
+      <Text className="text-[13px] text-ink-muted leading-5 mb-4">
         This anonymizes your profile (name, bio, avatar, vibes, contact info) immediately and signs you out. Your posts and other
         activity stay attributed to "Deleted user" rather than being purged instantly — this is a self-service request, not a
         same-second data purge.
       </Text>
-      <Text className="text-[12px] text-gray-500 mb-1.5">Type DELETE to confirm</Text>
+      <Text className="text-[12px] text-ink-muted mb-1.5">Type DELETE to confirm</Text>
       <TextInput
         value={confirmText}
         onChangeText={setConfirmText}
         autoCapitalize="characters"
         placeholder="DELETE"
-        className="bg-[#F3F4F6] rounded-xl px-3.5 py-2.5 text-[14px] text-[#1F1B17] mb-4"
+        className="bg-[#EBEEF4] rounded-xl px-3.5 py-2.5 text-[14px] text-[#181C20] mb-4"
       />
       <Pressable
         onPress={confirmDelete}

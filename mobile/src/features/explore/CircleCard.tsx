@@ -48,17 +48,17 @@ export default function CircleCard({
     >
       <Avatar name={name} size={48} />
       <View className="flex-1">
-        <Text className="text-[14px] font-semibold text-[#1F1B17]" numberOfLines={1}>
+        <Text className="text-[14px] font-semibold text-[#181C20]" numberOfLines={1}>
           {name}
         </Text>
-        <Text className="text-[11px] text-gray-400 mt-0.5" numberOfLines={1}>
+        <Text className="text-[11px] text-ink-muted mt-0.5" numberOfLines={1}>
           {subtitle}
         </Text>
       </View>
       {alreadyConnected ? (
-        <View className="flex-row items-center gap-1 px-2.5 py-1.5 rounded-full bg-gray-100">
+        <View className="flex-row items-center gap-1 px-2.5 py-1.5 rounded-full bg-surface-container">
           <Check size={12} color="#10B981" />
-          <Text className="text-[11px] font-semibold text-gray-500">Added</Text>
+          <Text className="text-[11px] font-semibold text-ink-muted">Added</Text>
         </View>
       ) : (
         <Pressable
@@ -68,7 +68,7 @@ export default function CircleCard({
           }}
           disabled={connecting}
           className="px-3 py-1.5 rounded-full"
-          style={{ backgroundColor: '#2196D6' }}
+          style={{ backgroundColor: '#006290' }}
         >
           {connecting ? <ActivityIndicator size="small" color="#fff" /> : <Text className="text-[11px] font-semibold text-white">Add to Circle</Text>}
         </Pressable>

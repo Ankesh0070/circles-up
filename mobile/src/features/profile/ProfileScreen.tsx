@@ -85,7 +85,7 @@ export default function ProfileScreen() {
   if (!profile) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator color="#2196D6" />
+        <ActivityIndicator color="#006290" />
       </View>
     );
   }
@@ -256,8 +256,8 @@ export default function ProfileScreen() {
         }}
         ListEmptyComponent={
           <View className="items-center py-10">
-            <MessageSquare size={28} color="#D1D5DB" />
-            <Text className="text-center text-gray-400 text-[13px] mt-2">No posts yet.</Text>
+            <MessageSquare size={28} color="#BEC7D1" />
+            <Text className="text-center text-ink-muted text-[13px] mt-2">No posts yet.</Text>
           </View>
         }
       />

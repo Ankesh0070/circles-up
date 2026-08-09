@@ -14,17 +14,17 @@ export default function SponsoredCard({ ad, userId }: { ad: ServedAd; userId: st
     <Pressable
       onPress={() => recordAdClickFireAndForget(ad.campaign_id, userId)}
       className="mx-4 mt-3 bg-white rounded-2xl overflow-hidden"
-      style={{ borderWidth: 1, borderColor: '#F3F4F6' }}
+      style={{ borderWidth: 1, borderColor: '#EBEEF4' }}
     >
       <View className="flex-row items-center gap-1.5 px-3 pt-2.5">
-        <Megaphone size={12} color="#9CA3AF" />
-        <Text className="text-[10px] font-semibold text-gray-400">SPONSORED</Text>
+        <Megaphone size={12} color="#6F7881" />
+        <Text className="text-[10px] font-semibold text-ink-muted">SPONSORED</Text>
       </View>
       {ad.image_url && <Image source={{ uri: ad.image_url }} className="w-full aspect-[2/1] mt-2" resizeMode="cover" />}
       <View className="p-3">
-        <Text className="text-[14px] font-semibold text-[#1F1B17]">{ad.headline}</Text>
-        <Text className="text-[13px] text-gray-600 mt-1">{ad.body}</Text>
-        <View className="mt-2 self-start px-3 py-1.5 rounded-full bg-gray-900">
+        <Text className="text-[14px] font-semibold text-[#181C20]">{ad.headline}</Text>
+        <Text className="text-[13px] text-ink-muted mt-1">{ad.body}</Text>
+        <View className="mt-2 self-start px-3 py-1.5 rounded-full bg-ink">
           <Text className="text-white text-[12px] font-semibold">{ad.cta_text}</Text>
         </View>
       </View>

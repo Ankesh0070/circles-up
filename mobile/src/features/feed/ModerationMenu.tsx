@@ -93,20 +93,20 @@ export default function ModerationMenu({
 
           {step === 'report' && (
             <View className="px-5 pt-3">
-              <Text className="text-[16px] font-bold text-[#1F1B17] mb-3">Why are you reporting this?</Text>
+              <Text className="text-[16px] font-bold text-[#181C20] mb-3">Why are you reporting this?</Text>
               {REPORT_REASONS.map((r) => (
                 <Pressable
                   key={r.id}
                   onPress={() => setReason(r.id)}
-                  className="flex-row items-center gap-3 py-3 border-b border-gray-100"
+                  className="flex-row items-center gap-3 py-3 border-b border-outline-variant"
                 >
                   <View
                     className="w-5 h-5 rounded-full items-center justify-center"
-                    style={{ borderWidth: 1.5, borderColor: reason === r.id ? '#2196D6' : '#D1D5DB' }}
+                    style={{ borderWidth: 1.5, borderColor: reason === r.id ? '#006290' : '#BEC7D1' }}
                   >
-                    {reason === r.id && <View className="w-2.5 h-2.5 rounded-full bg-[#2196D6]" />}
+                    {reason === r.id && <View className="w-2.5 h-2.5 rounded-full bg-[#006290]" />}
                   </View>
-                  <Text className="text-[14px] text-[#1F1B17] flex-1">{r.label}</Text>
+                  <Text className="text-[14px] text-[#181C20] flex-1">{r.label}</Text>
                 </Pressable>
               ))}
               <Pressable
@@ -122,14 +122,14 @@ export default function ModerationMenu({
 
           {step === 'submitted' && (
             <View className="px-5 py-6 items-center">
-              <Text className="text-[16px] font-bold text-[#1F1B17]">Report submitted</Text>
-              <Text className="text-[13px] text-gray-500 mt-2 text-center">
+              <Text className="text-[16px] font-bold text-[#181C20]">Report submitted</Text>
+              <Text className="text-[13px] text-ink-muted mt-2 text-center">
                 {reason === 'doxxing'
                   ? "Thanks — reports like this are prioritized for fast review."
                   : "Thanks for helping keep the neighbourhood safe. We'll review this."}
               </Text>
-              <Pressable onPress={close} className="mt-5 bg-gray-100 rounded-xl px-6 py-2.5">
-                <Text className="text-[14px] font-semibold text-[#1F1B17]">Done</Text>
+              <Pressable onPress={close} className="mt-5 bg-surface-container rounded-xl px-6 py-2.5">
+                <Text className="text-[14px] font-semibold text-[#181C20]">Done</Text>
               </Pressable>
             </View>
           )}
@@ -141,8 +141,8 @@ export default function ModerationMenu({
 
 function MenuRow({ label, onPress, destructive }: { label: string; onPress: () => void; destructive?: boolean }) {
   return (
-    <Pressable onPress={onPress} className="px-5 py-3.5 border-b border-gray-100">
-      <Text className="text-[15px] text-center" style={{ color: destructive ? '#DC2626' : '#1F1B17' }}>
+    <Pressable onPress={onPress} className="px-5 py-3.5 border-b border-outline-variant">
+      <Text className="text-[15px] text-center" style={{ color: destructive ? '#DC2626' : '#181C20' }}>
         {label}
       </Text>
     </Pressable>

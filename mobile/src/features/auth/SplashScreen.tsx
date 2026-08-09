@@ -26,13 +26,13 @@ export default function SplashScreen({ navigation }: Props) {
         </GradientText>
       </Animated.View>
       <Animated.View entering={FadeInDown.delay(350).duration(500)}>
-        <Text className="text-[15px] text-gray-500 mt-2 font-medium">Aage badh, apni circle ke saath</Text>
+        <Text className="text-[15px] text-ink-muted mt-2 font-medium">Aage badh, apni circle ke saath</Text>
       </Animated.View>
       <Animated.View
         entering={FadeInDown.delay(500).duration(500)}
         className="absolute bottom-10 flex-row items-center gap-1.5"
       >
-        <Text className="text-xs text-gray-400 font-medium">from </Text>
+        <Text className="text-xs text-ink-muted font-medium">from </Text>
         <GradientText style={{ fontSize: 12, fontWeight: '600' }}>India</GradientText>
       </Animated.View>
     </View>

@@ -2,7 +2,10 @@ import { useState } from 'react';
 import { View, Text, TextInput, Pressable, Image, ActivityIndicator, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Image as ImageIcon } from 'lucide-react-native';
 import GradientButton from '../../shared/components/GradientButton';
+import Card from '../../shared/components/Card';
+import { BACKGROUND, ON_SURFACE, ON_SURFACE_MUTED, OUTLINE_VARIANT, ERROR, RADIUS } from '../../shared/theme/tokens';
 import { categories, type PostCategory } from '../../shared/data/categories';
 import { supabase } from '../../shared/api/supabase';
 import { uploadPostMedia } from '../../shared/api/uploadMedia';
@@ -97,10 +100,14 @@ export default function CreatePostSheet({ navigation }: Props) {
   };
 
   return (
-    <ScrollView className="flex-1 bg-white px-5 pt-4" contentContainerStyle={{ paddingBottom: 40 }}>
-      <Text className="text-[18px] font-bold text-[#1F1B17]">Share with your circle</Text>
+    <ScrollView
+      style={{ flex: 1, backgroundColor: BACKGROUND }}
+      contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
+      keyboardShouldPersistTaps="handled"
+    >
+      <Text style={{ fontSize: 22, fontWeight: '700', color: ON_SURFACE }}>Share with your circle</Text>
 
-      <View className="flex-row flex-wrap gap-2 mt-4">
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 18 }}>
         {categories.map((c) => {
           const Icon = c.icon;
           const active = category === c.value;
@@ -108,44 +115,68 @@ export default function CreatePostSheet({ navigation }: Props) {
             <Pressable
               key={c.value}
               onPress={() => setCategory(c.value)}
-              className="flex-row items-center gap-1.5 px-3 py-2 rounded-full"
-              style={{ backgroundColor: active ? c.color : '#F3F4F6' }}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 6,
+                paddingHorizontal: 13,
+                paddingVertical: 9,
+                borderRadius: RADIUS.chip,
+                backgroundColor: active ? c.color : `${c.color}14`,
+              }}
             >
-              <Icon size={13} color={active ? '#fff' : c.color} />
-              <Text className="text-[12px] font-semibold" style={{ color: active ? '#fff' : '#374151' }}>
-                {c.name}
-              </Text>
+              <Icon size={14} color={active ? '#fff' : c.color} strokeWidth={2.2} />
+              <Text style={{ fontSize: 12.5, fontWeight: '700', color: active ? '#fff' : c.color }}>{c.name}</Text>
             </Pressable>
           );
         })}
       </View>
 
-      <TextInput
-        value={caption}
-        onChangeText={setCaption}
-        placeholder="Kya share karna hai apni circle ke saath?"
-        multiline
-        className="mt-4 text-[15px] text-[#1F1B17] min-h-[100px]"
-        textAlignVertical="top"
-      />
+      <Card style={{ marginTop: 18 }}>
+        <TextInput
+          value={caption}
+          onChangeText={setCaption}
+          placeholder="Kya share karna hai apni circle ke saath?"
+          placeholderTextColor={ON_SURFACE_MUTED}
+          multiline
+          style={{ fontSize: 15.5, color: ON_SURFACE, minHeight: 110, lineHeight: 22 }}
+          textAlignVertical="top"
+        />
+      </Card>
 
       {imageUri ? (
         <Pressable onPress={pickImage}>
-          <Image source={{ uri: imageUri }} className="w-full aspect-square rounded-xl mt-2" resizeMode="cover" />
+          <Image
+            source={{ uri: imageUri }}
+            style={{ width: '100%', aspectRatio: 4 / 3, borderRadius: RADIUS.card, marginTop: 14 }}
+            resizeMode="cover"
+          />
         </Pressable>
       ) : (
-        <Pressable onPress={pickImage} className="mt-2 border border-dashed border-gray-300 rounded-xl py-6 items-center">
-          <Text className="text-[13px] text-gray-500">📷 Add a photo</Text>
+        <Pressable
+          onPress={pickImage}
+          style={{
+            marginTop: 14,
+            borderWidth: 1.5,
+            borderStyle: 'dashed',
+            borderColor: OUTLINE_VARIANT,
+            borderRadius: RADIUS.card,
+            paddingVertical: 28,
+            alignItems: 'center',
+            gap: 8,
+          }}
+        >
+          <ImageIcon size={22} color={ON_SURFACE_MUTED} strokeWidth={1.9} />
+          <Text style={{ fontSize: 13.5, color: ON_SURFACE_MUTED, fontWeight: '600' }}>Add a photo</Text>
         </Pressable>
       )}
 
-      {error !== '' && <Text className="text-[12px] text-red-600 mt-3">{error}</Text>}
+      {error !== '' && <Text style={{ fontSize: 13, color: ERROR, marginTop: 14, marginLeft: 4 }}>{error}</Text>}
 
-      <View className="mt-6">
-        <GradientButton onPress={submit} disabled={submitting}>
-          {submitting ? '' : 'Post'}
+      <View style={{ marginTop: 26 }}>
+        <GradientButton onPress={submit} loading={submitting}>
+          Post
         </GradientButton>
-        {submitting && <ActivityIndicator style={{ marginTop: -38 }} color="#fff" />}
       </View>
     </ScrollView>
   );

@@ -16,7 +16,7 @@ type Notification = {
 
 const TYPE_ICON: Record<string, { icon: typeof Bell; color: string }> = {
   points_awarded: { icon: Trophy, color: '#B45309' },
-  circle_connection: { icon: Users, color: '#2196D6' },
+  circle_connection: { icon: Users, color: '#006290' },
   event_cancelled: { icon: CalendarX, color: '#DC2626' },
 };
 
@@ -87,7 +87,7 @@ export default function NotificationsScreen() {
   if (rows === null) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator color="#2196D6" />
+        <ActivityIndicator color="#006290" />
       </View>
     );
   }
@@ -106,9 +106,9 @@ export default function NotificationsScreen() {
             key={f}
             onPress={() => setFilter(f)}
             className="px-3 py-1.5 rounded-full"
-            style={{ backgroundColor: filter === f ? '#2196D6' : '#F3F4F6' }}
+            style={{ backgroundColor: filter === f ? '#006290' : '#EBEEF4' }}
           >
-            <Text style={{ color: filter === f ? '#fff' : '#374151', fontSize: 12, fontWeight: '700' }}>
+            <Text style={{ color: filter === f ? '#fff' : '#181C20', fontSize: 12, fontWeight: '700' }}>
               {f === 'all' ? 'All' : 'Unread'}
             </Text>
           </Pressable>
@@ -120,10 +120,10 @@ export default function NotificationsScreen() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ paddingBottom: 30 }}
         renderSectionHeader={({ section }) => (
-          <Text className="text-[12px] font-bold text-gray-400 uppercase tracking-wide px-4 pt-3 pb-1 bg-white">{section.title}</Text>
+          <Text className="text-[12px] font-bold text-ink-muted uppercase tracking-wide px-4 pt-3 pb-1 bg-white">{section.title}</Text>
         )}
         renderItem={({ item }) => {
-          const meta = TYPE_ICON[item.type] ?? { icon: Bell, color: '#6B7280' };
+          const meta = TYPE_ICON[item.type] ?? { icon: Bell, color: '#6F7881' };
           const Icon = meta.icon;
           const showCircleBack = item.type === 'circle_connection' && !!item.related_id;
           const alreadyConnected = showCircleBack && connectedBack.has(item.related_id as string);
@@ -133,29 +133,29 @@ export default function NotificationsScreen() {
                 <Icon size={16} color={meta.color} />
               </View>
               <View className="flex-1">
-                <Text className="text-[13px] font-semibold text-[#1F1B17]">{item.title}</Text>
-                <Text className="text-[12px] text-gray-500 mt-0.5">{item.body}</Text>
+                <Text className="text-[13px] font-semibold text-[#181C20]">{item.title}</Text>
+                <Text className="text-[12px] text-ink-muted mt-0.5">{item.body}</Text>
                 {showCircleBack && (
                   <Pressable
                     onPress={() => circleBack(item.related_id as string)}
                     disabled={alreadyConnected || connectingBack === item.related_id}
                     className="self-start mt-2 px-3 py-1.5 rounded-full"
-                    style={{ backgroundColor: alreadyConnected ? '#F3F4F6' : '#2196D6' }}
+                    style={{ backgroundColor: alreadyConnected ? '#EBEEF4' : '#006290' }}
                   >
-                    <Text style={{ color: alreadyConnected ? '#374151' : '#fff', fontSize: 11, fontWeight: '700' }}>
+                    <Text style={{ color: alreadyConnected ? '#181C20' : '#fff', fontSize: 11, fontWeight: '700' }}>
                       {alreadyConnected ? 'Connected' : connectingBack === item.related_id ? 'Connecting…' : '+ Circle back'}
                     </Text>
                   </Pressable>
                 )}
               </View>
-              {!item.read && <View className="w-2 h-2 rounded-full bg-[#2196D6] mt-1.5" />}
+              {!item.read && <View className="w-2 h-2 rounded-full bg-[#006290] mt-1.5" />}
             </Pressable>
           );
         }}
         ListEmptyComponent={
           <View className="items-center py-16">
-            <Bell size={28} color="#D1D5DB" />
-            <Text className="text-gray-400 text-[13px] mt-2">{filter === 'unread' ? 'No unread notifications.' : 'No notifications yet.'}</Text>
+            <Bell size={28} color="#BEC7D1" />
+            <Text className="text-ink-muted text-[13px] mt-2">{filter === 'unread' ? 'No unread notifications.' : 'No notifications yet.'}</Text>
           </View>
         }
       />

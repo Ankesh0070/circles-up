@@ -2,8 +2,20 @@ import { useCallback, useState } from 'react';
 import { View, Text, TextInput, Pressable, FlatList, Image, ActivityIndicator } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Send } from 'lucide-react-native';
 import HumanHeart from '../../shared/components/HumanHeart';
 import Avatar from '../../shared/components/Avatar';
+import Card from '../../shared/components/Card';
+import {
+  BACKGROUND,
+  SURFACE,
+  SURFACE_CONTAINER,
+  ON_SURFACE,
+  ON_SURFACE_MUTED,
+  OUTLINE_VARIANT,
+  PRIMARY,
+  RADIUS,
+} from '../../shared/theme/tokens';
 import { supabase } from '../../shared/api/supabase';
 import { embedCommentFireAndForget } from '../../shared/api/genie';
 import type { RootStackParamList } from '../../navigation/types';
@@ -102,61 +114,91 @@ export default function PostDetailScreen({ route }: Props) {
   if (comments === null) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator color="#2196D6" />
+        <ActivityIndicator color="#006290" />
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-white">
+    <View style={{ flex: 1, backgroundColor: BACKGROUND }}>
       <FlatList
         data={comments}
         keyExtractor={(c) => c.id}
-        contentContainerStyle={{ padding: 16, gap: 14 }}
+        contentContainerStyle={{ padding: 16, gap: 10 }}
         renderItem={({ item }) => (
-          <View className="flex-row gap-2.5">
-            <Avatar name={item.author?.name ?? '?'} size={30} />
-            <View className="flex-1">
-              {item.parent_comment_id && <Text className="text-[10px] text-gray-400">Replying</Text>}
-              <Text className="text-[13px]">
-                <Text className="font-semibold text-[#1F1B17]">{item.author?.name ?? 'Neighbour'}</Text>{' '}
-                <Text className="text-[#1F1B17]">{item.text}</Text>
+          <Card style={{ flexDirection: 'row', gap: 12, marginLeft: item.parent_comment_id ? 24 : 0 }}>
+            <Avatar name={item.author?.name ?? '?'} size={34} />
+            <View style={{ flex: 1 }}>
+              {item.parent_comment_id && (
+                <Text style={{ fontSize: 11, color: ON_SURFACE_MUTED, fontWeight: '600', marginBottom: 2 }}>Reply</Text>
+              )}
+              <Text style={{ fontSize: 14, fontWeight: '700', color: ON_SURFACE }}>
+                {item.author?.name ?? 'Neighbour'}
               </Text>
-              <View className="flex-row items-center gap-3 mt-1">
+              <Text style={{ fontSize: 14, color: ON_SURFACE, marginTop: 3, lineHeight: 20 }}>{item.text}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14, marginTop: 8 }}>
                 <Pressable onPress={() => setReplyTo({ id: item.id, name: item.author?.name ?? 'Neighbour' })}>
-                  <Text className="text-[11px] text-gray-400 font-medium">Reply</Text>
+                  <Text style={{ fontSize: 12, color: PRIMARY, fontWeight: '700' }}>Reply</Text>
                 </Pressable>
-                {item.likeCount > 0 && <Text className="text-[11px] text-gray-400">{item.likeCount} likes</Text>}
+                {item.likeCount > 0 && (
+                  <Text style={{ fontSize: 12, color: ON_SURFACE_MUTED }}>
+                    {item.likeCount} {item.likeCount === 1 ? 'like' : 'likes'}
+                  </Text>
+                )}
               </View>
             </View>
             <Pressable onPress={() => toggleLike(item)} hitSlop={8}>
-              <HumanHeart size={14} filled={item.likedByMe} />
+              <HumanHeart size={16} filled={item.likedByMe} />
             </Pressable>
-          </View>
+          </Card>
         )}
-        ListEmptyComponent={<Text className="text-center text-gray-400 text-[13px] mt-8">No comments yet.</Text>}
+        ListEmptyComponent={
+          <Text style={{ textAlign: 'center', color: ON_SURFACE_MUTED, fontSize: 13.5, marginTop: 32 }}>
+            No comments yet.
+          </Text>
+        }
       />
 
-      <View className="border-t border-gray-100 px-4 py-3">
+      <View style={{ borderTopWidth: 1, borderTopColor: OUTLINE_VARIANT, backgroundColor: SURFACE, paddingHorizontal: 16, paddingTop: 12, paddingBottom: 24 }}>
         {replyTo && (
-          <View className="flex-row items-center justify-between mb-1.5">
-            <Text className="text-[11px] text-gray-500">Replying to {replyTo.name}</Text>
-            <Pressable onPress={() => setReplyTo(null)}>
-              <Text className="text-[11px] text-gray-400">Cancel</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+            <Text style={{ fontSize: 12, color: ON_SURFACE_MUTED }}>
+              Replying to <Text style={{ fontWeight: '700', color: ON_SURFACE }}>{replyTo.name}</Text>
+            </Text>
+            <Pressable onPress={() => setReplyTo(null)} hitSlop={8}>
+              <Text style={{ fontSize: 12, color: PRIMARY, fontWeight: '700' }}>Cancel</Text>
             </Pressable>
           </View>
         )}
-        <View className="flex-row items-center gap-2">
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
           <TextInput
             value={text}
             onChangeText={setText}
             placeholder="Add a comment…"
-            className="flex-1 bg-[#F3F4F6] rounded-full px-4 py-2.5 text-[13px]"
+            placeholderTextColor={ON_SURFACE_MUTED}
+            style={{
+              flex: 1,
+              backgroundColor: SURFACE_CONTAINER,
+              borderRadius: RADIUS.chip,
+              paddingHorizontal: 18,
+              paddingVertical: 12,
+              fontSize: 14,
+              color: ON_SURFACE,
+            }}
           />
-          <Pressable onPress={submitComment} disabled={posting || !text.trim()}>
-            <Text className="text-[13px] font-bold" style={{ color: text.trim() ? '#2196D6' : '#D1D5DB' }}>
-              Post
-            </Text>
+          <Pressable
+            onPress={submitComment}
+            disabled={posting || !text.trim()}
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: 22,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: text.trim() ? PRIMARY : SURFACE_CONTAINER,
+            }}
+          >
+            <Send size={18} color={text.trim() ? '#fff' : ON_SURFACE_MUTED} strokeWidth={2.2} />
           </Pressable>
         </View>
       </View>

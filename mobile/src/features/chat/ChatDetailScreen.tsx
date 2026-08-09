@@ -8,6 +8,17 @@ import Avatar from '../../shared/components/Avatar';
 import AlertModal from '../../shared/components/AlertModal';
 import { supabase } from '../../shared/api/supabase';
 import { uploadChatImage, uploadChatVoiceNote, getChatMediaSignedUrl } from '../../shared/api/uploadChatMedia';
+import {
+  BACKGROUND,
+  SURFACE,
+  SURFACE_CONTAINER,
+  ON_SURFACE,
+  ON_SURFACE_MUTED,
+  OUTLINE_VARIANT,
+  PRIMARY,
+  ERROR,
+  RADIUS,
+} from '../../shared/theme/tokens';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ChatDetail'>;
@@ -188,29 +199,41 @@ export default function ChatDetailScreen({ route, navigation }: Props) {
   if (!meta || !messages) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator color="#2196D6" />
+        <ActivityIndicator color="#006290" />
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-white">
+    <View style={{ flex: 1, backgroundColor: BACKGROUND }}>
       {/* Header */}
-      <View className="flex-row items-center gap-3 px-4 py-3 border-b border-gray-100">
-        <Avatar name={meta.displayName} size={36} />
-        <Text className="flex-1 text-[15px] font-semibold text-[#1F1B17]">{meta.displayName}</Text>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 12,
+          paddingHorizontal: 16,
+          paddingTop: 48,
+          paddingBottom: 12,
+          backgroundColor: SURFACE,
+          borderBottomWidth: 1,
+          borderBottomColor: OUTLINE_VARIANT,
+        }}
+      >
+        <Avatar name={meta.displayName} size={40} />
+        <Text style={{ flex: 1, fontSize: 16, fontWeight: '700', color: ON_SURFACE }}>{meta.displayName}</Text>
         {!meta.isGroup && (
           <>
             <Pressable onPress={() => setCallActive('voice')} hitSlop={6}>
-              <Phone size={20} color="#1F1B17" strokeWidth={1.9} />
+              <Phone size={20} color={ON_SURFACE} strokeWidth={2} />
             </Pressable>
             <Pressable onPress={() => setCallActive('video')} hitSlop={6}>
-              <Video size={20} color="#1F1B17" strokeWidth={1.9} />
+              <Video size={20} color={ON_SURFACE} strokeWidth={2} />
             </Pressable>
           </>
         )}
         <Pressable onPress={() => setMenuOpen(true)} hitSlop={6}>
-          <MoreVertical size={20} color="#1F1B17" strokeWidth={1.9} />
+          <MoreVertical size={20} color={ON_SURFACE} strokeWidth={2} />
         </Pressable>
       </View>
 
@@ -227,26 +250,58 @@ export default function ChatDetailScreen({ route, navigation }: Props) {
       />
 
       {/* Composer */}
-      <View className="border-t border-gray-100 px-3 py-2 flex-row items-end gap-2">
-        <Pressable onPress={sendImage} hitSlop={6} disabled={uploading}>
-          <Camera size={22} color="#1F1B17" strokeWidth={1.8} />
+      <View
+        style={{
+          borderTopWidth: 1,
+          borderTopColor: OUTLINE_VARIANT,
+          backgroundColor: SURFACE,
+          paddingHorizontal: 14,
+          paddingTop: 10,
+          flexDirection: 'row',
+          alignItems: 'flex-end',
+          gap: 10,
+        }}
+      >
+        <Pressable onPress={sendImage} hitSlop={6} disabled={uploading} style={{ paddingBottom: 10 }}>
+          <Camera size={22} color={ON_SURFACE_MUTED} strokeWidth={1.9} />
         </Pressable>
         <TextInput
           value={text}
           onChangeText={setText}
           placeholder="Message…"
+          placeholderTextColor={ON_SURFACE_MUTED}
           multiline
-          className="flex-1 bg-[#F3F4F6] rounded-2xl px-4 py-2 text-[14px] max-h-[100px]"
+          style={{
+            flex: 1,
+            backgroundColor: SURFACE_CONTAINER,
+            borderRadius: RADIUS.chip,
+            paddingHorizontal: 18,
+            paddingVertical: 11,
+            fontSize: 14.5,
+            color: ON_SURFACE,
+            maxHeight: 100,
+          }}
         />
-        {text.trim() ? (
-          <Pressable onPress={sendText} hitSlop={6}>
-            <Send size={22} color="#2196D6" strokeWidth={2} />
-          </Pressable>
-        ) : (
-          <Pressable onPress={toggleRecording} hitSlop={6}>
-            <Mic size={22} color={isRecording ? '#EF4444' : '#1F1B17'} strokeWidth={2} />
-          </Pressable>
-        )}
+        <Pressable
+          onPress={text.trim() ? sendText : toggleRecording}
+          hitSlop={6}
+          style={{
+            width: 44,
+            height: 44,
+            borderRadius: 22,
+            alignItems: 'center',
+            justifyContent: 'center',
+            // Recording turns the mic red — the one place in chat that
+            // borrows an alert colour, because it's a live capture state.
+            backgroundColor: text.trim() ? PRIMARY : isRecording ? ERROR : SURFACE_CONTAINER,
+          }}
+        >
+          {text.trim() ? (
+            <Send size={19} color="#fff" strokeWidth={2.2} />
+          ) : (
+            <Mic size={19} color={isRecording ? '#fff' : ON_SURFACE_MUTED} strokeWidth={2.2} />
+          )}
+        </Pressable>
       </View>
 
       {/* Phase 39: encryption footer copy. Chat data is TLS-in-transit +
@@ -256,8 +311,10 @@ export default function ChatDetailScreen({ route, navigation }: Props) {
           Signal-protocol implementation, keys we don't derive today, and a
           real security review — noted as a future upgrade path but not
           silently pretended-into-existence. */}
-      <View className="px-4 pb-1">
-        <Text className="text-[10px] text-gray-400 text-center">Encrypted in transit and at rest.</Text>
+      <View style={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 20, backgroundColor: SURFACE }}>
+        <Text style={{ fontSize: 10.5, color: ON_SURFACE_MUTED, textAlign: 'center' }}>
+          Encrypted in transit and at rest.
+        </Text>
       </View>
 
       {/* Menu sheet */}
@@ -265,12 +322,12 @@ export default function ChatDetailScreen({ route, navigation }: Props) {
         <Pressable className="flex-1 bg-black/40 justify-end" onPress={() => setMenuOpen(false)}>
           <Pressable className="bg-white rounded-t-2xl pb-8 pt-2" onPress={(e) => e.stopPropagation()}>
             {!meta.isGroup && meta.otherUserId && (
-              <Pressable onPress={block} className="px-5 py-3.5 border-b border-gray-100">
+              <Pressable onPress={block} className="px-5 py-3.5 border-b border-outline-variant">
                 <Text className="text-[15px] text-center text-red-600">Block this neighbour</Text>
               </Pressable>
             )}
             <Pressable onPress={() => setMenuOpen(false)} className="px-5 py-3.5">
-              <Text className="text-[15px] text-center text-[#1F1B17]">Cancel</Text>
+              <Text className="text-[15px] text-center text-[#181C20]">Cancel</Text>
             </Pressable>
           </Pressable>
         </Pressable>
@@ -296,10 +353,10 @@ export default function ChatDetailScreen({ route, navigation }: Props) {
           <View className="flex-1 bg-black items-center justify-center gap-6">
             <Avatar name={meta.displayName} size={120} />
             <Text className="text-white text-[22px] font-semibold">{meta.displayName}</Text>
-            <Text className="text-gray-400 text-[13px]">
+            <Text className="text-ink-muted text-[13px]">
               {callActive === 'voice' ? 'Voice calling…' : 'Video calling…'}
             </Text>
-            <Text className="text-gray-500 text-[11px] mt-2 text-center px-8">
+            <Text className="text-ink-muted text-[11px] mt-2 text-center px-8">
               (Simulated — real calling is not implemented yet)
             </Text>
             <Pressable
@@ -345,14 +402,25 @@ function MessageBubble({
   return (
     <Pressable onLongPress={() => !isMine && onReport(message.id)}>
       <View
-        className={`max-w-[75%] rounded-2xl px-3 py-2 ${isMine ? 'self-end' : 'self-start'}`}
-        style={{ backgroundColor: isMine ? '#2196D6' : '#F3F4F6' }}
+        style={{
+          maxWidth: '78%',
+          alignSelf: isMine ? 'flex-end' : 'flex-start',
+          backgroundColor: isMine ? PRIMARY : SURFACE,
+          paddingHorizontal: 14,
+          paddingVertical: 10,
+          // Tail-side corner tightened so direction reads at a glance.
+          borderRadius: 18,
+          borderBottomRightRadius: isMine ? 4 : 18,
+          borderBottomLeftRadius: isMine ? 18 : 4,
+        }}
       >
         {showAuthor && !isMine && message.authorName && (
-          <Text className="text-[11px] font-semibold text-[#2196D6] mb-0.5">{message.authorName}</Text>
+          <Text style={{ fontSize: 11.5, fontWeight: '700', color: PRIMARY, marginBottom: 3 }}>
+            {message.authorName}
+          </Text>
         )}
         {message.kind === 'text' && (
-          <Text style={{ color: isMine ? '#fff' : '#1F1B17', fontSize: 14 }}>{message.text}</Text>
+          <Text style={{ color: isMine ? '#fff' : ON_SURFACE, fontSize: 14.5, lineHeight: 20 }}>{message.text}</Text>
         )}
         {message.kind === 'image' && signedUrl && (
           <Image source={{ uri: signedUrl }} style={{ width: 200, height: 200, borderRadius: 8 }} resizeMode="cover" />
@@ -381,8 +449,8 @@ function VoiceMessage({ uri, durationMs, isMine }: { uri: string | null; duratio
 
   return (
     <Pressable onPress={toggle} className="flex-row items-center gap-2 py-1">
-      <Text style={{ color: isMine ? '#fff' : '#1F1B17', fontSize: 18 }}>{playing ? '⏸️' : '▶️'}</Text>
-      <Text style={{ color: isMine ? '#fff' : '#1F1B17', fontSize: 12 }}>
+      <Text style={{ color: isMine ? '#fff' : '#181C20', fontSize: 18 }}>{playing ? '⏸️' : '▶️'}</Text>
+      <Text style={{ color: isMine ? '#fff' : '#181C20', fontSize: 12 }}>
         {durationMs ? `${Math.round(durationMs / 1000)}s voice note` : 'Voice note'}
       </Text>
     </Pressable>
@@ -447,28 +515,28 @@ function ReportSheet({
         <Pressable className="bg-white rounded-t-2xl pb-8 pt-4 px-5" onPress={(e) => e.stopPropagation()}>
           {done ? (
             <View className="items-center py-4">
-              <Text className="text-[16px] font-bold text-[#1F1B17]">Report submitted</Text>
-              <Text className="text-[13px] text-gray-500 mt-2 text-center">
+              <Text className="text-[16px] font-bold text-[#181C20]">Report submitted</Text>
+              <Text className="text-[13px] text-ink-muted mt-2 text-center">
                 {reason === 'harassment' || reason === 'threat'
                   ? "Thanks — reports like this are prioritized for fast review."
                   : "Thanks for helping keep the neighbourhood safe."}
               </Text>
-              <Pressable onPress={onClose} className="mt-4 bg-gray-100 rounded-xl px-6 py-2.5">
+              <Pressable onPress={onClose} className="mt-4 bg-surface-container rounded-xl px-6 py-2.5">
                 <Text className="text-[14px] font-semibold">Done</Text>
               </Pressable>
             </View>
           ) : (
             <>
-              <Text className="text-[16px] font-bold text-[#1F1B17] mb-3">Report this message</Text>
+              <Text className="text-[16px] font-bold text-[#181C20] mb-3">Report this message</Text>
               {DM_REPORT_REASONS.map((r) => (
-                <Pressable key={r.id} onPress={() => setReason(r.id)} className="flex-row items-center gap-3 py-3 border-b border-gray-100">
+                <Pressable key={r.id} onPress={() => setReason(r.id)} className="flex-row items-center gap-3 py-3 border-b border-outline-variant">
                   <View
                     className="w-5 h-5 rounded-full items-center justify-center"
-                    style={{ borderWidth: 1.5, borderColor: reason === r.id ? '#2196D6' : '#D1D5DB' }}
+                    style={{ borderWidth: 1.5, borderColor: reason === r.id ? '#006290' : '#BEC7D1' }}
                   >
-                    {reason === r.id && <View className="w-2.5 h-2.5 rounded-full bg-[#2196D6]" />}
+                    {reason === r.id && <View className="w-2.5 h-2.5 rounded-full bg-[#006290]" />}
                   </View>
-                  <Text className="text-[14px] text-[#1F1B17] flex-1">{r.label}</Text>
+                  <Text className="text-[14px] text-[#181C20] flex-1">{r.label}</Text>
                 </Pressable>
               ))}
               <Pressable

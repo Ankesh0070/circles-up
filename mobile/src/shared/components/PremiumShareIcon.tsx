@@ -3,7 +3,7 @@ import Svg, { Path } from 'react-native-svg';
 // Ported from the prototype (lines 262–280) — custom paper-plane share icon.
 export default function PremiumShareIcon({
   size = 18,
-  color = '#1F1B17',
+  color = '#181C20',
   strokeWidth = 1.8,
 }: {
   size?: number;

@@ -63,7 +63,7 @@ export default function NeighbourhoodSheet() {
   if (memberships === null) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator color="#2196D6" />
+        <ActivityIndicator color="#006290" />
       </View>
     );
   }
@@ -77,19 +77,19 @@ export default function NeighbourhoodSheet() {
         renderItem={({ item }) => (
           <Pressable
             onPress={() => switchTo(item.neighbourhood_id)}
-            className="flex-row items-center gap-3 py-3.5 border-b border-gray-100"
+            className="flex-row items-center gap-3 py-3.5 border-b border-outline-variant"
           >
-            <View className="w-10 h-10 rounded-full bg-[#EBF6FD] items-center justify-center">
-              <ShieldCheck size={18} color="#2196D6" />
+            <View className="w-10 h-10 rounded-full bg-[#E4F0F8] items-center justify-center">
+              <ShieldCheck size={18} color="#006290" />
             </View>
             <View className="flex-1">
-              <Text className="text-[14px] font-semibold text-[#1F1B17]">{item.name}</Text>
-              <Text className="text-[12px] text-gray-400">
+              <Text className="text-[14px] font-semibold text-[#181C20]">{item.name}</Text>
+              <Text className="text-[12px] text-ink-muted">
                 {item.society} · {item.city}
               </Text>
             </View>
             {switching === item.neighbourhood_id ? (
-              <ActivityIndicator size="small" color="#2196D6" />
+              <ActivityIndicator size="small" color="#006290" />
             ) : item.neighbourhood_id === activeId ? (
               <Check size={18} color="#10B981" />
             ) : null}
@@ -98,10 +98,10 @@ export default function NeighbourhoodSheet() {
       />
       <Pressable
         onPress={() => navigation.navigate('AddNeighbourhood')}
-        className="flex-row items-center gap-2 justify-center py-4 border-t border-gray-100"
+        className="flex-row items-center gap-2 justify-center py-4 border-t border-outline-variant"
       >
-        <Plus size={16} color="#2196D6" />
-        <Text className="text-[13px] font-semibold text-[#2196D6]">Add a new neighbourhood</Text>
+        <Plus size={16} color="#006290" />
+        <Text className="text-[13px] font-semibold text-[#006290]">Add a new neighbourhood</Text>
       </Pressable>
     </View>
   );

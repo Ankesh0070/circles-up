@@ -107,48 +107,48 @@ export default function ListingDetailScreen({ route, navigation }: Props) {
             </Text>
           </View>
           {listing.status === 'sold' && (
-            <View className="px-2 py-1 rounded-full bg-gray-100">
-              <Text className="text-[11px] font-semibold text-gray-500">SOLD</Text>
+            <View className="px-2 py-1 rounded-full bg-surface-container">
+              <Text className="text-[11px] font-semibold text-ink-muted">SOLD</Text>
             </View>
           )}
         </View>
 
-        <Text className="text-[20px] font-bold text-[#1F1B17] mt-2">{listing.title}</Text>
+        <Text className="text-[20px] font-bold text-[#181C20] mt-2">{listing.title}</Text>
         <Text className="text-[16px] font-semibold text-[#F59E0B] mt-1">{listing.price ? `₹${listing.price}` : 'Free'}</Text>
-        <Text className="text-[14px] text-gray-600 mt-3 leading-5">{listing.description}</Text>
+        <Text className="text-[14px] text-ink-muted mt-3 leading-5">{listing.description}</Text>
 
-        <View className="flex-row items-center gap-2.5 mt-5 pt-4 border-t border-gray-100">
+        <View className="flex-row items-center gap-2.5 mt-5 pt-4 border-t border-outline-variant">
           <Avatar name={listing.seller?.name ?? '?'} size={36} />
           <View>
-            <Text className="text-[13px] font-semibold text-[#1F1B17]">{listing.seller?.name ?? 'Neighbour'}</Text>
+            <Text className="text-[13px] font-semibold text-[#181C20]">{listing.seller?.name ?? 'Neighbour'}</Text>
             {/* edgecase.md §6.4: deliberately "verified neighbour", never
                 "verified trustworthy seller" — membership verification says
                 nothing about trustworthiness as a seller. */}
-            <Text className="text-[11px] text-gray-400">Verified neighbour</Text>
+            <Text className="text-[11px] text-ink-muted">Verified neighbour</Text>
           </View>
         </View>
 
         {/* edgecase.md §6.2: Bazaar is listing-only, no escrow/payment —
             surfaced here, not just buried in ToS. */}
-        <Text className="text-[11px] text-gray-400 mt-4">
+        <Text className="text-[11px] text-ink-muted mt-4">
           Circle Up only connects buyers and sellers — payment and pickup happen directly between you, off-platform.
         </Text>
 
         {isOwner && listing.status === 'active' && (
           <View className="mt-5 gap-2">
-            <Pressable onPress={markSold} disabled={busy} className="bg-gray-900 rounded-xl py-3 items-center">
+            <Pressable onPress={markSold} disabled={busy} className="bg-ink rounded-xl py-3 items-center">
               <Text className="text-white font-semibold text-[14px]">Mark as sold</Text>
             </Pressable>
-            <Pressable onPress={bumpAvailable} disabled={busy} className="bg-gray-100 rounded-xl py-3 items-center">
-              <Text className="text-[#1F1B17] font-semibold text-[14px]">Still available — bump listing</Text>
+            <Pressable onPress={bumpAvailable} disabled={busy} className="bg-surface-container rounded-xl py-3 items-center">
+              <Text className="text-[#181C20] font-semibold text-[14px]">Still available — bump listing</Text>
             </Pressable>
           </View>
         )}
 
         {!isOwner && (
           <Pressable onPress={report} disabled={busy || reported} className="flex-row items-center gap-1.5 mt-5">
-            <Flag size={14} color={reported ? '#9CA3AF' : '#DC2626'} />
-            <Text className="text-[12px]" style={{ color: reported ? '#9CA3AF' : '#DC2626' }}>
+            <Flag size={14} color={reported ? '#6F7881' : '#DC2626'} />
+            <Text className="text-[12px]" style={{ color: reported ? '#6F7881' : '#DC2626' }}>
               {reported ? 'Reported' : 'Report this listing'}
             </Text>
           </Pressable>

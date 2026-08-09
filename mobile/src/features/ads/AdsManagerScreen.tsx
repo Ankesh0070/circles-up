@@ -17,12 +17,12 @@ type Campaign = {
 };
 
 const STATUS_COLOR: Record<string, string> = {
-  draft: '#9CA3AF',
+  draft: '#6F7881',
   pending_review: '#D97706',
   active: '#059669',
-  paused: '#6B7280',
+  paused: '#6F7881',
   rejected: '#DC2626',
-  completed: '#6B7280',
+  completed: '#6F7881',
 };
 
 // Phase 81 (Group I) — campaign dashboard: spend/reach/clicks/CTR, pause/
@@ -75,7 +75,7 @@ export default function AdsManagerScreen() {
   };
 
   return (
-    <View className="flex-1 bg-[#FAFAFA]">
+    <View className="flex-1 bg-[#F6F9FF]">
       {campaigns === null ? (
         <ActivityIndicator className="mt-10" color="#F59E0B" />
       ) : (
@@ -88,7 +88,7 @@ export default function AdsManagerScreen() {
             return (
               <View className="bg-white rounded-2xl p-3.5" style={{ shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 6, shadowOffset: { width: 0, height: 2 } }}>
                 <View className="flex-row items-center gap-2">
-                  <Text className="text-[14px] font-semibold text-[#1F1B17] flex-1">{item.headline}</Text>
+                  <Text className="text-[14px] font-semibold text-[#181C20] flex-1">{item.headline}</Text>
                   <View className="px-2 py-0.5 rounded-full" style={{ backgroundColor: `${STATUS_COLOR[item.status]}1A` }}>
                     <Text className="text-[10px] font-semibold" style={{ color: STATUS_COLOR[item.status] }}>
                       {item.status.replace('_', ' ').toUpperCase()}
@@ -108,15 +108,15 @@ export default function AdsManagerScreen() {
                     onPress={() => toggleStatus(item)}
                     disabled={busyId === item.id}
                     className="mt-3 rounded-xl py-2 items-center"
-                    style={{ backgroundColor: '#F3F4F6' }}
+                    style={{ backgroundColor: '#EBEEF4' }}
                   >
-                    <Text className="text-[12px] font-semibold text-[#1F1B17]">{item.status === 'active' ? 'Pause' : 'Resume'}</Text>
+                    <Text className="text-[12px] font-semibold text-[#181C20]">{item.status === 'active' ? 'Pause' : 'Resume'}</Text>
                   </Pressable>
                 )}
               </View>
             );
           }}
-          ListEmptyComponent={<Text className="text-center text-gray-400 text-[13px] mt-6">No ad campaigns yet.</Text>}
+          ListEmptyComponent={<Text className="text-center text-ink-muted text-[13px] mt-6">No ad campaigns yet.</Text>}
         />
       )}
 
@@ -134,8 +134,8 @@ export default function AdsManagerScreen() {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <View className="items-center">
-      <Text className="text-[12px] font-bold text-[#1F1B17]">{value}</Text>
-      <Text className="text-[10px] text-gray-400">{label}</Text>
+      <Text className="text-[12px] font-bold text-[#181C20]">{value}</Text>
+      <Text className="text-[10px] text-ink-muted">{label}</Text>
     </View>
   );
 }

@@ -4,7 +4,17 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Search, Edit3 } from 'lucide-react-native';
 import Avatar from '../../shared/components/Avatar';
+import Card from '../../shared/components/Card';
 import { supabase } from '../../shared/api/supabase';
+import {
+  BACKGROUND,
+  SURFACE,
+  SURFACE_CONTAINER,
+  ON_SURFACE,
+  ON_SURFACE_MUTED,
+  PRIMARY,
+  RADIUS,
+} from '../../shared/theme/tokens';
 import type { RootStackParamList } from '../../navigation/types';
 
 type ChatRow = {
@@ -113,57 +123,91 @@ export default function ChatsTab() {
   const filtered = (rows ?? []).filter((r) => r.displayName.toLowerCase().includes(query.trim().toLowerCase()));
 
   return (
-    <View className="flex-1 bg-white">
-      <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-100">
-        <Text className="text-[20px] font-bold text-[#1F1B17]">Chats</Text>
+    <View style={{ flex: 1, backgroundColor: BACKGROUND }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingHorizontal: 20,
+          paddingVertical: 14,
+          backgroundColor: SURFACE,
+        }}
+      >
+        <Text style={{ fontSize: 24, fontWeight: '700', color: ON_SURFACE }}>Chats</Text>
         <Pressable onPress={() => navigation.navigate('NewChat')} hitSlop={8}>
-          <Edit3 size={22} color="#1F1B17" strokeWidth={1.9} />
+          <Edit3 size={22} color={PRIMARY} strokeWidth={2} />
         </Pressable>
       </View>
 
-      <View className="flex-row items-center gap-2 mx-4 mt-2 px-3 py-2 bg-gray-100 rounded-xl">
-        <Search size={16} color="#9CA3AF" />
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 10,
+          marginHorizontal: 16,
+          marginTop: 12,
+          paddingHorizontal: 16,
+          paddingVertical: 12,
+          backgroundColor: SURFACE_CONTAINER,
+          borderRadius: RADIUS.chip,
+        }}
+      >
+        <Search size={17} color={ON_SURFACE_MUTED} />
         <TextInput
           value={query}
           onChangeText={setQuery}
           placeholder="Search chats"
-          className="flex-1 text-[13px]"
+          placeholderTextColor={ON_SURFACE_MUTED}
+          style={{ flex: 1, fontSize: 14, color: ON_SURFACE }}
         />
       </View>
 
       {rows === null ? (
-        <ActivityIndicator className="mt-10" color="#2196D6" />
+        <ActivityIndicator style={{ marginTop: 40 }} color={PRIMARY} />
       ) : (
         <FlatList
           data={filtered}
           keyExtractor={(r) => r.id}
+          contentContainerStyle={{ padding: 16, gap: 10 }}
           renderItem={({ item }) => (
-            <Pressable
+            <Card
               onPress={() => navigation.navigate('ChatDetail', { chatId: item.id })}
-              className="flex-row items-center gap-3 px-4 py-3 border-b border-gray-50"
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}
             >
               {item.displayEmoji ? (
-                <View className="w-12 h-12 rounded-full bg-gray-100 items-center justify-center">
+                <View
+                  style={{
+                    width: 50,
+                    height: 50,
+                    borderRadius: 25,
+                    backgroundColor: SURFACE_CONTAINER,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
                   <Text style={{ fontSize: 24 }}>{item.displayEmoji}</Text>
                 </View>
               ) : (
-                <Avatar name={item.displayName} size={48} />
+                <Avatar name={item.displayName} size={50} />
               )}
-              <View className="flex-1">
-                <View className="flex-row items-center justify-between">
-                  <Text className="text-[15px] font-semibold text-[#1F1B17]" numberOfLines={1}>
+              <View style={{ flex: 1 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Text style={{ fontSize: 15.5, fontWeight: '700', color: ON_SURFACE }} numberOfLines={1}>
                     {item.displayName}
                   </Text>
-                  {item.lastAt && <Text className="text-[11px] text-gray-400">{timeAgo(item.lastAt)}</Text>}
+                  {item.lastAt && (
+                    <Text style={{ fontSize: 11.5, color: ON_SURFACE_MUTED }}>{timeAgo(item.lastAt)}</Text>
+                  )}
                 </View>
-                <Text className="text-[13px] text-gray-500 mt-0.5" numberOfLines={1}>
+                <Text style={{ fontSize: 13.5, color: ON_SURFACE_MUTED, marginTop: 3 }} numberOfLines={1}>
                   {item.lastMessage ?? (item.is_group ? 'New group chat' : 'Say hi to your neighbour')}
                 </Text>
               </View>
-            </Pressable>
+            </Card>
           )}
           ListEmptyComponent={
-            <Text className="text-center text-gray-400 mt-10 text-[13px]">
+            <Text style={{ textAlign: 'center', color: ON_SURFACE_MUTED, marginTop: 40, fontSize: 13.5 }}>
               No chats yet — tap the pencil to start one.
             </Text>
           }

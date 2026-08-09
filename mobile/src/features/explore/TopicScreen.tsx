@@ -95,12 +95,12 @@ export default function TopicScreen({ route }: Props) {
 
   return (
     <View className="flex-1 bg-white">
-      <View className="px-4 pt-4 pb-2 border-b border-gray-100">
-        <Text className="text-[18px] font-bold text-[#1F1B17]">"{topic}"</Text>
+      <View className="px-4 pt-4 pb-2 border-b border-outline-variant">
+        <Text className="text-[18px] font-bold text-[#181C20]">"{topic}"</Text>
         <View className="flex-row gap-2 mt-3">
           {(['top', 'recent', 'people'] as Tab[]).map((t) => (
-            <Pressable key={t} onPress={() => setTab(t)} className="px-3 py-1.5 rounded-full" style={{ backgroundColor: tab === t ? '#2196D6' : '#F3F4F6' }}>
-              <Text style={{ color: tab === t ? '#fff' : '#374151', fontSize: 12, fontWeight: '700', textTransform: 'capitalize' }}>{t}</Text>
+            <Pressable key={t} onPress={() => setTab(t)} className="px-3 py-1.5 rounded-full" style={{ backgroundColor: tab === t ? '#006290' : '#EBEEF4' }}>
+              <Text style={{ color: tab === t ? '#fff' : '#181C20', fontSize: 12, fontWeight: '700', textTransform: 'capitalize' }}>{t}</Text>
             </Pressable>
           ))}
         </View>
@@ -108,7 +108,7 @@ export default function TopicScreen({ route }: Props) {
 
       {tab === 'people' ? (
         people === null ? (
-          <ActivityIndicator className="mt-10" color="#2196D6" />
+          <ActivityIndicator className="mt-10" color="#006290" />
         ) : (
           <FlatList
             data={people}
@@ -117,17 +117,17 @@ export default function TopicScreen({ route }: Props) {
             renderItem={({ item }) => (
               <CircleCard userId={item.user_id} name={item.name} subtitle={item.subtitle} alreadyConnected={false} onConnected={load} />
             )}
-            ListEmptyComponent={<Text className="text-center text-gray-400 text-[13px] mt-6">No one in your circle shares this vibe yet.</Text>}
+            ListEmptyComponent={<Text className="text-center text-ink-muted text-[13px] mt-6">No one in your circle shares this vibe yet.</Text>}
           />
         )
       ) : posts === null ? (
-        <ActivityIndicator className="mt-10" color="#2196D6" />
+        <ActivityIndicator className="mt-10" color="#006290" />
       ) : (
         <FlatList
           data={tab === 'top' ? [...posts].sort((a, b) => b.reactionCount - a.reactionCount) : posts}
           keyExtractor={(p) => p.id}
           renderItem={({ item }) => <PostCard post={item} onChanged={load} />}
-          ListEmptyComponent={<Text className="text-center text-gray-400 text-[13px] mt-6">No posts mention "{topic}" yet.</Text>}
+          ListEmptyComponent={<Text className="text-center text-ink-muted text-[13px] mt-6">No posts mention "{topic}" yet.</Text>}
         />
       )}
     </View>

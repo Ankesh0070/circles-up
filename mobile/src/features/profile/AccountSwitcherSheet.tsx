@@ -46,7 +46,7 @@ export default function AccountSwitcherSheet() {
   if (pages === null) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator color="#2196D6" />
+        <ActivityIndicator color="#006290" />
       </View>
     );
   }
@@ -57,28 +57,28 @@ export default function AccountSwitcherSheet() {
         data={pages}
         keyExtractor={(p) => p.id}
         ListHeaderComponent={
-          <Pressable onPress={() => navigation.goBack()} className="flex-row items-center gap-3 px-5 py-3.5 border-b border-gray-100">
-            <View className="w-10 h-10 rounded-full bg-[#EBF6FD] items-center justify-center">
-              <User size={18} color="#2196D6" />
+          <Pressable onPress={() => navigation.goBack()} className="flex-row items-center gap-3 px-5 py-3.5 border-b border-outline-variant">
+            <View className="w-10 h-10 rounded-full bg-[#E4F0F8] items-center justify-center">
+              <User size={18} color="#006290" />
             </View>
-            <Text className="flex-1 text-[14px] font-semibold text-[#1F1B17]">{personalName} (Personal)</Text>
+            <Text className="flex-1 text-[14px] font-semibold text-[#181C20]">{personalName} (Personal)</Text>
             <Check size={16} color="#10B981" />
           </Pressable>
         }
         renderItem={({ item }) => (
           <Pressable
             onPress={() => navigation.replace('PageDetail', { pageId: item.id })}
-            className="flex-row items-center gap-3 px-5 py-3.5 border-b border-gray-100"
+            className="flex-row items-center gap-3 px-5 py-3.5 border-b border-outline-variant"
           >
             <View className="w-10 h-10 rounded-full bg-[#FEF3C7] items-center justify-center">
               <Briefcase size={18} color="#F59E0B" />
             </View>
-            <Text className="flex-1 text-[14px] font-semibold text-[#1F1B17]">{item.name} (Business)</Text>
+            <Text className="flex-1 text-[14px] font-semibold text-[#181C20]">{item.name} (Business)</Text>
           </Pressable>
         )}
         ListFooterComponent={
           pages.length === 0 ? (
-            <Text className="text-center text-gray-400 text-[13px] mt-6 px-5">
+            <Text className="text-center text-ink-muted text-[13px] mt-6 px-5">
               No business pages yet — create one from My Pages to switch into it here.
             </Text>
           ) : null

@@ -70,7 +70,7 @@ export default function SilentPhraseScreen() {
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator color="#2196D6" />
+        <ActivityIndicator color="#006290" />
       </View>
     );
   }
@@ -79,8 +79,8 @@ export default function SilentPhraseScreen() {
 
   return (
     <View className="flex-1 bg-white px-6 pt-8">
-      <Text className="text-[18px] font-bold text-[#1F1B17]">Silent Phrase</Text>
-      <Text className="text-[13px] text-gray-500 mt-1.5 leading-relaxed">
+      <Text className="text-[18px] font-bold text-[#181C20]">Silent Phrase</Text>
+      <Text className="text-[13px] text-ink-muted mt-1.5 leading-relaxed">
         Say your phrase while Circle Up is open to silently trigger SOS — no need to touch the screen.
       </Text>
       <View className="bg-amber-50 rounded-xl px-3 py-2.5 mt-3">
@@ -89,13 +89,13 @@ export default function SilentPhraseScreen() {
         </Text>
       </View>
 
-      <Text className="text-[12px] font-bold text-gray-400 uppercase mt-6 mb-2">Your phrase</Text>
+      <Text className="text-[12px] font-bold text-ink-muted uppercase mt-6 mb-2">Your phrase</Text>
       <TextInput
         value={phrase}
         onChangeText={setPhrase}
         onBlur={() => save(phrase, enabled)}
         placeholder="e.g. circle up help me"
-        className="bg-gray-100 rounded-xl px-3 py-2.5 text-[14px]"
+        className="bg-surface-container rounded-xl px-3 py-2.5 text-[14px]"
       />
       {tooCommon && (
         <Text className="text-[11px] text-red-600 mt-1.5">
@@ -103,15 +103,15 @@ export default function SilentPhraseScreen() {
         </Text>
       )}
 
-      <View className="flex-row items-center justify-between mt-6 py-3 border-t border-b border-gray-100">
+      <View className="flex-row items-center justify-between mt-6 py-3 border-t border-b border-outline-variant">
         <View className="flex-1 pr-3">
-          <Text className="text-[14px] font-semibold text-[#1F1B17]">Listen while app is open</Text>
-          <Text className="text-[11px] text-gray-400 mt-0.5">{saving ? 'Saving…' : 'On-device only — audio never leaves your phone'}</Text>
+          <Text className="text-[14px] font-semibold text-[#181C20]">Listen while app is open</Text>
+          <Text className="text-[11px] text-ink-muted mt-0.5">{saving ? 'Saving…' : 'On-device only — audio never leaves your phone'}</Text>
         </View>
         <Switch value={enabled} onValueChange={toggleEnabled} disabled={tooCommon} />
       </View>
 
-      <Text className="text-[11px] text-gray-400 mt-4 leading-relaxed">{WAKE_WORD_DETECTOR_UNAVAILABLE_REASON}</Text>
+      <Text className="text-[11px] text-ink-muted mt-4 leading-relaxed">{WAKE_WORD_DETECTOR_UNAVAILABLE_REASON}</Text>
 
       <View className="mt-6">
         <GradientButton onPress={() => setTestFired(true)}>Test trigger (simulate detection)</GradientButton>

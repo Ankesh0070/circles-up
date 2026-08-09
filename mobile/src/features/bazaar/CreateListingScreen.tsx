@@ -89,7 +89,7 @@ export default function CreateListingScreen({ navigation }: Props) {
 
   return (
     <ScrollView className="flex-1 bg-white px-5 pt-4" contentContainerStyle={{ paddingBottom: 40 }}>
-      <Text className="text-[18px] font-bold text-[#1F1B17]">List something</Text>
+      <Text className="text-[18px] font-bold text-[#181C20]">List something</Text>
 
       <View className="flex-row flex-wrap gap-2 mt-4">
         {bazaarCategories.map((c) => {
@@ -100,10 +100,10 @@ export default function CreateListingScreen({ navigation }: Props) {
               key={c.value}
               onPress={() => setCategory(c.value)}
               className="flex-row items-center gap-1.5 px-3 py-2 rounded-full"
-              style={{ backgroundColor: active ? c.color : '#F3F4F6' }}
+              style={{ backgroundColor: active ? c.color : '#EBEEF4' }}
             >
-              <Icon size={14} color={active ? '#fff' : '#374151'} />
-              <Text style={{ color: active ? '#fff' : '#374151', fontSize: 12, fontWeight: '600' }}>{c.name}</Text>
+              <Icon size={14} color={active ? '#fff' : '#181C20'} />
+              <Text style={{ color: active ? '#fff' : '#181C20', fontSize: 12, fontWeight: '600' }}>{c.name}</Text>
             </Pressable>
           );
         })}
@@ -113,7 +113,7 @@ export default function CreateListingScreen({ navigation }: Props) {
         value={title}
         onChangeText={setTitle}
         placeholder="Title"
-        className="mt-4 px-3 py-2.5 bg-gray-50 rounded-xl text-[14px]"
+        className="mt-4 px-3 py-2.5 bg-surface-low rounded-xl text-[14px]"
       />
 
       <TextInput
@@ -121,7 +121,7 @@ export default function CreateListingScreen({ navigation }: Props) {
         onChangeText={setDescription}
         placeholder="Describe the item — condition, why you're selling, etc."
         multiline
-        className="mt-3 px-3 py-2.5 bg-gray-50 rounded-xl text-[14px]"
+        className="mt-3 px-3 py-2.5 bg-surface-low rounded-xl text-[14px]"
         style={{ minHeight: 90, textAlignVertical: 'top' }}
       />
 
@@ -131,12 +131,12 @@ export default function CreateListingScreen({ navigation }: Props) {
           onChangeText={setPrice}
           placeholder="Price (₹)"
           keyboardType="numeric"
-          className="mt-3 px-3 py-2.5 bg-gray-50 rounded-xl text-[14px]"
+          className="mt-3 px-3 py-2.5 bg-surface-low rounded-xl text-[14px]"
         />
       )}
 
       <Pressable onPress={pickImage} className="mt-3 flex-row items-center gap-2">
-        <Text className="text-[13px] text-[#2196D6] font-medium">📷 Add a photo</Text>
+        <Text className="text-[13px] text-[#006290] font-medium">📷 Add a photo</Text>
       </Pressable>
       {imageUri && <Image source={{ uri: imageUri }} className="w-24 h-24 rounded-xl mt-2" />}
 

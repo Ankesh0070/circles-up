@@ -78,37 +78,37 @@ export default function CreateEventScreen({ navigation }: Props) {
 
   return (
     <ScrollView className="flex-1 bg-white px-5 pt-4" contentContainerStyle={{ paddingBottom: 40 }}>
-      <Text className="text-[18px] font-bold text-[#1F1B17]">Host a Scene</Text>
+      <Text className="text-[18px] font-bold text-[#181C20]">Host a Scene</Text>
 
-      <TextInput value={title} onChangeText={setTitle} placeholder="Event title" className="mt-4 px-3 py-2.5 bg-gray-50 rounded-xl text-[14px]" />
+      <TextInput value={title} onChangeText={setTitle} placeholder="Event title" className="mt-4 px-3 py-2.5 bg-surface-low rounded-xl text-[14px]" />
       <TextInput
         value={eventType}
         onChangeText={setEventType}
         placeholder="Type (e.g. potluck, game night, workshop)"
-        className="mt-3 px-3 py-2.5 bg-gray-50 rounded-xl text-[14px]"
+        className="mt-3 px-3 py-2.5 bg-surface-low rounded-xl text-[14px]"
       />
       <TextInput
         value={description}
         onChangeText={setDescription}
         placeholder="Description"
         multiline
-        className="mt-3 px-3 py-2.5 bg-gray-50 rounded-xl text-[14px]"
+        className="mt-3 px-3 py-2.5 bg-surface-low rounded-xl text-[14px]"
         style={{ minHeight: 80, textAlignVertical: 'top' }}
       />
-      <TextInput value={location} onChangeText={setLocation} placeholder="Location" className="mt-3 px-3 py-2.5 bg-gray-50 rounded-xl text-[14px]" />
+      <TextInput value={location} onChangeText={setLocation} placeholder="Location" className="mt-3 px-3 py-2.5 bg-surface-low rounded-xl text-[14px]" />
 
       <View className="flex-row gap-3 mt-3">
         <TextInput
           value={dateStr}
           onChangeText={setDateStr}
           placeholder="YYYY-MM-DD"
-          className="flex-1 px-3 py-2.5 bg-gray-50 rounded-xl text-[14px]"
+          className="flex-1 px-3 py-2.5 bg-surface-low rounded-xl text-[14px]"
         />
         <TextInput
           value={timeStr}
           onChangeText={setTimeStr}
           placeholder="HH:MM"
-          className="flex-1 px-3 py-2.5 bg-gray-50 rounded-xl text-[14px]"
+          className="flex-1 px-3 py-2.5 bg-surface-low rounded-xl text-[14px]"
         />
       </View>
 
@@ -117,25 +117,25 @@ export default function CreateEventScreen({ navigation }: Props) {
         onChangeText={setGuestLimit}
         placeholder="Guest limit (optional)"
         keyboardType="numeric"
-        className="mt-3 px-3 py-2.5 bg-gray-50 rounded-xl text-[14px]"
+        className="mt-3 px-3 py-2.5 bg-surface-low rounded-xl text-[14px]"
       />
 
-      <Text className="text-[12px] font-semibold text-gray-400 mt-5 mb-2">WHO CAN SEE THIS</Text>
+      <Text className="text-[12px] font-semibold text-ink-muted mt-5 mb-2">WHO CAN SEE THIS</Text>
       {PRIVACY_OPTIONS.map((opt) => (
         <Pressable
           key={opt.value}
           onPress={() => setPrivacyTier(opt.value)}
-          className="flex-row items-start gap-3 py-2.5 border-b border-gray-100"
+          className="flex-row items-start gap-3 py-2.5 border-b border-outline-variant"
         >
           <View
             className="w-5 h-5 rounded-full items-center justify-center mt-0.5"
-            style={{ borderWidth: 1.5, borderColor: privacyTier === opt.value ? '#A855F7' : '#D1D5DB' }}
+            style={{ borderWidth: 1.5, borderColor: privacyTier === opt.value ? '#A855F7' : '#BEC7D1' }}
           >
             {privacyTier === opt.value && <View className="w-2.5 h-2.5 rounded-full bg-[#A855F7]" />}
           </View>
           <View className="flex-1">
-            <Text className="text-[14px] font-medium text-[#1F1B17]">{opt.label}</Text>
-            <Text className="text-[12px] text-gray-400 mt-0.5">{opt.blurb}</Text>
+            <Text className="text-[14px] font-medium text-[#181C20]">{opt.label}</Text>
+            <Text className="text-[12px] text-ink-muted mt-0.5">{opt.blurb}</Text>
           </View>
         </Pressable>
       ))}

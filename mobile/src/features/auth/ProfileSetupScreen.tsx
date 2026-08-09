@@ -2,11 +2,14 @@ import { useState } from 'react';
 import { View, Text, TextInput, Pressable, Image, ActivityIndicator, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Camera, User } from 'lucide-react-native';
 import GradientButton from '../../shared/components/GradientButton';
+import TextField from '../../shared/components/TextField';
 import Avatar from '../../shared/components/Avatar';
 import VibesPicker from './VibesPicker';
 import { supabase } from '../../shared/api/supabase';
 import { MIN_VIBES } from '../../shared/data/vibeCategories';
+import { SURFACE, ON_SURFACE, ON_SURFACE_MUTED, PRIMARY, ERROR } from '../../shared/theme/tokens';
 import type { AuthStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'ProfileSetup'>;
@@ -81,52 +84,70 @@ export default function ProfileSetupScreen(_props: Props) {
   };
 
   return (
-    <ScrollView className="flex-1 bg-white px-6 pt-14" contentContainerStyle={{ paddingBottom: 40 }}>
-      <Text className="text-[24px] font-bold text-[#1F1B17] tracking-tight">Set up your profile</Text>
-      <Text className="text-[13px] text-gray-500 mt-1.5">This is how your neighbours will see you.</Text>
+    <ScrollView
+      style={{ flex: 1, backgroundColor: SURFACE }}
+      contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 60, paddingBottom: 40 }}
+      keyboardShouldPersistTaps="handled"
+    >
+      <Text style={{ fontSize: 28, fontWeight: '700', color: ON_SURFACE, letterSpacing: -0.5 }}>Set up your profile</Text>
+      <Text style={{ fontSize: 14.5, color: ON_SURFACE_MUTED, marginTop: 8 }}>
+        This is how your neighbours will see you.
+      </Text>
 
-      <Pressable onPress={pickAvatar} className="items-center mt-6">
-        {avatarUri ? (
-          <Image source={{ uri: avatarUri }} style={{ width: 88, height: 88, borderRadius: 44 }} />
-        ) : (
-          <Avatar name={name || '?'} size={88} />
-        )}
-        <Text className="text-[12px] mt-2" style={{ color: '#2196D6' }}>
+      <Pressable onPress={pickAvatar} style={{ alignItems: 'center', marginTop: 28 }}>
+        <View>
+          {avatarUri ? (
+            <Image source={{ uri: avatarUri }} style={{ width: 96, height: 96, borderRadius: 48 }} />
+          ) : (
+            <Avatar name={name || '?'} size={96} />
+          )}
+          <View
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              right: 0,
+              width: 30,
+              height: 30,
+              borderRadius: 15,
+              backgroundColor: PRIMARY,
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderWidth: 3,
+              borderColor: SURFACE,
+            }}
+          >
+            <Camera size={14} color="#fff" strokeWidth={2.4} />
+          </View>
+        </View>
+        <Text style={{ fontSize: 13, marginTop: 10, color: PRIMARY, fontWeight: '700' }}>
           {avatarUri ? 'Change photo' : 'Add photo'}
         </Text>
       </Pressable>
 
-      <Text className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mt-8">Name</Text>
-      <TextInput
-        value={name}
-        onChangeText={setName}
-        placeholder="Your name"
-        className="mt-2 text-[16px] text-[#1F1B17] border-b border-gray-200 pb-3"
-      />
+      <View style={{ marginTop: 28, gap: 18 }}>
+        <TextField label="Name" value={name} onChangeText={setName} placeholder="Your name" icon={User} />
+        <TextField
+          label="Bio (optional)"
+          value={bio}
+          onChangeText={setBio}
+          placeholder="chai pe charcha enthusiast..."
+          multiline
+        />
+      </View>
 
-      <Text className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mt-5">Bio (optional)</Text>
-      <TextInput
-        value={bio}
-        onChangeText={setBio}
-        placeholder="chai pe charcha enthusiast..."
-        multiline
-        className="mt-2 text-[16px] text-[#1F1B17] border-b border-gray-200 pb-3"
-      />
-
-      <View className="mt-8">
+      <View style={{ marginTop: 32 }}>
         <VibesPicker
           selected={vibes}
           onToggle={(vibe) => setVibes((prev) => (prev.includes(vibe) ? prev.filter((v) => v !== vibe) : [...prev, vibe]))}
         />
       </View>
 
-      {error !== '' && <Text className="text-[12px] text-red-600 mt-4">{error}</Text>}
+      {error !== '' && <Text style={{ fontSize: 13, color: ERROR, marginTop: 16, marginLeft: 4 }}>{error}</Text>}
 
-      <View className="mt-8">
-        <GradientButton onPress={finish} disabled={!canContinue || saving}>
-          {saving ? '' : 'Finish setting up'}
+      <View style={{ marginTop: 32 }}>
+        <GradientButton onPress={finish} disabled={!canContinue} loading={saving} showArrow>
+          Finish setting up
         </GradientButton>
-        {saving && <ActivityIndicator style={{ marginTop: -38 }} color="#fff" />}
       </View>
     </ScrollView>
   );

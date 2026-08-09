@@ -110,13 +110,13 @@ export default function EventDetailScreen({ route }: Props) {
       )}
 
       <Text className="text-[11px] font-semibold text-[#A855F7]">{formatWhen(event.starts_at)}</Text>
-      <Text className="text-[20px] font-bold text-[#1F1B17] mt-1">{event.title}</Text>
+      <Text className="text-[20px] font-bold text-[#181C20] mt-1">{event.title}</Text>
       <View className="flex-row items-center gap-1 mt-2">
-        <MapPin size={13} color="#9CA3AF" />
-        <Text className="text-[13px] text-gray-500">{event.location}</Text>
+        <MapPin size={13} color="#6F7881" />
+        <Text className="text-[13px] text-ink-muted">{event.location}</Text>
       </View>
-      <Text className="text-[13px] text-gray-400 mt-1">Hosted by {event.host?.name ?? 'a neighbour'}</Text>
-      <Text className="text-[14px] text-gray-600 mt-3 leading-5">{event.description}</Text>
+      <Text className="text-[13px] text-ink-muted mt-1">Hosted by {event.host?.name ?? 'a neighbour'}</Text>
+      <Text className="text-[14px] text-ink-muted mt-3 leading-5">{event.description}</Text>
 
       {event.status === 'active' && !isHost && (
         <View className="flex-row gap-2 mt-5">
@@ -124,9 +124,9 @@ export default function EventDetailScreen({ route }: Props) {
             onPress={() => rsvp('going')}
             disabled={busy}
             className="flex-1 rounded-xl py-2.5 items-center"
-            style={{ backgroundColor: myRsvp === 'going' ? '#A855F7' : myRsvp === 'waitlisted' ? '#FEF3C7' : '#F3F4F6' }}
+            style={{ backgroundColor: myRsvp === 'going' ? '#A855F7' : myRsvp === 'waitlisted' ? '#FEF3C7' : '#EBEEF4' }}
           >
-            <Text style={{ fontSize: 13, fontWeight: '700', color: myRsvp === 'going' ? '#fff' : myRsvp === 'waitlisted' ? '#92400E' : '#374151' }}>
+            <Text style={{ fontSize: 13, fontWeight: '700', color: myRsvp === 'going' ? '#fff' : myRsvp === 'waitlisted' ? '#92400E' : '#181C20' }}>
               {myRsvp === 'waitlisted' ? 'Waitlisted' : 'Going'}
             </Text>
           </Pressable>
@@ -134,9 +134,9 @@ export default function EventDetailScreen({ route }: Props) {
             onPress={() => rsvp('maybe')}
             disabled={busy}
             className="flex-1 rounded-xl py-2.5 items-center"
-            style={{ backgroundColor: myRsvp === 'maybe' ? '#A855F7' : '#F3F4F6' }}
+            style={{ backgroundColor: myRsvp === 'maybe' ? '#A855F7' : '#EBEEF4' }}
           >
-            <Text style={{ fontSize: 13, fontWeight: '700', color: myRsvp === 'maybe' ? '#fff' : '#374151' }}>Maybe</Text>
+            <Text style={{ fontSize: 13, fontWeight: '700', color: myRsvp === 'maybe' ? '#fff' : '#181C20' }}>Maybe</Text>
           </Pressable>
         </View>
       )}
@@ -153,22 +153,22 @@ export default function EventDetailScreen({ route }: Props) {
       <Modal visible={confirmingCancel} transparent animationType="fade" onRequestClose={() => setConfirmingCancel(false)}>
         <Pressable className="flex-1 bg-black/40 justify-end" onPress={() => setConfirmingCancel(false)}>
           <Pressable className="bg-white rounded-t-2xl px-5 pt-5 pb-8" onPress={(e) => e.stopPropagation()}>
-            <Text className="text-[16px] font-bold text-[#1F1B17]">Cancel this event?</Text>
-            <Text className="text-[13px] text-gray-500 mt-2">Everyone who RSVP'd will be notified.</Text>
+            <Text className="text-[16px] font-bold text-[#181C20]">Cancel this event?</Text>
+            <Text className="text-[13px] text-ink-muted mt-2">Everyone who RSVP'd will be notified.</Text>
             <Pressable onPress={confirmCancel} className="mt-5 bg-red-600 rounded-xl py-3 items-center">
               <Text className="text-white font-semibold text-[14px]">Cancel event</Text>
             </Pressable>
-            <Pressable onPress={() => setConfirmingCancel(false)} className="mt-2 bg-gray-100 rounded-xl py-3 items-center">
-              <Text className="text-[#1F1B17] font-semibold text-[14px]">Never mind</Text>
+            <Pressable onPress={() => setConfirmingCancel(false)} className="mt-2 bg-surface-container rounded-xl py-3 items-center">
+              <Text className="text-[#181C20] font-semibold text-[14px]">Never mind</Text>
             </Pressable>
           </Pressable>
         </Pressable>
       </Modal>
 
-      <View className="mt-6 pt-4 border-t border-gray-100">
+      <View className="mt-6 pt-4 border-t border-outline-variant">
         <View className="flex-row items-center gap-1.5 mb-3">
-          <Users size={14} color="#6B7280" />
-          <Text className="text-[13px] font-semibold text-gray-600">
+          <Users size={14} color="#6F7881" />
+          <Text className="text-[13px] font-semibold text-ink-muted">
             {going.length} going{event.guest_limit ? ` / ${event.guest_limit}` : ''}
             {maybe.length > 0 ? ` · ${maybe.length} maybe` : ''}
             {waitlisted.length > 0 ? ` · ${waitlisted.length} waitlisted` : ''}
@@ -177,8 +177,8 @@ export default function EventDetailScreen({ route }: Props) {
         {rsvps.map((r) => (
           <View key={r.user_id} className="flex-row items-center gap-2.5 py-1.5">
             <Avatar name={r.guest?.name ?? '?'} size={28} />
-            <Text className="text-[13px] text-[#1F1B17] flex-1">{r.guest?.name ?? 'Neighbour'}</Text>
-            <Text className="text-[11px] text-gray-400 capitalize">{r.status}</Text>
+            <Text className="text-[13px] text-[#181C20] flex-1">{r.guest?.name ?? 'Neighbour'}</Text>
+            <Text className="text-[11px] text-ink-muted capitalize">{r.status}</Text>
           </View>
         ))}
       </View>

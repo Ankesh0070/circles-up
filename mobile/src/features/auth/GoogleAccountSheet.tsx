@@ -79,15 +79,15 @@ export default function GoogleAccountSheet({
       <Pressable className="flex-1 bg-black/55 justify-end" onPress={onClose}>
         <Pressable className="w-full bg-white rounded-t-[28px] overflow-hidden" onPress={(e) => e.stopPropagation()}>
           <View className="pt-3 pb-1 items-center">
-            <View className="w-9 h-1 rounded-full bg-gray-200" />
+            <View className="w-9 h-1 rounded-full bg-surface-variant" />
           </View>
           <View className="flex-row items-center justify-between px-5 pt-2 pb-3">
             <View className="flex-row items-center gap-2">
               <GoogleLogo size={18} />
-              <Text className="text-[12px] text-gray-500 font-medium">accounts.google.com</Text>
+              <Text className="text-[12px] text-ink-muted font-medium">accounts.google.com</Text>
             </View>
             <Pressable onPress={onClose} hitSlop={8}>
-              <Text className="text-gray-500 text-[18px]">✕</Text>
+              <Text className="text-ink-muted text-[18px]">✕</Text>
             </Pressable>
           </View>
 
@@ -136,7 +136,7 @@ export default function GoogleAccountSheet({
                 <Text className="text-[24px] text-[#202124] font-normal text-center mt-4">{headline}</Text>
 
                 <View className="items-center mt-3">
-                  <View className="flex-row items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-gray-300 max-w-full">
+                  <View className="flex-row items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-outline-variant max-w-full">
                     <View className="w-7 h-7 rounded-full items-center justify-center bg-[#1A73E8]">
                       <Text className="text-white text-[13px] font-semibold">{initial}</Text>
                     </View>
@@ -184,7 +184,7 @@ export default function GoogleAccountSheet({
                 <GoogleLogo size={34} />
                 <ActivityIndicator size="large" color="#1A73E8" className="mt-6" />
                 <Text className="text-[15px] text-[#202124] mt-5 font-medium">Connecting to Circle Up…</Text>
-                <Text className="text-[12px] text-gray-500 mt-1.5 text-center">
+                <Text className="text-[12px] text-ink-muted mt-1.5 text-center">
                   Signed in as <Text className="font-medium text-[#202124]">{email}</Text>
                 </Text>
               </View>

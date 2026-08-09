@@ -26,16 +26,16 @@ function timeAgo(iso: string): string {
 
 function SourceRow({ source }: { source: GenieSource }) {
   return (
-    <View className="flex-row items-start px-4 py-3 border-b border-gray-50">
+    <View className="flex-row items-start px-4 py-3 border-b border-outline-variant">
       <Avatar name={source.authorName} size={32} />
       <View className="ml-2.5 flex-1">
         <View className="flex-row items-center gap-1.5">
-          <Text className="text-[13px] font-semibold text-[#1F1B17]">{source.authorName}</Text>
+          <Text className="text-[13px] font-semibold text-[#181C20]">{source.authorName}</Text>
           {/* edgecase.md §4.3 — recency shown prominently so users can judge
               whether a recommendation might be stale. */}
-          <Text className="text-[11px] text-gray-400">· {timeAgo(source.createdAt)}</Text>
+          <Text className="text-[11px] text-ink-muted">· {timeAgo(source.createdAt)}</Text>
         </View>
-        <Text className="text-[13px] text-gray-600 mt-0.5">{source.content}</Text>
+        <Text className="text-[13px] text-ink-muted mt-0.5">{source.content}</Text>
       </View>
     </View>
   );
@@ -95,16 +95,16 @@ export default function GenieScreen() {
         <View className="px-5 pt-4 pb-2">
           <View className="flex-row items-center gap-2">
             <Sparkles size={20} color="#8B5CF6" />
-            <Text className="text-[18px] font-bold text-[#1F1B17]">Circle Genie</Text>
+            <Text className="text-[18px] font-bold text-[#181C20]">Circle Genie</Text>
           </View>
-          <Text className="text-[13px] text-gray-500 mt-1">
+          <Text className="text-[13px] text-ink-muted mt-1">
             Ask what your neighbours have said — answers are grounded in real posts, not invented.
           </Text>
         </View>
 
         {!result && !loading && (
           <View className="px-5 pt-3">
-            <Text className="text-[12px] font-semibold text-gray-400 mb-2">TRY ASKING</Text>
+            <Text className="text-[12px] font-semibold text-ink-muted mb-2">TRY ASKING</Text>
             <View className="flex-row flex-wrap gap-2">
               {SUGGESTED_PROMPTS.map((prompt) => (
                 <Pressable
@@ -125,7 +125,7 @@ export default function GenieScreen() {
         {loading && (
           <View className="items-center py-10">
             <ActivityIndicator color="#8B5CF6" />
-            <Text className="text-[13px] text-gray-400 mt-2">Asking your neighbours...</Text>
+            <Text className="text-[13px] text-ink-muted mt-2">Asking your neighbours...</Text>
           </View>
         )}
 
@@ -138,7 +138,7 @@ export default function GenieScreen() {
         {result && !loading && (
           <View className="mt-2">
             <View className="mx-5 px-4 py-3 rounded-xl bg-violet-50">
-              <Text className="text-[14px] text-[#1F1B17] leading-5">{result.answer}</Text>
+              <Text className="text-[14px] text-[#181C20] leading-5">{result.answer}</Text>
               {result.cached && <Text className="text-[11px] text-violet-400 mt-2">From a recent answer</Text>}
             </View>
 
@@ -151,7 +151,7 @@ export default function GenieScreen() {
                     </View>
                   ))}
                 </View>
-                <Text className="text-[12px] text-gray-500 ml-2">
+                <Text className="text-[12px] text-ink-muted ml-2">
                   {uniqueNeighbours.length} neighbour{uniqueNeighbours.length === 1 ? '' : 's'} mentioned this
                   {result.sources.length > uniqueNeighbours.length ? ` · ${result.sources.length} posts` : ''}
                 </Text>
@@ -159,7 +159,7 @@ export default function GenieScreen() {
             )}
 
             {result.sources.length > 0 && (
-              <View className="mt-2 border-t border-gray-50">
+              <View className="mt-2 border-t border-outline-variant">
                 {result.sources.map((s) => (
                   <SourceRow key={s.postId} source={s} />
                 ))}
@@ -169,12 +169,12 @@ export default function GenieScreen() {
         )}
       </ScrollView>
 
-      <View className="flex-row items-center gap-2 px-4 py-3 border-t border-gray-100">
+      <View className="flex-row items-center gap-2 px-4 py-3 border-t border-outline-variant">
         <TextInput
           value={query}
           onChangeText={setQuery}
           placeholder="Ask Circle Genie..."
-          className="flex-1 bg-gray-50 rounded-full px-4 py-2.5 text-[14px]"
+          className="flex-1 bg-surface-low rounded-full px-4 py-2.5 text-[14px]"
           onSubmitEditing={() => runQuery(query)}
           editable={!loading}
         />
@@ -182,7 +182,7 @@ export default function GenieScreen() {
           onPress={() => runQuery(query)}
           disabled={loading || !query.trim()}
           className="w-10 h-10 rounded-full items-center justify-center"
-          style={{ backgroundColor: query.trim() && !loading ? '#8B5CF6' : '#E5E7EB' }}
+          style={{ backgroundColor: query.trim() && !loading ? '#8B5CF6' : '#BEC7D1' }}
         >
           <Send size={16} color="#fff" />
         </Pressable>

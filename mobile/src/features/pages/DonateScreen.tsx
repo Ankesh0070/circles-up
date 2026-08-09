@@ -75,13 +75,13 @@ export default function DonateScreen({ route, navigation }: Props) {
     return (
       <View className="flex-1 items-center justify-center bg-white px-8">
         <CheckCircle2 size={56} color="#059669" />
-        <Text className="text-[18px] font-bold text-[#1F1B17] mt-4">Thank you!</Text>
-        <Text className="text-[13px] text-gray-500 mt-2 text-center">
+        <Text className="text-[18px] font-bold text-[#181C20] mt-4">Thank you!</Text>
+        <Text className="text-[13px] text-ink-muted mt-2 text-center">
           Your ₹{order?.amount} donation to {pageName} was successful. A tax receipt is being generated and will be
           available shortly — it's never lost even if generation hiccups the first time.
         </Text>
-        <Pressable onPress={() => navigation.goBack()} className="mt-6 bg-gray-100 rounded-xl px-6 py-3">
-          <Text className="text-[14px] font-semibold text-[#1F1B17]">Done</Text>
+        <Pressable onPress={() => navigation.goBack()} className="mt-6 bg-surface-container rounded-xl px-6 py-3">
+          <Text className="text-[14px] font-semibold text-[#181C20]">Done</Text>
         </Pressable>
       </View>
     );
@@ -90,11 +90,11 @@ export default function DonateScreen({ route, navigation }: Props) {
   if (step === 'checkout' && order) {
     return (
       <View className="flex-1 items-center justify-center bg-white px-6">
-        <View className="w-full bg-gray-50 rounded-2xl p-5 items-center" style={{ borderWidth: 1, borderColor: '#E5E7EB' }}>
-          <Text className="text-[12px] font-semibold text-gray-400">MOCK PAYMENT GATEWAY</Text>
-          <Text className="text-[24px] font-bold text-[#1F1B17] mt-2">₹{order.amount}</Text>
-          <Text className="text-[12px] text-gray-500 mt-1">to {pageName}</Text>
-          <Text className="text-[10px] text-gray-400 mt-3 text-center">
+        <View className="w-full bg-surface-low rounded-2xl p-5 items-center" style={{ borderWidth: 1, borderColor: '#BEC7D1' }}>
+          <Text className="text-[12px] font-semibold text-ink-muted">MOCK PAYMENT GATEWAY</Text>
+          <Text className="text-[24px] font-bold text-[#181C20] mt-2">₹{order.amount}</Text>
+          <Text className="text-[12px] text-ink-muted mt-1">to {pageName}</Text>
+          <Text className="text-[10px] text-ink-muted mt-3 text-center">
             No real Razorpay account is contracted yet — this simulates a successful checkout rather than moving real money.
           </Text>
           {!!error && <Text className="text-[12px] text-red-500 mt-3">{error}</Text>}
@@ -110,7 +110,7 @@ export default function DonateScreen({ route, navigation }: Props) {
     <ScrollView className="flex-1 bg-white px-5 pt-6" contentContainerStyle={{ paddingBottom: 40 }}>
       <View className="items-center">
         <HeartHandshake size={40} color="#DC2626" />
-        <Text className="text-[18px] font-bold text-[#1F1B17] mt-3">Donate to {pageName ?? '...'}</Text>
+        <Text className="text-[18px] font-bold text-[#181C20] mt-3">Donate to {pageName ?? '...'}</Text>
       </View>
 
       <View className="flex-row flex-wrap gap-2 mt-6 justify-center">
@@ -119,9 +119,9 @@ export default function DonateScreen({ route, navigation }: Props) {
             key={p}
             onPress={() => setAmount(String(p))}
             className="px-4 py-2 rounded-full"
-            style={{ backgroundColor: amount === String(p) ? '#DC2626' : '#F3F4F6' }}
+            style={{ backgroundColor: amount === String(p) ? '#DC2626' : '#EBEEF4' }}
           >
-            <Text style={{ color: amount === String(p) ? '#fff' : '#374151', fontSize: 13, fontWeight: '700' }}>₹{p}</Text>
+            <Text style={{ color: amount === String(p) ? '#fff' : '#181C20', fontSize: 13, fontWeight: '700' }}>₹{p}</Text>
           </Pressable>
         ))}
       </View>
@@ -131,7 +131,7 @@ export default function DonateScreen({ route, navigation }: Props) {
         onChangeText={setAmount}
         keyboardType="numeric"
         placeholder="Custom amount"
-        className="mt-4 px-3 py-2.5 bg-gray-50 rounded-xl text-[14px] text-center"
+        className="mt-4 px-3 py-2.5 bg-surface-low rounded-xl text-[14px] text-center"
       />
 
       {!!error && <Text className="text-[12px] text-red-500 mt-3 text-center">{error}</Text>}

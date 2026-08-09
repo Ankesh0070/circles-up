@@ -17,7 +17,7 @@ type PageRow = {
 };
 
 const TYPE_ICON = { personal: User, business: Briefcase, ngo: HeartHandshake } as const;
-const TYPE_COLOR = { personal: '#2196D6', business: '#F59E0B', ngo: '#DC2626' } as const;
+const TYPE_COLOR = { personal: '#006290', business: '#F59E0B', ngo: '#DC2626' } as const;
 
 // Phase 78 (Group I) — "My Pages" (stats/manage live in PageDetailScreen,
 // reached by tapping a card) plus a "Discover" tab so business/NGO pages
@@ -50,16 +50,16 @@ export default function MyPagesScreen() {
   );
 
   return (
-    <View className="flex-1 bg-[#FAFAFA]">
+    <View className="flex-1 bg-[#F6F9FF]">
       <View className="flex-row px-4 py-3 gap-2">
         {(['mine', 'discover'] as Tab[]).map((t) => (
           <Pressable
             key={t}
             onPress={() => setTab(t)}
             className="px-3 py-1.5 rounded-full"
-            style={{ backgroundColor: tab === t ? '#059669' : '#F3F4F6' }}
+            style={{ backgroundColor: tab === t ? '#059669' : '#EBEEF4' }}
           >
-            <Text style={{ color: tab === t ? '#fff' : '#374151', fontSize: 12, fontWeight: '700' }}>
+            <Text style={{ color: tab === t ? '#fff' : '#181C20', fontSize: 12, fontWeight: '700' }}>
               {t === 'mine' ? 'My Pages' : 'Discover'}
             </Text>
           </Pressable>
@@ -86,9 +86,9 @@ export default function MyPagesScreen() {
                   <Icon size={18} color={color} />
                 </View>
                 <View className="flex-1">
-                  <Text className="text-[14px] font-semibold text-[#1F1B17]">{item.name}</Text>
+                  <Text className="text-[14px] font-semibold text-[#181C20]">{item.name}</Text>
                   {item.bio && (
-                    <Text className="text-[12px] text-gray-500 mt-0.5" numberOfLines={1}>
+                    <Text className="text-[12px] text-ink-muted mt-0.5" numberOfLines={1}>
                       {item.bio}
                     </Text>
                   )}
@@ -110,7 +110,7 @@ export default function MyPagesScreen() {
             );
           }}
           ListEmptyComponent={
-            <Text className="text-center text-gray-400 text-[13px] mt-6">
+            <Text className="text-center text-ink-muted text-[13px] mt-6">
               {tab === 'mine' ? "You haven't created a page yet." : 'No other pages to discover yet.'}
             </Text>
           }

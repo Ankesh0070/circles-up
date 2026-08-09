@@ -1,7 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import { View, Text, TextInput, Pressable, ActivityIndicator } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { ArrowLeft } from 'lucide-react-native';
 import { supabase } from '../../shared/api/supabase';
+import {
+  SURFACE,
+  SURFACE_LOW,
+  ON_SURFACE,
+  ON_SURFACE_MUTED,
+  OUTLINE_VARIANT,
+  PRIMARY,
+  ERROR,
+  RADIUS,
+} from '../../shared/theme/tokens';
 import type { AuthStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Otp'>;
@@ -61,10 +72,12 @@ export default function OtpScreen({ navigation, route }: Props) {
 
   if (existingAccountNotice) {
     return (
-      <View className="flex-1 bg-white items-center justify-center px-8">
-        <Text className="text-[40px]">👋</Text>
-        <Text className="text-[20px] font-bold text-[#1F1B17] mt-4 text-center">Welcome back!</Text>
-        <Text className="text-[14px] text-gray-500 mt-2 text-center leading-relaxed">
+      <View style={{ flex: 1, backgroundColor: SURFACE, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 }}>
+        <Text style={{ fontSize: 48 }}>👋</Text>
+        <Text style={{ fontSize: 24, fontWeight: '700', color: ON_SURFACE, marginTop: 18, textAlign: 'center' }}>
+          Welcome back!
+        </Text>
+        <Text style={{ fontSize: 14.5, color: ON_SURFACE_MUTED, marginTop: 10, textAlign: 'center', lineHeight: 21 }}>
           This number is already registered and verified — we've signed you in instead of creating a new account.
         </Text>
       </View>
@@ -81,16 +94,16 @@ export default function OtpScreen({ navigation, route }: Props) {
   };
 
   return (
-    <View className="flex-1 bg-white px-6 pt-14">
-      <Pressable onPress={() => navigation.goBack()} hitSlop={8} className="w-9 h-9 -ml-1 justify-center">
-        <Text className="text-[22px] text-[#262626]">←</Text>
+    <View style={{ flex: 1, backgroundColor: SURFACE, paddingHorizontal: 24, paddingTop: 64 }}>
+      <Pressable onPress={() => navigation.goBack()} hitSlop={8} style={{ alignSelf: 'flex-start', marginBottom: 20 }}>
+        <ArrowLeft size={24} color={ON_SURFACE} />
       </Pressable>
-      <Text className="text-[26px] font-bold text-[#262626] mt-6 tracking-tight">Verify OTP</Text>
-      <Text className="text-[14px] text-gray-500 mt-2">
-        Code sent to <Text className="text-[#262626] font-semibold">{phone}</Text>
+      <Text style={{ fontSize: 28, fontWeight: '700', color: ON_SURFACE, letterSpacing: -0.5 }}>Verify OTP</Text>
+      <Text style={{ fontSize: 14.5, color: ON_SURFACE_MUTED, marginTop: 8 }}>
+        Code sent to <Text style={{ color: ON_SURFACE, fontWeight: '700' }}>{phone}</Text>
       </Text>
 
-      <View className="flex-row gap-3 mt-10 justify-center">
+      <View style={{ flexDirection: 'row', gap: 10, marginTop: 40, justifyContent: 'center' }}>
         {otp.map((d, i) => (
           <TextInput
             key={i}
@@ -102,17 +115,42 @@ export default function OtpScreen({ navigation, route }: Props) {
             keyboardType="number-pad"
             maxLength={1}
             editable={!loading}
-            className="w-11 h-14 rounded-xl border border-gray-200 text-center text-[20px] font-bold text-[#262626] bg-[#FAFAFA]"
+            style={{
+              width: 48,
+              height: 60,
+              borderRadius: RADIUS.card,
+              borderWidth: 1.5,
+              // The whole row turns red on a rejected code — a single wrong
+              // box would be misleading since the code is validated as one.
+              borderColor: error ? ERROR : d ? PRIMARY : OUTLINE_VARIANT,
+              backgroundColor: SURFACE,
+              textAlign: 'center',
+              fontSize: 22,
+              fontWeight: '700',
+              color: ON_SURFACE,
+            }}
           />
         ))}
       </View>
 
-      {loading && <ActivityIndicator className="mt-6" color="#2196D6" />}
-      {error !== '' && <Text className="text-[12px] text-red-600 mt-6 text-center">{error}</Text>}
+      {loading && <ActivityIndicator style={{ marginTop: 24 }} color={PRIMARY} />}
+      {error !== '' && (
+        <Text style={{ fontSize: 13, color: ERROR, marginTop: 24, textAlign: 'center', fontWeight: '600' }}>{error}</Text>
+      )}
 
-      <Text className="text-[12px] text-gray-400 mt-8 text-center">
-        Local dev: use test code <Text className="font-semibold text-gray-600">123456</Text> for +919876543210
-      </Text>
+      <View
+        style={{
+          marginTop: 36,
+          padding: 14,
+          borderRadius: RADIUS.card,
+          backgroundColor: SURFACE_LOW,
+        }}
+      >
+        <Text style={{ fontSize: 12.5, color: ON_SURFACE_MUTED, textAlign: 'center' }}>
+          Local dev: use test code <Text style={{ fontWeight: '700', color: ON_SURFACE }}>123456</Text> for
+          +919876543210
+        </Text>
+      </View>
     </View>
   );
 }

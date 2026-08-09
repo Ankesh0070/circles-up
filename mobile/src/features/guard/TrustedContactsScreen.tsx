@@ -76,7 +76,7 @@ export default function TrustedContactsScreen() {
   if (contacts === null) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator color="#2196D6" />
+        <ActivityIndicator color="#006290" />
       </View>
     );
   }
@@ -90,15 +90,15 @@ export default function TrustedContactsScreen() {
         keyExtractor={(c) => c.id}
         contentContainerStyle={{ padding: 16 }}
         ListHeaderComponent={
-          <Text className="text-[13px] text-gray-500 mb-3">
+          <Text className="text-[13px] text-ink-muted mb-3">
             These {contacts.length}/{MAX_CONTACTS} people get alerted (SMS + your live location) whenever you trigger SOS.
           </Text>
         }
         renderItem={({ item }) => (
-          <View className="flex-row items-center gap-3 py-3 border-b border-gray-100">
+          <View className="flex-row items-center gap-3 py-3 border-b border-outline-variant">
             <View className="flex-1">
-              <Text className="text-[14px] font-semibold text-[#1F1B17]">{item.name}</Text>
-              <Text className="text-[12px] text-gray-500">
+              <Text className="text-[14px] font-semibold text-[#181C20]">{item.name}</Text>
+              <Text className="text-[12px] text-ink-muted">
                 {item.phone}
                 {item.relation ? ` · ${item.relation}` : ''}
               </Text>
@@ -113,24 +113,24 @@ export default function TrustedContactsScreen() {
             </Pressable>
           </View>
         )}
-        ListEmptyComponent={<Text className="text-center text-gray-400 text-[13px] mt-6">No trusted contacts yet.</Text>}
+        ListEmptyComponent={<Text className="text-center text-ink-muted text-[13px] mt-6">No trusted contacts yet.</Text>}
         ListFooterComponent={
           contacts.length < MAX_CONTACTS ? (
             <View className="mt-5">
-              <Text className="text-[13px] font-bold text-[#1F1B17] mb-2">Add a contact</Text>
-              <TextInput value={name} onChangeText={setName} placeholder="Name" className="bg-gray-100 rounded-xl px-3 py-2.5 text-[13px] mb-2" />
+              <Text className="text-[13px] font-bold text-[#181C20] mb-2">Add a contact</Text>
+              <TextInput value={name} onChangeText={setName} placeholder="Name" className="bg-surface-container rounded-xl px-3 py-2.5 text-[13px] mb-2" />
               <TextInput
                 value={phone}
                 onChangeText={setPhone}
                 placeholder="Phone number"
                 keyboardType="phone-pad"
-                className="bg-gray-100 rounded-xl px-3 py-2.5 text-[13px] mb-2"
+                className="bg-surface-container rounded-xl px-3 py-2.5 text-[13px] mb-2"
               />
               <TextInput
                 value={relation}
                 onChangeText={setRelation}
                 placeholder="Relation (optional)"
-                className="bg-gray-100 rounded-xl px-3 py-2.5 text-[13px] mb-2"
+                className="bg-surface-container rounded-xl px-3 py-2.5 text-[13px] mb-2"
               />
               {error !== '' && <Text className="text-[12px] text-red-600 mb-2">{error}</Text>}
               <GradientButton onPress={addContact} disabled={saving}>
@@ -138,7 +138,7 @@ export default function TrustedContactsScreen() {
               </GradientButton>
             </View>
           ) : (
-            <Text className="text-[12px] text-gray-400 mt-4 text-center">
+            <Text className="text-[12px] text-ink-muted mt-4 text-center">
               You've reached the {MAX_CONTACTS}-contact limit. Remove one to add another.
             </Text>
           )

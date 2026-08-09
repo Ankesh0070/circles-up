@@ -10,7 +10,7 @@ import type { RootStackParamList } from '../../navigation/types';
 type Props = NativeStackScreenProps<RootStackParamList, 'CreatePage'>;
 
 const TYPE_META = {
-  personal: { title: 'Personal page', color: '#2196D6' },
+  personal: { title: 'Personal page', color: '#006290' },
   business: { title: 'Business page', color: '#F59E0B' },
   ngo: { title: 'NGO page', color: '#DC2626' },
 } as const;
@@ -100,15 +100,15 @@ export default function CreatePageScreen({ route, navigation }: Props) {
 
   return (
     <ScrollView className="flex-1 bg-white px-5 pt-4" contentContainerStyle={{ paddingBottom: 40 }}>
-      <Text className="text-[18px] font-bold text-[#1F1B17]">{meta.title}</Text>
+      <Text className="text-[18px] font-bold text-[#181C20]">{meta.title}</Text>
 
-      <TextInput value={name} onChangeText={setName} placeholder="Page name" className="mt-4 px-3 py-2.5 bg-gray-50 rounded-xl text-[14px]" />
+      <TextInput value={name} onChangeText={setName} placeholder="Page name" className="mt-4 px-3 py-2.5 bg-surface-low rounded-xl text-[14px]" />
       <TextInput
         value={bio}
         onChangeText={setBio}
         placeholder="Short description"
         multiline
-        className="mt-3 px-3 py-2.5 bg-gray-50 rounded-xl text-[14px]"
+        className="mt-3 px-3 py-2.5 bg-surface-low rounded-xl text-[14px]"
         style={{ minHeight: 70, textAlignVertical: 'top' }}
       />
 
@@ -117,7 +117,7 @@ export default function CreatePageScreen({ route, navigation }: Props) {
           value={profession}
           onChangeText={setProfession}
           placeholder="Profession (e.g. Photographer, Tutor)"
-          className="mt-3 px-3 py-2.5 bg-gray-50 rounded-xl text-[14px]"
+          className="mt-3 px-3 py-2.5 bg-surface-low rounded-xl text-[14px]"
         />
       )}
 
@@ -127,9 +127,9 @@ export default function CreatePageScreen({ route, navigation }: Props) {
             value={gstNumber}
             onChangeText={setGstNumber}
             placeholder="GST number"
-            className="px-3 py-2.5 bg-gray-50 rounded-xl text-[14px]"
+            className="px-3 py-2.5 bg-surface-low rounded-xl text-[14px]"
           />
-          <Text className="text-[11px] text-gray-400 mt-1.5">Self-declared — not verified against government records.</Text>
+          <Text className="text-[11px] text-ink-muted mt-1.5">Self-declared — not verified against government records.</Text>
         </View>
       )}
 
@@ -139,9 +139,9 @@ export default function CreatePageScreen({ route, navigation }: Props) {
             value={darpanId}
             onChangeText={setDarpanId}
             placeholder="Darpan ID"
-            className="px-3 py-2.5 bg-gray-50 rounded-xl text-[14px]"
+            className="px-3 py-2.5 bg-surface-low rounded-xl text-[14px]"
           />
-          <Text className="text-[11px] text-gray-400 mt-1.5">Self-declared, verification pending.</Text>
+          <Text className="text-[11px] text-ink-muted mt-1.5">Self-declared, verification pending.</Text>
           <View className="mt-2 px-3 py-2.5 rounded-xl bg-amber-50">
             <Text className="text-[12px] text-amber-800">
               NGO pages need manual approval before they can accept donations — this isn't automatic.
@@ -156,15 +156,15 @@ export default function CreatePageScreen({ route, navigation }: Props) {
             value={address}
             onChangeText={setAddress}
             placeholder="Address"
-            className="px-3 py-2.5 bg-gray-50 rounded-xl text-[14px]"
+            className="px-3 py-2.5 bg-surface-low rounded-xl text-[14px]"
           />
           <Pressable onPress={useCurrentLocation} disabled={locating} className="flex-row items-center gap-1.5 mt-2">
-            {locating ? <ActivityIndicator size="small" color="#2196D6" /> : <MapPin size={14} color="#2196D6" />}
-            <Text className="text-[12px] font-medium text-[#2196D6]">
+            {locating ? <ActivityIndicator size="small" color="#006290" /> : <MapPin size={14} color="#006290" />}
+            <Text className="text-[12px] font-medium text-[#006290]">
               {coords ? 'Location captured' : 'Use my current location'}
             </Text>
           </Pressable>
-          <Text className="text-[11px] text-gray-400 mt-1">Checked against your neighbourhood boundary, not government-verified.</Text>
+          <Text className="text-[11px] text-ink-muted mt-1">Checked against your neighbourhood boundary, not government-verified.</Text>
         </View>
       )}
 

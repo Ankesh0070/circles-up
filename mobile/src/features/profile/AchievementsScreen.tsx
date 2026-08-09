@@ -51,7 +51,7 @@ export default function AchievementsScreen() {
   if (!data) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator color="#2196D6" />
+        <ActivityIndicator color="#006290" />
       </View>
     );
   }
@@ -67,7 +67,7 @@ export default function AchievementsScreen() {
         </Text>
       </View>
 
-      <Text className="text-[13px] font-bold text-gray-500 mt-6 mb-2 uppercase tracking-wide">Badges</Text>
+      <Text className="text-[13px] font-bold text-ink-muted mt-6 mb-2 uppercase tracking-wide">Badges</Text>
       <View className="gap-3">
         {BADGES.map((b) => {
           const Icon = b.icon;
@@ -83,8 +83,8 @@ export default function AchievementsScreen() {
                 <Icon size={20} color={b.color} />
               </View>
               <View className="flex-1">
-                <Text className="text-[14px] font-bold text-[#1F1B17]">{b.label}</Text>
-                <Text className="text-[11px] text-gray-500 mt-0.5">
+                <Text className="text-[14px] font-bold text-[#181C20]">{b.label}</Text>
+                <Text className="text-[11px] text-ink-muted mt-0.5">
                   {earned ? 'Earned' : `${Math.min(progress, b.need)}/${b.need} — ${b.hint}`}
                 </Text>
               </View>
@@ -93,7 +93,7 @@ export default function AchievementsScreen() {
         })}
       </View>
 
-      <Text className="text-[13px] font-bold text-gray-500 mt-6 mb-2 uppercase tracking-wide">How points are earned</Text>
+      <Text className="text-[13px] font-bold text-ink-muted mt-6 mb-2 uppercase tracking-wide">How points are earned</Text>
       <View className="gap-2">
         <PointsRow label="Donation completed" points={10} desc="Only counted once Razorpay confirms payment succeeded." />
         <PointsRow label="Event attended" points={15} desc="Only when the event host checks you in after it starts." />
@@ -105,10 +105,10 @@ export default function AchievementsScreen() {
 
 function PointsRow({ label, points, desc }: { label: string; points: number; desc: string }) {
   return (
-    <View className="flex-row items-start justify-between bg-[#FAFAFA] rounded-xl p-3">
+    <View className="flex-row items-start justify-between bg-[#F6F9FF] rounded-xl p-3">
       <View className="flex-1 mr-3">
-        <Text className="text-[13px] font-semibold text-[#1F1B17]">{label}</Text>
-        <Text className="text-[11px] text-gray-400 mt-0.5">{desc}</Text>
+        <Text className="text-[13px] font-semibold text-[#181C20]">{label}</Text>
+        <Text className="text-[11px] text-ink-muted mt-0.5">{desc}</Text>
       </View>
       <Text className="text-[13px] font-bold text-[#059669]">+{points}</Text>
     </View>

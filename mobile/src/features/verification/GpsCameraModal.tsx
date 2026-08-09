@@ -131,10 +131,10 @@ export default function GpsCameraModal({
               here, right now.
             </Text>
             <Pressable onPress={requestAccess} className="mt-8 bg-white rounded-2xl px-6 py-3.5">
-              <Text className="font-semibold text-[#1F1B17]">Enable Camera & Location</Text>
+              <Text className="font-semibold text-[#181C20]">Enable Camera & Location</Text>
             </Pressable>
             <Pressable onPress={onClose} className="mt-4">
-              <Text className="text-gray-400 text-[13px]">Cancel</Text>
+              <Text className="text-ink-muted text-[13px]">Cancel</Text>
             </Pressable>
           </View>
         )}
@@ -152,7 +152,7 @@ export default function GpsCameraModal({
               <Pressable
                 onPress={handleCapture}
                 className="w-16 h-16 rounded-full bg-white items-center justify-center"
-                style={{ borderWidth: 4, borderColor: '#2196D6' }}
+                style={{ borderWidth: 4, borderColor: '#006290' }}
               />
             </View>
             <Pressable onPress={onClose} className="absolute top-12 left-6">
@@ -178,10 +178,10 @@ export default function GpsCameraModal({
               guarantee — it may need manual review.
             </Text>
             <Pressable onPress={pickFromGallery} className="mt-8 bg-white rounded-2xl px-6 py-3.5">
-              <Text className="font-semibold text-[#1F1B17]">Choose from Gallery</Text>
+              <Text className="font-semibold text-[#181C20]">Choose from Gallery</Text>
             </Pressable>
             <Pressable onPress={onClose} className="mt-4">
-              <Text className="text-gray-400 text-[13px]">Cancel</Text>
+              <Text className="text-ink-muted text-[13px]">Cancel</Text>
             </Pressable>
           </View>
         )}

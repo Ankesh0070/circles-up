@@ -97,7 +97,7 @@ export default function EditProfileScreen() {
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator color="#2196D6" />
+        <ActivityIndicator color="#006290" />
       </View>
     );
   }
@@ -110,8 +110,8 @@ export default function EditProfileScreen() {
       <Field label="Link" value={link} onChangeText={setLink} placeholder="https://" autoCapitalize="none" keyboardType="url" />
       <Field label="Bio" value={bio} onChangeText={setBio} placeholder="Tell your neighbours about you" multiline />
 
-      <Text className="text-[12px] font-semibold text-gray-500 mt-5 mb-1">Private info</Text>
-      <Text className="text-[11px] text-gray-400 mb-2">Only visible to you — never shown on your public profile.</Text>
+      <Text className="text-[12px] font-semibold text-ink-muted mt-5 mb-1">Private info</Text>
+      <Text className="text-[11px] text-ink-muted mb-2">Only visible to you — never shown on your public profile.</Text>
       <Field label="Phone" value={phone} onChangeText={setPhone} placeholder="+91" keyboardType="phone-pad" />
 
       <View className="mt-5">
@@ -149,7 +149,7 @@ function Field({
 }) {
   return (
     <View className="mt-4">
-      <Text className="text-[12px] font-semibold text-gray-500 mb-1">{label}</Text>
+      <Text className="text-[12px] font-semibold text-ink-muted mb-1">{label}</Text>
       <TextInput
         value={value}
         onChangeText={onChangeText}
@@ -158,7 +158,7 @@ function Field({
         autoCapitalize={autoCapitalize ?? 'sentences'}
         keyboardType={keyboardType ?? 'default'}
         textAlignVertical={multiline ? 'top' : 'center'}
-        className="bg-[#F3F4F6] rounded-xl px-3.5 py-2.5 text-[14px] text-[#1F1B17]"
+        className="bg-[#EBEEF4] rounded-xl px-3.5 py-2.5 text-[14px] text-[#181C20]"
         style={multiline ? { minHeight: 80 } : undefined}
       />
     </View>

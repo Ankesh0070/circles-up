@@ -35,7 +35,7 @@ export default function ShareProfileSheet() {
   if (!profile) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator color="#2196D6" />
+        <ActivityIndicator color="#006290" />
       </View>
     );
   }
@@ -54,37 +54,37 @@ export default function ShareProfileSheet() {
 
   return (
     <View className="flex-1 bg-white items-center px-6 pt-8">
-      <View className="items-center bg-[#FAFAFA] rounded-3xl p-8 w-full">
+      <View className="items-center bg-[#F6F9FF] rounded-3xl p-8 w-full">
         {/* QR-style placeholder: a real QR renderer needs a native/canvas
             dependency this build doesn't include yet — this grid honestly
             represents "a QR code goes here" rather than faking a scannable
             one, matching the "self-declared, not verified" honesty pattern
             used elsewhere for unimplemented externals. */}
-        <View className="w-40 h-40 rounded-2xl bg-white items-center justify-center border border-gray-200">
+        <View className="w-40 h-40 rounded-2xl bg-white items-center justify-center border border-outline-variant">
           <View className="flex-row flex-wrap w-28 h-28">
             {Array.from({ length: 64 }).map((_, i) => (
               <View
                 key={i}
-                style={{ width: '12.5%', height: '12.5%', backgroundColor: (i * 7 + profile.id.charCodeAt(0)) % 3 === 0 ? '#1F1B17' : 'transparent' }}
+                style={{ width: '12.5%', height: '12.5%', backgroundColor: (i * 7 + profile.id.charCodeAt(0)) % 3 === 0 ? '#181C20' : 'transparent' }}
               />
             ))}
           </View>
         </View>
         <Avatar name={profile.name} size={56} />
-        <Text className="text-[16px] font-bold text-[#1F1B17] mt-2">{profile.name}</Text>
-        {profile.username && <Text className="text-[12px] text-gray-400">@{profile.username}</Text>}
+        <Text className="text-[16px] font-bold text-[#181C20] mt-2">{profile.name}</Text>
+        {profile.username && <Text className="text-[12px] text-ink-muted">@{profile.username}</Text>}
       </View>
 
-      <View className="flex-row items-center gap-2 bg-[#F3F4F6] rounded-xl px-3.5 py-3 mt-6 w-full">
-        <Text className="flex-1 text-[12px] text-gray-600" numberOfLines={1}>
+      <View className="flex-row items-center gap-2 bg-[#EBEEF4] rounded-xl px-3.5 py-3 mt-6 w-full">
+        <Text className="flex-1 text-[12px] text-ink-muted" numberOfLines={1}>
           {link}
         </Text>
         <Pressable onPress={copyLink} hitSlop={8}>
-          {copied ? <Check size={16} color="#10B981" /> : <Copy size={16} color="#374151" />}
+          {copied ? <Check size={16} color="#10B981" /> : <Copy size={16} color="#181C20" />}
         </Pressable>
       </View>
 
-      <Pressable onPress={shareLink} className="flex-row items-center justify-center gap-2 mt-4 py-3 rounded-2xl bg-[#2196D6] w-full">
+      <Pressable onPress={shareLink} className="flex-row items-center justify-center gap-2 mt-4 py-3 rounded-2xl bg-[#006290] w-full">
         <Share2 size={16} color="#fff" />
         <Text className="text-[14px] font-bold text-white">Share profile</Text>
       </Pressable>

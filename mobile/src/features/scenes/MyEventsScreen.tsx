@@ -70,16 +70,16 @@ export default function MyEventsScreen() {
   );
 
   return (
-    <View className="flex-1 bg-[#FAFAFA]">
+    <View className="flex-1 bg-[#F6F9FF]">
       <View className="flex-row px-4 py-3 gap-2">
         {(['upcoming', 'past'] as Tab[]).map((t) => (
           <Pressable
             key={t}
             onPress={() => setTab(t)}
             className="px-3 py-1.5 rounded-full"
-            style={{ backgroundColor: tab === t ? '#A855F7' : '#F3F4F6' }}
+            style={{ backgroundColor: tab === t ? '#A855F7' : '#EBEEF4' }}
           >
-            <Text style={{ color: tab === t ? '#fff' : '#374151', fontSize: 12, fontWeight: '700' }}>
+            <Text style={{ color: tab === t ? '#fff' : '#181C20', fontSize: 12, fontWeight: '700' }}>
               {t === 'upcoming' ? 'Upcoming' : 'Past'}
             </Text>
           </Pressable>
@@ -100,7 +100,7 @@ export default function MyEventsScreen() {
               style={{ shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 6, shadowOffset: { width: 0, height: 2 } }}
             >
               <View className="flex-row items-center gap-2">
-                <Text className="text-[15px] font-bold text-[#1F1B17] flex-1">{item.title}</Text>
+                <Text className="text-[15px] font-bold text-[#181C20] flex-1">{item.title}</Text>
                 {item.isHost && (
                   <View className="px-2 py-0.5 rounded bg-purple-50">
                     <Text className="text-[10px] font-semibold text-purple-700">HOST</Text>
@@ -112,14 +112,14 @@ export default function MyEventsScreen() {
                   </View>
                 )}
               </View>
-              <Text className="text-[12px] text-gray-500 mt-1">{formatWhen(item.starts_at)}</Text>
+              <Text className="text-[12px] text-ink-muted mt-1">{formatWhen(item.starts_at)}</Text>
               <View className="flex-row items-center gap-1 mt-1">
-                <MapPin size={12} color="#9CA3AF" />
-                <Text className="text-[12px] text-gray-500">{item.location}</Text>
+                <MapPin size={12} color="#6F7881" />
+                <Text className="text-[12px] text-ink-muted">{item.location}</Text>
               </View>
             </Pressable>
           )}
-          ListEmptyComponent={<Text className="text-center text-gray-400 text-[13px] mt-6">Nothing here yet.</Text>}
+          ListEmptyComponent={<Text className="text-center text-ink-muted text-[13px] mt-6">Nothing here yet.</Text>}
         />
       )}
     </View>

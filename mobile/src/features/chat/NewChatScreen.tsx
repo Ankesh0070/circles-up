@@ -63,19 +63,19 @@ export default function NewChatScreen() {
 
   return (
     <View className="flex-1 bg-white">
-      <View className="px-4 py-3 border-b border-gray-100">
-        <Text className="text-[16px] font-bold text-[#1F1B17]">New message</Text>
+      <View className="px-4 py-3 border-b border-outline-variant">
+        <Text className="text-[16px] font-bold text-[#181C20]">New message</Text>
         <TextInput
           value={query}
           onChangeText={setQuery}
           placeholder="Search your circle"
-          className="mt-3 px-3 py-2 bg-gray-100 rounded-xl text-[13px]"
+          className="mt-3 px-3 py-2 bg-surface-container rounded-xl text-[13px]"
         />
         {error !== '' && <Text className="text-[12px] text-red-600 mt-2">{error}</Text>}
       </View>
 
       {users === null ? (
-        <ActivityIndicator className="mt-10" color="#2196D6" />
+        <ActivityIndicator className="mt-10" color="#006290" />
       ) : (
         <FlatList
           data={filtered}
@@ -84,15 +84,15 @@ export default function NewChatScreen() {
             <Pressable
               onPress={() => openDm(item.id)}
               disabled={opening === item.id}
-              className="flex-row items-center gap-3 px-4 py-3 border-b border-gray-50"
+              className="flex-row items-center gap-3 px-4 py-3 border-b border-outline-variant"
             >
               <Avatar name={item.name ?? '?'} size={42} />
-              <Text className="flex-1 text-[14px] font-medium text-[#1F1B17]">{item.name ?? 'Neighbour'}</Text>
-              {opening === item.id && <ActivityIndicator color="#2196D6" />}
+              <Text className="flex-1 text-[14px] font-medium text-[#181C20]">{item.name ?? 'Neighbour'}</Text>
+              {opening === item.id && <ActivityIndicator color="#006290" />}
             </Pressable>
           )}
           ListEmptyComponent={
-            <Text className="text-center text-gray-400 mt-10 text-[13px]">
+            <Text className="text-center text-ink-muted mt-10 text-[13px]">
               No neighbours in your circle yet.
             </Text>
           }

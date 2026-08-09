@@ -23,7 +23,7 @@ type PageDetail = {
 };
 
 const TYPE_ICON = { personal: User, business: Briefcase, ngo: HeartHandshake } as const;
-const TYPE_COLOR = { personal: '#2196D6', business: '#F59E0B', ngo: '#DC2626' } as const;
+const TYPE_COLOR = { personal: '#006290', business: '#F59E0B', ngo: '#DC2626' } as const;
 
 // Not a named implementation-plan phase on its own, but the necessary hub
 // screen (same role as ListingDetail/EventDetail in Groups H) — hosts
@@ -90,25 +90,25 @@ export default function PageDetailScreen({ route, navigation }: Props) {
         <View className="w-16 h-16 rounded-full items-center justify-center" style={{ backgroundColor: `${color}1A` }}>
           <Icon size={26} color={color} />
         </View>
-        <Text className="text-[18px] font-bold text-[#1F1B17] mt-2">{page.name}</Text>
-        {page.bio && <Text className="text-[13px] text-gray-500 mt-1 text-center">{page.bio}</Text>}
+        <Text className="text-[18px] font-bold text-[#181C20] mt-2">{page.name}</Text>
+        {page.bio && <Text className="text-[13px] text-ink-muted mt-1 text-center">{page.bio}</Text>}
       </View>
 
       {page.page_type === 'personal' && page.profession && (
-        <Text className="text-[13px] text-center text-gray-600 mt-3">{page.profession}</Text>
+        <Text className="text-[13px] text-center text-ink-muted mt-3">{page.profession}</Text>
       )}
 
       {page.page_type === 'business' && (
         <View className="mt-4 items-center">
-          <Text className="text-[12px] text-gray-500">GST: {page.gst_number}</Text>
-          <Text className="text-[10px] text-gray-400 mt-0.5">Self-declared, verification pending</Text>
+          <Text className="text-[12px] text-ink-muted">GST: {page.gst_number}</Text>
+          <Text className="text-[10px] text-ink-muted mt-0.5">Self-declared, verification pending</Text>
         </View>
       )}
 
       {page.page_type === 'ngo' && (
         <View className="mt-4 items-center">
-          <Text className="text-[12px] text-gray-500">Darpan ID: {page.darpan_id}</Text>
-          <Text className="text-[10px] text-gray-400 mt-0.5">Self-declared, verification pending</Text>
+          <Text className="text-[12px] text-ink-muted">Darpan ID: {page.darpan_id}</Text>
+          <Text className="text-[10px] text-ink-muted mt-0.5">Self-declared, verification pending</Text>
           <View
             className="mt-2 px-2.5 py-1 rounded-full"
             style={{ backgroundColor: page.ngo_approval_status === 'approved' ? '#D1FAE5' : '#FEF3C7' }}
@@ -125,8 +125,8 @@ export default function PageDetailScreen({ route, navigation }: Props) {
 
       {page.address && (
         <View className="flex-row items-center justify-center gap-1 mt-3">
-          <MapPin size={12} color="#9CA3AF" />
-          <Text className="text-[12px] text-gray-500">{page.address}</Text>
+          <MapPin size={12} color="#6F7881" />
+          <Text className="text-[12px] text-ink-muted">{page.address}</Text>
         </View>
       )}
 
@@ -141,35 +141,35 @@ export default function PageDetailScreen({ route, navigation }: Props) {
 
       {/* Owner: Manage/Insights/Promote (Phase 78) */}
       {isOwner && (
-        <View className="mt-6 pt-4 border-t border-gray-100">
+        <View className="mt-6 pt-4 border-t border-outline-variant">
           {page.page_type === 'ngo' && donationStats && (
             <View className="flex-row justify-around mb-4">
               <View className="items-center">
-                <Text className="text-[18px] font-bold text-[#1F1B17]">{donationStats.count}</Text>
-                <Text className="text-[11px] text-gray-500">Donations</Text>
+                <Text className="text-[18px] font-bold text-[#181C20]">{donationStats.count}</Text>
+                <Text className="text-[11px] text-ink-muted">Donations</Text>
               </View>
               <View className="items-center">
-                <Text className="text-[18px] font-bold text-[#1F1B17]">₹{donationStats.total.toFixed(0)}</Text>
-                <Text className="text-[11px] text-gray-500">Raised</Text>
+                <Text className="text-[18px] font-bold text-[#181C20]">₹{donationStats.total.toFixed(0)}</Text>
+                <Text className="text-[11px] text-ink-muted">Raised</Text>
               </View>
             </View>
           )}
           {page.page_type === 'business' && adStats && (
             <View className="flex-row justify-around mb-4">
               <View className="items-center">
-                <Text className="text-[18px] font-bold text-[#1F1B17]">{adStats.campaigns}</Text>
-                <Text className="text-[11px] text-gray-500">Campaigns</Text>
+                <Text className="text-[18px] font-bold text-[#181C20]">{adStats.campaigns}</Text>
+                <Text className="text-[11px] text-ink-muted">Campaigns</Text>
               </View>
               <View className="items-center">
-                <Text className="text-[18px] font-bold text-[#1F1B17]">₹{adStats.spend.toFixed(2)}</Text>
-                <Text className="text-[11px] text-gray-500">Spent</Text>
+                <Text className="text-[18px] font-bold text-[#181C20]">₹{adStats.spend.toFixed(2)}</Text>
+                <Text className="text-[11px] text-ink-muted">Spent</Text>
               </View>
             </View>
           )}
           {page.page_type === 'business' && (
             <Pressable
               onPress={() => navigation.navigate('AdsManager')}
-              className="flex-row items-center justify-center gap-2 bg-gray-900 rounded-xl py-3"
+              className="flex-row items-center justify-center gap-2 bg-ink rounded-xl py-3"
             >
               <Megaphone size={16} color="#fff" />
               <Text className="text-white font-semibold text-[14px]">Promote — Ads Manager</Text>
@@ -180,13 +180,13 @@ export default function PageDetailScreen({ route, navigation }: Props) {
 
       {/* Visitor: donate (Phase 79/80) */}
       {!isOwner && page.page_type === 'ngo' && (
-        <View className="mt-6 pt-4 border-t border-gray-100">
+        <View className="mt-6 pt-4 border-t border-outline-variant">
           {page.ngo_approval_status === 'approved' ? (
             <Pressable onPress={() => navigation.navigate('Donate', { pageId: page.id })} className="bg-red-600 rounded-xl py-3 items-center">
               <Text className="text-white font-semibold text-[14px]">Donate</Text>
             </Pressable>
           ) : (
-            <Text className="text-[12px] text-gray-400 text-center">
+            <Text className="text-[12px] text-ink-muted text-center">
               This NGO hasn't been approved to accept donations yet.
             </Text>
           )}
