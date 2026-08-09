@@ -56,6 +56,9 @@ export type ModalStackParamList = {
   Donate: { pageId: string };
   AdsManager: undefined;
   CreateAd: undefined;
+  ShareProfile: undefined;
+  AccountSwitcher: undefined;
+  ProfileMenu: undefined;
 };
 
 export type RootStackParamList = {

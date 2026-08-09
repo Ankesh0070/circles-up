@@ -20,6 +20,13 @@ export async function uploadBazaarListingMedia(localUri: string, userId: string)
   return uploadToPostMediaBucket(localUri, `bazaar/${userId}/${Date.now()}.jpg`);
 }
 
+// Phase 92 (Group J) — Profile Menu Sheet's "Story" option is this app's
+// first real story-creation path (Phase 24/25 only ever built story
+// *viewing*; StoriesBar's "Your Story" ring had no onPress until now).
+export async function uploadStoryMedia(localUri: string, userId: string): Promise<string> {
+  return uploadToPostMediaBucket(localUri, `stories/${userId}/${Date.now()}.jpg`);
+}
+
 async function uploadToPostMediaBucket(localUri: string, path: string): Promise<string> {
   const manipulated = await ImageManipulator.manipulateAsync(
     localUri,

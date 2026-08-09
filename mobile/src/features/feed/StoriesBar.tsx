@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import GradientRing from '../../shared/components/GradientRing';
 import Avatar from '../../shared/components/Avatar';
 import { supabase } from '../../shared/api/supabase';
 import StoryViewer from './StoryViewer';
+import type { RootStackParamList } from '../../navigation/types';
 
 export type StoryGroup = {
   authorId: string;
@@ -17,6 +19,7 @@ export type StoryGroup = {
 // Ported from the prototype's StoriesBar (lines 1907–1932) — circular story
 // rings, unviewed-first ordering, "Your Story" pinned first.
 export default function StoriesBar() {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [groups, setGroups] = useState<StoryGroup[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
   const [viewerGroup, setViewerGroup] = useState<StoryGroup | null>(null);
@@ -77,14 +80,14 @@ export default function StoriesBar() {
   return (
     <>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} className="px-4 py-3 bg-white border-b border-gray-100">
-        <View className="items-center mr-4" style={{ width: 64 }}>
+        <Pressable onPress={() => navigation.navigate('ProfileMenu')} className="items-center mr-4" style={{ width: 64 }}>
           <GradientRing size={64} hasStory={false}>
             <Avatar name="You" size={58} />
           </GradientRing>
           <Text className="text-[11px] text-gray-500 mt-1" numberOfLines={1}>
             Your Story
           </Text>
-        </View>
+        </Pressable>
 
         {groups.map((g) => (
           <Pressable key={g.authorId} onPress={() => setViewerGroup(g)} className="items-center mr-4" style={{ width: 64 }}>

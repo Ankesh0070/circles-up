@@ -34,6 +34,14 @@ import PageDetailScreen from '../features/pages/PageDetailScreen';
 import DonateScreen from '../features/pages/DonateScreen';
 import AdsManagerScreen from '../features/ads/AdsManagerScreen';
 import CreateAdScreen from '../features/ads/CreateAdScreen';
+import EditProfileScreen from '../features/profile/EditProfileScreen';
+import SettingsScreen from '../features/profile/SettingsScreen';
+import SettingsDetailScreen from '../features/profile/SettingsDetailScreen';
+import AchievementsScreen from '../features/profile/AchievementsScreen';
+import ShareProfileSheet from '../features/profile/ShareProfileSheet';
+import AccountSwitcherSheet from '../features/profile/AccountSwitcherSheet';
+import ProfileMenuSheet from '../features/profile/ProfileMenuSheet';
+import NotificationsScreen from '../features/profile/NotificationsScreen';
 import { supabase } from '../shared/api/supabase';
 import type { RootStackParamList } from './types';
 
@@ -127,6 +135,14 @@ export default function RootNavigator() {
         <Stack.Screen name="Donate" component={DonateScreen} options={{ title: 'Donate' }} />
         <Stack.Screen name="AdsManager" component={AdsManagerScreen} options={{ title: 'Ads Manager' }} />
         <Stack.Screen name="CreateAd" component={CreateAdScreen} options={{ title: 'Create ad' }} />
+        <Stack.Screen name="EditProfile" component={EditProfileScreen} options={{ title: 'Edit Profile' }} />
+        <Stack.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
+        <Stack.Screen name="SettingsDetail" component={SettingsDetailScreen} options={{ title: 'Settings' }} />
+        <Stack.Screen name="Achievements" component={AchievementsScreen} options={{ title: 'Achievements' }} />
+        <Stack.Screen name="ShareProfile" component={ShareProfileSheet} options={{ title: 'Share Profile' }} />
+        <Stack.Screen name="AccountSwitcher" component={AccountSwitcherSheet} options={{ title: 'Switch account' }} />
+        <Stack.Screen name="ProfileMenu" component={ProfileMenuSheet} options={{ title: 'Create' }} />
+        <Stack.Screen name="Notifications" component={NotificationsScreen} options={{ title: 'Notifications' }} />
         {MODAL_SCREEN_NAMES.map((name) => (
           <Stack.Screen key={name} name={name}>
             {() => <PlaceholderScreen name={name} />}
