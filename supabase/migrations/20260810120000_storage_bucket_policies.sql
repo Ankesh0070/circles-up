@@ -25,77 +25,100 @@
 -- object path could sign it. Tightening this to actual chat membership needs
 -- the chat id in the object path (it isn't there today) — worth doing before a
 -- real launch, alongside the post-media revisit that comment already flags.
+--
+-- The whole thing is guarded because the Docker-free local stack (plain
+-- Postgres + PostgREST, no Storage service) has no `storage` schema at all —
+-- without the guard, running migrations locally dies here. Hosted Supabase
+-- always has it. Policies are dropped first so re-running is safe.
+do $storage_policies$
+begin
+  if to_regclass('storage.objects') is null then
+    raise notice 'storage schema not present — skipping storage policies (local dev stack)';
+    return;
+  end if;
 
--- ---------------------------------------------------------------- avatars --
-create policy "avatars_select_public"
-  on storage.objects for select
-  using (bucket_id = 'avatars');
+  -- -------------------------------------------------------------- avatars --
+  drop policy if exists "avatars_select_public" on storage.objects;
+  create policy "avatars_select_public"
+    on storage.objects for select
+    using (bucket_id = 'avatars');
 
-create policy "avatars_insert_own"
-  on storage.objects for insert to authenticated
-  with check (bucket_id = 'avatars' and name like auth.uid()::text || '-%');
+  drop policy if exists "avatars_insert_own" on storage.objects;
+  create policy "avatars_insert_own"
+    on storage.objects for insert to authenticated
+    with check (bucket_id = 'avatars' and name like auth.uid()::text || '-%');
 
-create policy "avatars_update_own"
-  on storage.objects for update to authenticated
-  using (bucket_id = 'avatars' and name like auth.uid()::text || '-%');
+  drop policy if exists "avatars_update_own" on storage.objects;
+  create policy "avatars_update_own"
+    on storage.objects for update to authenticated
+    using (bucket_id = 'avatars' and name like auth.uid()::text || '-%');
 
-create policy "avatars_delete_own"
-  on storage.objects for delete to authenticated
-  using (bucket_id = 'avatars' and name like auth.uid()::text || '-%');
+  drop policy if exists "avatars_delete_own" on storage.objects;
+  create policy "avatars_delete_own"
+    on storage.objects for delete to authenticated
+    using (bucket_id = 'avatars' and name like auth.uid()::text || '-%');
 
--- ------------------------------------------------------------- post-media --
--- Accepts both the flat "<uid>/…" layout and the "bazaar/<uid>/…" and
--- "stories/<uid>/…" layouts, so listing and story uploads aren't rejected.
-create policy "post_media_select_public"
-  on storage.objects for select
-  using (bucket_id = 'post-media');
+  -- ----------------------------------------------------------- post-media --
+  -- Accepts both the flat "<uid>/…" layout and the "bazaar/<uid>/…" and
+  -- "stories/<uid>/…" layouts, so listing and story uploads aren't rejected.
+  drop policy if exists "post_media_select_public" on storage.objects;
+  create policy "post_media_select_public"
+    on storage.objects for select
+    using (bucket_id = 'post-media');
 
-create policy "post_media_insert_own"
-  on storage.objects for insert to authenticated
-  with check (
-    bucket_id = 'post-media'
-    and (
-      (storage.foldername(name))[1] = auth.uid()::text
-      or (
-        (storage.foldername(name))[1] in ('bazaar', 'stories')
-        and (storage.foldername(name))[2] = auth.uid()::text
+  drop policy if exists "post_media_insert_own" on storage.objects;
+  create policy "post_media_insert_own"
+    on storage.objects for insert to authenticated
+    with check (
+      bucket_id = 'post-media'
+      and (
+        (storage.foldername(name))[1] = auth.uid()::text
+        or (
+          (storage.foldername(name))[1] in ('bazaar', 'stories')
+          and (storage.foldername(name))[2] = auth.uid()::text
+        )
       )
-    )
-  );
+    );
 
-create policy "post_media_delete_own"
-  on storage.objects for delete to authenticated
-  using (
-    bucket_id = 'post-media'
-    and (
-      (storage.foldername(name))[1] = auth.uid()::text
-      or (
-        (storage.foldername(name))[1] in ('bazaar', 'stories')
-        and (storage.foldername(name))[2] = auth.uid()::text
+  drop policy if exists "post_media_delete_own" on storage.objects;
+  create policy "post_media_delete_own"
+    on storage.objects for delete to authenticated
+    using (
+      bucket_id = 'post-media'
+      and (
+        (storage.foldername(name))[1] = auth.uid()::text
+        or (
+          (storage.foldername(name))[1] in ('bazaar', 'stories')
+          and (storage.foldername(name))[2] = auth.uid()::text
+        )
       )
-    )
-  );
+    );
 
--- ------------------------------------------------------------- chat-media --
-create policy "chat_media_select_authenticated"
-  on storage.objects for select to authenticated
-  using (bucket_id = 'chat-media');
+  -- ----------------------------------------------------------- chat-media --
+  drop policy if exists "chat_media_select_authenticated" on storage.objects;
+  create policy "chat_media_select_authenticated"
+    on storage.objects for select to authenticated
+    using (bucket_id = 'chat-media');
 
-create policy "chat_media_insert_own"
-  on storage.objects for insert to authenticated
-  with check (
-    bucket_id = 'chat-media'
-    and (storage.foldername(name))[1] = auth.uid()::text
-  );
+  drop policy if exists "chat_media_insert_own" on storage.objects;
+  create policy "chat_media_insert_own"
+    on storage.objects for insert to authenticated
+    with check (
+      bucket_id = 'chat-media'
+      and (storage.foldername(name))[1] = auth.uid()::text
+    );
 
-create policy "chat_media_delete_own"
-  on storage.objects for delete to authenticated
-  using (
-    bucket_id = 'chat-media'
-    and (storage.foldername(name))[1] = auth.uid()::text
-  );
+  drop policy if exists "chat_media_delete_own" on storage.objects;
+  create policy "chat_media_delete_own"
+    on storage.objects for delete to authenticated
+    using (
+      bucket_id = 'chat-media'
+      and (storage.foldername(name))[1] = auth.uid()::text
+    );
 
--- verification-photos intentionally gets no client policy: the selfie is sent
--- to the verification service as base64 and written server-side under the
--- service role, so no signed-in user should be able to read or write that
--- bucket directly (edgecase.md §1, §3.13).
+  -- verification-photos intentionally gets no client policy: the selfie is
+  -- sent to the verification service as base64 and written server-side under
+  -- the service role, so no signed-in user should be able to read or write
+  -- that bucket directly (edgecase.md §1, §3.13).
+end
+$storage_policies$;

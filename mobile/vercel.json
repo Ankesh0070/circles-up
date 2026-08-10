@@ -4,6 +4,7 @@
   "framework": null,
   "rewrites": [
     { "source": "/verification/submit", "destination": "/api/verification-submit" },
+    { "source": "/neighbourhoods/create", "destination": "/api/neighbourhoods-create" },
     { "source": "/sos/dispatch", "destination": "/api/sos-dispatch" },
     { "source": "/ads/serve", "destination": "/api/ads-serve?action=serve" },
     { "source": "/ads/click", "destination": "/api/ads-serve?action=click" },

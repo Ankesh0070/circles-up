@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, TextInput, Pressable, ActivityIndicator, ScrollView } from 'react-native';
-import { MapPin, Building2, CheckCircle2, Clock } from 'lucide-react-native';
+import * as Location from 'expo-location';
+import { MapPin, Building2, CheckCircle2, Clock, Plus } from 'lucide-react-native';
 import GradientButton from '../../shared/components/GradientButton';
 import TextField from '../../shared/components/TextField';
 import Card from '../../shared/components/Card';
@@ -58,6 +59,11 @@ export default function AddressVerificationFlow({
   const [tower, setTower] = useState('');
   const [flat, setFlat] = useState('');
 
+  const [searched, setSearched] = useState(false);
+  const [addingNew, setAddingNew] = useState(false);
+  const [newCity, setNewCity] = useState('');
+  const [adding, setAdding] = useState(false);
+
   const [cameraOpen, setCameraOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [outcome, setOutcome] = useState<SubmitOutcome | null>(null);
@@ -66,14 +72,63 @@ export default function AddressVerificationFlow({
   const search = async (text: string) => {
     setQuery(text);
     setNeighbourhood(null);
+    setAddingNew(false);
     if (text.trim().length < 2) {
       setResults([]);
+      setSearched(false);
       return;
     }
     setSearching(true);
     const { data } = await supabase.from('neighbourhoods').select('id, name, city').ilike('name', `%${text}%`).limit(5);
     setSearching(false);
     setResults(data ?? []);
+    setSearched(true);
+  };
+
+  // Nothing matched a real search — offer to create the place instead of
+  // leaving the person at a dead end. Gated on `searched` so the prompt only
+  // appears after a query has actually come back empty, not while typing.
+  const canAddNew = searched && !searching && results.length === 0 && query.trim().length >= 2 && !neighbourhood;
+
+  const addNeighbourhood = async () => {
+    setError('');
+    if (newCity.trim().length < 2) {
+      setError('Add the city or town this neighbourhood is in.');
+      return;
+    }
+    setAdding(true);
+    try {
+      // The boundary is drawn around where you actually are, so this needs a
+      // real fix — not a typed address.
+      const permission = await Location.requestForegroundPermissionsAsync();
+      if (!permission.granted) {
+        setError('Location access is needed to add a neighbourhood — it sets the area boundary.');
+        return;
+      }
+      const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
+
+      const res = await fetch(`${VERIFICATION_SERVICE_URL}/neighbourhoods/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: query.trim(),
+          city: newCity.trim(),
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+        }),
+      });
+      const created = await res.json();
+      if (!res.ok) throw new Error(created.message ?? 'Could not add that neighbourhood.');
+
+      setNeighbourhood(created);
+      setQuery(created.name);
+      setResults([]);
+      setAddingNew(false);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not add that neighbourhood.');
+    } finally {
+      setAdding(false);
+    }
   };
 
   const detailsOk = neighbourhood && society.trim().length > 0 && flat.trim().length > 0;
@@ -188,6 +243,60 @@ export default function AddressVerificationFlow({
               <Text style={{ fontSize: 12.5, color: ON_SURFACE_MUTED, marginTop: 2 }}>{n.city}</Text>
             </Pressable>
           ))}
+        </Card>
+      )}
+
+      {canAddNew && !addingNew && (
+        <Pressable
+          onPress={() => {
+            setAddingNew(true);
+            setError('');
+          }}
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 10,
+            marginTop: 10,
+            paddingHorizontal: 16,
+            paddingVertical: 14,
+            borderRadius: RADIUS.card,
+            borderWidth: 1.5,
+            borderStyle: 'dashed',
+            borderColor: OUTLINE_VARIANT,
+          }}
+        >
+          <Plus size={18} color={PRIMARY} strokeWidth={2.4} />
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 14.5, fontWeight: '700', color: PRIMARY }}>Add “{query.trim()}”</Text>
+            <Text style={{ fontSize: 12.5, color: ON_SURFACE_MUTED, marginTop: 2 }}>
+              Not listed yet — start it for your area.
+            </Text>
+          </View>
+        </Pressable>
+      )}
+
+      {addingNew && (
+        <Card style={{ marginTop: 10, gap: 12 }}>
+          <Text style={{ fontSize: 14.5, fontWeight: '700', color: ON_SURFACE }}>Add “{query.trim()}”</Text>
+          {/* Said plainly, because it explains the location prompt that's
+              about to appear and what the boundary ends up being. */}
+          <Text style={{ fontSize: 12.5, color: ON_SURFACE_MUTED, lineHeight: 18 }}>
+            We'll use where you are right now to draw this neighbourhood's area, so you need to be in it. Neighbours who
+            join later get checked against that same area.
+          </Text>
+          <TextField
+            label="City or town"
+            value={newCity}
+            onChangeText={setNewCity}
+            placeholder="e.g. Bengaluru"
+            icon={Building2}
+          />
+          <GradientButton onPress={addNeighbourhood} loading={adding} showArrow>
+            Use my current location
+          </GradientButton>
+          <Pressable onPress={() => setAddingNew(false)} style={{ alignSelf: 'center', paddingVertical: 4 }}>
+            <Text style={{ fontSize: 13.5, color: ON_SURFACE_MUTED, fontWeight: '600' }}>Cancel</Text>
+          </Pressable>
         </Card>
       )}
 
