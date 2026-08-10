@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, TextInput, Pressable, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, TextInput, Pressable, ActivityIndicator, ScrollView, Platform } from 'react-native';
 import * as Location from 'expo-location';
 import { MapPin, Building2, CheckCircle2, Clock, Plus } from 'lucide-react-native';
 import GradientButton from '../../shared/components/GradientButton';
@@ -172,6 +172,44 @@ export default function AddressVerificationFlow({
     }
   };
 
+  // Web-only escape hatch: the deployed browser build can't reliably run the
+  // live camera + GPS capture, and the geofence assumes you're physically in
+  // the neighbourhood — so without this, a demo signup dead-ends here. Creates
+  // a verified membership server-side (see api/verification-demo) so the feed
+  // works, and drops straight into the next onboarding step.
+  const skipForDemo = async () => {
+    if (!neighbourhood) return;
+    setSubmitting(true);
+    setError('');
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      setSubmitting(false);
+      setError('Not signed in.');
+      return;
+    }
+    try {
+      const res = await fetch(`${VERIFICATION_SERVICE_URL}/verification/demo-complete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          neighbourhoodId: neighbourhood.id,
+          society: society.trim(),
+          flat: flat.trim(),
+        }),
+      });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.message ?? `Demo verification failed (${res.status})`);
+      onDone({ status: 'verified' });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not skip verification.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   if (outcome) {
     const ok = outcome.status === 'verified';
     return (
@@ -338,6 +376,19 @@ export default function AddressVerificationFlow({
           Verify with a live selfie
         </GradientButton>
       </View>
+
+      {/* The live selfie needs camera + GPS, which the browser build can't run
+          reliably and which assume you're physically in the neighbourhood.
+          This one-tap demo skip gets a web visitor into the app. */}
+      {Platform.OS === 'web' && (
+        <Pressable
+          onPress={skipForDemo}
+          disabled={!detailsOk || submitting}
+          style={{ marginTop: 16, alignSelf: 'center', paddingVertical: 8, opacity: !detailsOk || submitting ? 0.5 : 1 }}
+        >
+          <Text style={{ fontSize: 13.5, fontWeight: '700', color: PRIMARY }}>Skip selfie — continue (demo)</Text>
+        </Pressable>
+      )}
 
       <GpsCameraModal visible={cameraOpen} onClose={() => setCameraOpen(false)} onCapture={handleCapture} />
     </ScrollView>

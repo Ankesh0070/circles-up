@@ -5,6 +5,7 @@
   "git": { "deploymentEnabled": { "main": false } },
   "rewrites": [
     { "source": "/verification/submit", "destination": "/api/verification-submit" },
+    { "source": "/verification/demo-complete", "destination": "/api/verification-demo" },
     { "source": "/neighbourhoods/create", "destination": "/api/neighbourhoods-create" },
     { "source": "/sos/dispatch", "destination": "/api/sos-dispatch" },
     { "source": "/ads/serve", "destination": "/api/ads-serve?action=serve" },
