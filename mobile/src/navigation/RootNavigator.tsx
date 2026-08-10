@@ -69,25 +69,52 @@ export default function RootNavigator() {
       return;
     }
     let cancelled = false;
-    supabase
-      .from('profiles')
-      .select('onboarding_completed')
-      .eq('id', session.user.id)
-      .single()
-      .then(({ data, error }) => {
-        if (cancelled) return;
+
+    (async () => {
+      // A stored session is not proof the account still exists. getUser()
+      // validates the token against the server, which is the only way to tell
+      // a token for a deleted or revoked account from a healthy one — and
+      // that distinction is load-bearing: without it such a session fell
+      // through to the "assume onboarded" branch below and dropped the person
+      // into a Main tab with no data and NO route back, because Login and
+      // Signup only render when there's no session. The app looked like it
+      // had stopped accepting logins entirely; really it was refusing to let
+      // go of a dead one. An invalid token is a sign-out, not a shrug.
+      const { error: authError } = await supabase.auth.getUser();
+      if (cancelled) return;
+      if (authError?.status === 401 || authError?.status === 403) {
+        await supabase.auth.signOut();
+        return; // onAuthStateChange clears `session`, which renders Login.
+      }
+
+      // maybeSingle(), not single(): "no row" has to be distinguishable from
+      // "the request failed", since single() reports both as an error and the
+      // two need opposite handling.
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('onboarding_completed')
+        .eq('id', session.user.id)
+        .maybeSingle();
+      if (cancelled) return;
+
+      if (error) {
         // Phase 97 (network-degradation testing) found a real bug here: a
         // failed request (network down) fell through the same `?? false`
         // as "row exists but onboarding_completed is false" — so a fully
         // verified returning user reopening the app with no connectivity
         // got routed straight back into the Address/live-selfie gauntlet
-        // instead of Main. A session existing at all means they signed in
-        // before; assume onboarded on a network error and let individual
-        // screens handle their own offline states, rather than routing
-        // the entire app on a request that never actually answered the
-        // question.
-        setOnboarded(error ? true : (data?.onboarding_completed ?? false));
-      });
+        // instead of Main. The token checked out just above, so this is a
+        // transport problem; assume onboarded and let individual screens
+        // handle their own offline states, rather than routing the entire
+        // app on a request that never actually answered the question.
+        setOnboarded(true);
+        return;
+      }
+
+      // Reachable and answered: no row means onboarding genuinely isn't done.
+      setOnboarded(data?.onboarding_completed ?? false);
+    })();
+
     return () => {
       cancelled = true;
     };
