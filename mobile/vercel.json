@@ -2,6 +2,7 @@
   "buildCommand": "",
   "outputDirectory": "dist",
   "framework": null,
+  "git": { "deploymentEnabled": { "main": false } },
   "rewrites": [
     { "source": "/verification/submit", "destination": "/api/verification-submit" },
     { "source": "/neighbourhoods/create", "destination": "/api/neighbourhoods-create" },
