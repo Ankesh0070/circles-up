@@ -1,6 +1,6 @@
-import { resolveDevUrl } from './devHost';
+import { serviceUrl } from './serviceUrl';
 
-const GENIE_SERVICE_URL = resolveDevUrl(process.env.EXPO_PUBLIC_GENIE_SERVICE_URL ?? 'http://127.0.0.1:4003');
+const GENIE_SERVICE_URL = serviceUrl(process.env.EXPO_PUBLIC_GENIE_SERVICE_URL, 4003);
 
 // Fire-and-forget — a post/comment insert must never fail or stall on the
 // embedding call. Errors are swallowed here (logged, not thrown) since the

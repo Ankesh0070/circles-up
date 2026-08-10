@@ -1,6 +1,6 @@
-import { resolveDevUrl } from './devHost';
+import { serviceUrl } from './serviceUrl';
 
-const COMPLIANCE_SERVICE_URL = resolveDevUrl(process.env.EXPO_PUBLIC_COMPLIANCE_SERVICE_URL ?? 'http://127.0.0.1:4005');
+const COMPLIANCE_SERVICE_URL = serviceUrl(process.env.EXPO_PUBLIC_COMPLIANCE_SERVICE_URL, 4005);
 
 export type DonationOrder = { donationId: string; orderId: string; amount: number; currency: string };
 export type DonationConfirmResult = { donationId: string; paymentStatus: 'succeeded' | 'failed'; error?: string };

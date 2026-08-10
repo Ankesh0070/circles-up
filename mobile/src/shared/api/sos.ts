@@ -2,9 +2,9 @@ import { Linking, Platform } from 'react-native';
 import * as Location from 'expo-location';
 import * as Crypto from 'expo-crypto';
 import { supabase } from './supabase';
-import { resolveDevUrl } from './devHost';
+import { serviceUrl } from './serviceUrl';
 
-const SOS_SERVICE_URL = resolveDevUrl(process.env.EXPO_PUBLIC_SOS_SERVICE_URL ?? 'http://127.0.0.1:4002');
+const SOS_SERVICE_URL = serviceUrl(process.env.EXPO_PUBLIC_SOS_SERVICE_URL, 4002);
 
 // edgecase.md §3.1 (🔴) — these three MUST be dialed via the phone's own
 // cellular radio (native tel:), never routed through our backend/SMS
