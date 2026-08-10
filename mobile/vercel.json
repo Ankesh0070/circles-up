@@ -1,0 +1,8 @@
+{
+  "buildCommand": "",
+  "outputDirectory": "dist",
+  "framework": null,
+  "rewrites": [
+    { "source": "/verification/submit", "destination": "/api/verification-submit" }
+  ]
+}

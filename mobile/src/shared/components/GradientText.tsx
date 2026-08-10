@@ -1,4 +1,4 @@
-import { Text, type TextStyle, type StyleProp } from 'react-native';
+import { View, Text, type TextStyle, type StyleProp } from 'react-native';
 import MaskedView from '@react-native-masked-view/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
 import { IG_GRADIENT_COLORS, IG_GRADIENT_LOCATIONS, IG_GRADIENT_ANGLE } from '../theme/tokens';
@@ -21,15 +21,24 @@ export default function GradientText({
   style?: StyleProp<TextStyle>;
 }) {
   return (
-    <MaskedView maskElement={<Text style={[style, { backgroundColor: 'transparent' }]}>{children}</Text>}>
-      <LinearGradient
-        colors={IG_GRADIENT_COLORS}
-        locations={IG_GRADIENT_LOCATIONS}
-        start={IG_GRADIENT_ANGLE.start}
-        end={IG_GRADIENT_ANGLE.end}
-      >
-        <Text style={[style, { opacity: 0 }]}>{children}</Text>
-      </LinearGradient>
-    </MaskedView>
+    // pointerEvents="none" is load-bearing, not cosmetic: MaskedView renders
+    // its own stacking layers on web, and those layers swallow the click
+    // before it reaches an enclosing Pressable. That silently broke both
+    // auth entry points ("Create new account" on Login, "Log in" on Signup) —
+    // the label rendered fine but the tap did nothing. The text is never
+    // interactive itself, so making it click-transparent costs nothing and
+    // lets the press land on whatever wraps it.
+    <View pointerEvents="none">
+      <MaskedView maskElement={<Text style={[style, { backgroundColor: 'transparent' }]}>{children}</Text>}>
+        <LinearGradient
+          colors={IG_GRADIENT_COLORS}
+          locations={IG_GRADIENT_LOCATIONS}
+          start={IG_GRADIENT_ANGLE.start}
+          end={IG_GRADIENT_ANGLE.end}
+        >
+          <Text style={[style, { opacity: 0 }]}>{children}</Text>
+        </LinearGradient>
+      </MaskedView>
+    </View>
   );
 }
