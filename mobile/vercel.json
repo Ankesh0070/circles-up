@@ -3,6 +3,17 @@
   "outputDirectory": "dist",
   "framework": null,
   "rewrites": [
-    { "source": "/verification/submit", "destination": "/api/verification-submit" }
+    { "source": "/verification/submit", "destination": "/api/verification-submit" },
+    { "source": "/sos/dispatch", "destination": "/api/sos-dispatch" },
+    { "source": "/ads/serve", "destination": "/api/ads-serve?action=serve" },
+    { "source": "/ads/click", "destination": "/api/ads-serve?action=click" },
+    { "source": "/genie/query", "destination": "/api/genie?action=query" },
+    { "source": "/genie/embed-post", "destination": "/api/genie?action=embed-post" },
+    { "source": "/genie/embed-comment", "destination": "/api/genie?action=embed-comment" },
+    { "source": "/compliance/donations", "destination": "/api/compliance-donations?action=create" },
+    {
+      "source": "/compliance/donations/:donationId/confirm",
+      "destination": "/api/compliance-donations?action=confirm&donationId=:donationId"
+    }
   ]
 }
