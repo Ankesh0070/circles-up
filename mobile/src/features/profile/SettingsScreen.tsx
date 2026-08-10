@@ -113,7 +113,15 @@ export default function SettingsScreen() {
       ))}
 
       <Pressable
-        onPress={() => supabase.auth.signOut()}
+        onPress={async () => {
+          await supabase.auth.signOut();
+          // Signing out swaps the root screen from Main to Auth, but Settings
+          // is a modal sitting ON TOP of that swap — leave it there and the
+          // person keeps staring at a Settings screen for an account they're
+          // no longer signed into, as if the button did nothing. Pop back so
+          // the Login screen underneath is what they actually see.
+          navigation.popToTop();
+        }}
         className="flex-row items-center justify-center gap-2 mx-5 mt-6 py-3.5 rounded-xl bg-white"
       >
         <LogOut size={16} color="#DC2626" />
