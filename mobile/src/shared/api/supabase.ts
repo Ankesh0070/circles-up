@@ -16,11 +16,16 @@ if (!rawUrl || !anonKey) {
 // device, so point it at whichever host actually served this bundle.
 const url = resolveDevUrl(rawUrl);
 
+import { Platform } from 'react-native';
+
 export const supabase = createClient(url, anonKey, {
   auth: {
     storage: AsyncStorage,
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: false,
+    // On web the Google OAuth redirect comes back with the session in the
+    // URL; supabase-js has to parse it to complete sign-in. Native never gets
+    // that redirect, so leave it off there.
+    detectSessionInUrl: Platform.OS === 'web',
   },
 });

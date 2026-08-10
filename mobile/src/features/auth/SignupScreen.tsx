@@ -8,8 +8,8 @@ import CircleUpLogo from '../../shared/components/CircleUpLogo';
 import TextField from '../../shared/components/TextField';
 import Card from '../../shared/components/Card';
 import GoogleLogo from './GoogleLogo';
-import GoogleAccountSheet from './GoogleAccountSheet';
 import { supabase } from '../../shared/api/supabase';
+import { signInWithGoogle } from '../../shared/api/googleAuth';
 import {
   SURFACE,
   ON_SURFACE,
@@ -29,7 +29,18 @@ type Method = 'email' | 'phone';
 // Ported from the prototype (lines 786–965) — "SCREEN: CREATE ACCOUNT".
 export default function SignupScreen({ navigation }: Props) {
   const [picked, setPicked] = useState<Method | null>(null);
-  const [googleOpen, setGoogleOpen] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [googleError, setGoogleError] = useState('');
+
+  const handleGoogle = async () => {
+    if (googleLoading) return;
+    setGoogleLoading(true);
+    setGoogleError('');
+    const { error } = await signInWithGoogle();
+    // Web success is a redirect away from this page; we only land here on error.
+    if (error) setGoogleError(error);
+    setGoogleLoading(false);
+  };
   // Phase 21 / edgecase.md §1.9 (🔴): self-declared 18+ gate, required before
   // any signup method can proceed. False declaration is a ToS violation
   // (enforceable, not preventable, at the app layer) — this at least makes
@@ -60,12 +71,6 @@ export default function SignupScreen({ navigation }: Props) {
       contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 64, paddingBottom: 32, flexGrow: 1 }}
       keyboardShouldPersistTaps="handled"
     >
-      <GoogleAccountSheet
-        visible={googleOpen}
-        mode="signup"
-        onClose={() => setGoogleOpen(false)}
-        onContinue={() => setGoogleOpen(false)}
-      />
       <Pressable onPress={() => navigation.goBack()} hitSlop={8} style={{ alignSelf: 'flex-start', marginBottom: 20 }}>
         <ArrowLeft size={24} color={ON_SURFACE} />
       </Pressable>
@@ -129,12 +134,13 @@ export default function SignupScreen({ navigation }: Props) {
           <Card
             key={m.key}
             onPress={() =>
-              requireAgeGate(() => (m.key === 'gmail' ? setGoogleOpen(true) : setPicked(m.key as 'email' | 'phone')))
+              requireAgeGate(() => (m.key === 'gmail' ? handleGoogle() : setPicked(m.key as 'email' | 'phone')))
             }
             style={{
               flexDirection: 'row',
               alignItems: 'center',
               gap: 14,
+              opacity: m.key === 'gmail' && googleLoading ? 0.6 : 1,
               ...(m.primary ? { borderWidth: 2, borderColor: ON_SURFACE } : {}),
             }}
           >
@@ -153,12 +159,17 @@ export default function SignupScreen({ navigation }: Props) {
               {m.primary ? <GoogleLogo size={22} /> : m.icon ? <m.icon size={20} color={PRIMARY} strokeWidth={2.1} /> : null}
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 15, fontWeight: '700', color: ON_SURFACE }}>{m.title}</Text>
+              <Text style={{ fontSize: 15, fontWeight: '700', color: ON_SURFACE }}>
+                {m.key === 'gmail' && googleLoading ? 'Opening Google…' : m.title}
+              </Text>
               <Text style={{ fontSize: 12.5, color: ON_SURFACE_MUTED, marginTop: 2 }}>{m.sub}</Text>
             </View>
             <ChevronRight size={18} color={ON_SURFACE_MUTED} />
           </Card>
         ))}
+        {googleError !== '' && (
+          <Text style={{ fontSize: 12.5, color: ERROR, marginLeft: 4, marginTop: 2 }}>{googleError}</Text>
+        )}
       </View>
 
       <View style={{ marginTop: 'auto', paddingTop: 32, alignItems: 'center' }}>

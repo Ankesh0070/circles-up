@@ -7,8 +7,8 @@ import GradientText from '../../shared/components/GradientText';
 import GradientButton from '../../shared/components/GradientButton';
 import TextField from '../../shared/components/TextField';
 import GoogleLogo from './GoogleLogo';
-import GoogleAccountSheet from './GoogleAccountSheet';
 import { supabase } from '../../shared/api/supabase';
+import { signInWithGoogle } from '../../shared/api/googleAuth';
 import {
   SURFACE,
   ON_SURFACE,
@@ -27,9 +27,20 @@ type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
 export default function LoginScreen({ navigation }: Props) {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
-  const [googleOpen, setGoogleOpen] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const handleGoogle = async () => {
+    if (googleLoading) return;
+    setGoogleLoading(true);
+    setError('');
+    const { error: gError } = await signInWithGoogle();
+    // On web, success is a redirect — the page navigates away, so we only get
+    // here on failure. Clear the spinner and show why.
+    if (gError) setError(gError);
+    setGoogleLoading(false);
+  };
 
   const canContinue = identifier.trim().length >= 3 && password.length >= 6;
 
@@ -76,16 +87,6 @@ export default function LoginScreen({ navigation }: Props) {
       contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 72, paddingBottom: 40, flexGrow: 1 }}
       keyboardShouldPersistTaps="handled"
     >
-      <GoogleAccountSheet
-        visible={googleOpen}
-        mode="login"
-        onClose={() => setGoogleOpen(false)}
-        onContinue={() => {
-          setGoogleOpen(false);
-          setError('Google sign-in needs a real OAuth client — not wired yet (see GoogleAccountSheet.tsx).');
-        }}
-      />
-
       <View style={{ alignItems: 'center' }}>
         <View
           style={[
@@ -154,7 +155,8 @@ export default function LoginScreen({ navigation }: Props) {
       </View>
 
       <Pressable
-        onPress={() => setGoogleOpen(true)}
+        onPress={handleGoogle}
+        disabled={googleLoading}
         style={{
           flexDirection: 'row',
           alignItems: 'center',
@@ -164,10 +166,13 @@ export default function LoginScreen({ navigation }: Props) {
           borderRadius: RADIUS.chip,
           borderWidth: 1.5,
           borderColor: OUTLINE_VARIANT,
+          opacity: googleLoading ? 0.6 : 1,
         }}
       >
         <GoogleLogo size={20} />
-        <Text style={{ fontSize: 15, fontWeight: '600', color: ON_SURFACE }}>Continue with Google</Text>
+        <Text style={{ fontSize: 15, fontWeight: '600', color: ON_SURFACE }}>
+          {googleLoading ? 'Opening Google…' : 'Continue with Google'}
+        </Text>
       </Pressable>
 
       <View style={{ marginTop: 'auto', paddingTop: 32, alignItems: 'center' }}>
