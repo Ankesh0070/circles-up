@@ -1,24 +1,11 @@
-import { serviceUrl } from './serviceUrl';
-
-const ADS_SERVICE_URL = serviceUrl(process.env.EXPO_PUBLIC_ADS_SERVICE_URL, 4004);
-
+// Demo build: no ads backend. Serving returns null (feed shows no sponsored
+// card), clicks are no-ops. Keeps the same interface so callers don't change.
 export type ServedAd = { campaign_id: string; headline: string; body: string; image_url: string | null; cta_text: string };
 
-export async function fetchServedAd(userId: string, neighbourhoodId: string): Promise<ServedAd | null> {
-  const res = await fetch(`${ADS_SERVICE_URL}/ads/serve`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId, neighbourhoodId }),
-  });
-  if (!res.ok) return null;
-  const body = await res.json();
-  return body && body.campaign_id ? body : null;
+export async function fetchServedAd(_userId: string, _neighbourhoodId: string): Promise<ServedAd | null> {
+  return null;
 }
 
-export function recordAdClickFireAndForget(campaignId: string, userId: string) {
-  fetch(`${ADS_SERVICE_URL}/ads/click`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ campaignId, userId }),
-  }).catch((e) => console.warn('[ads] click record failed', e));
+export function recordAdClickFireAndForget(_campaignId: string, _userId: string) {
+  /* no-op in demo */
 }

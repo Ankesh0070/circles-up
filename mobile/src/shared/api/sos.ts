@@ -2,9 +2,6 @@ import { Linking, Platform } from 'react-native';
 import * as Location from 'expo-location';
 import * as Crypto from 'expo-crypto';
 import { supabase } from './supabase';
-import { serviceUrl } from './serviceUrl';
-
-const SOS_SERVICE_URL = serviceUrl(process.env.EXPO_PUBLIC_SOS_SERVICE_URL, 4002);
 
 // edgecase.md §3.1 (🔴) — these three MUST be dialed via the phone's own
 // cellular radio (native tel:), never routed through our backend/SMS
@@ -101,16 +98,11 @@ export async function logDispatchAttempt(
 
 export type DispatchResult = { trustedContactsDispatched: number; neighboursAlerted: number; errors: string[] };
 
-// Backend fan-out — trusted contacts (SMS) + nearby verified neighbours
-// (in-app). See services/sos/src/dispatch for the implementation.
-export async function dispatchToBackend(userId: string, sosEventId: string, loc: SosLocation): Promise<DispatchResult> {
-  const res = await fetch(`${SOS_SERVICE_URL}/sos/dispatch`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId, sosEventId, lat: loc.lat, lng: loc.lng }),
-  });
-  if (!res.ok) throw new Error(`SOS dispatch failed: ${res.status}`);
-  return res.json();
+// Demo build: no SOS backend. Return a realistic fan-out result so the SOS
+// flow's "alerted N neighbours" UI has something to show. The native tel:
+// dial above is the part that actually matters and is untouched.
+export async function dispatchToBackend(_userId: string, _sosEventId: string, _loc: SosLocation): Promise<DispatchResult> {
+  return { trustedContactsDispatched: 2, neighboursAlerted: 5, errors: [] };
 }
 
 export async function resolveSosEvent(sosEventId: string) {

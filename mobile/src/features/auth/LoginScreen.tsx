@@ -7,7 +7,7 @@ import GradientText from '../../shared/components/GradientText';
 import GradientButton from '../../shared/components/GradientButton';
 import TextField from '../../shared/components/TextField';
 import GoogleLogo from './GoogleLogo';
-import { supabase } from '../../shared/api/supabase';
+import { supabase, mockSignIn } from '../../shared/api/supabase';
 import { signInWithGoogle, GOOGLE_AUTH_ENABLED } from '../../shared/api/googleAuth';
 import {
   SURFACE,
@@ -56,29 +56,13 @@ export default function LoginScreen({ navigation }: Props) {
     setLoading(true);
     setError('');
     const trimmed = identifier.trim();
-    // Supabase Auth natively supports email+password and phone+password.
-    // "Username" login has no backing lookup, so it's an honest inline error
-    // rather than a silent no-op.
+    // Demo build: no real auth. Whatever the person types becomes their
+    // display name (email → the part before @). mockSignIn stores it and
+    // RootNavigator's onAuthStateChange listener switches to Main.
     const isEmail = trimmed.includes('@');
-    const isPhone = /^\d{10}$/.test(trimmed);
-
-    if (!isEmail && !isPhone) {
-      setError("Username login isn't available yet — use your phone number or email.");
-      setLoading(false);
-      return;
-    }
-
-    const { error: authError } = isEmail
-      ? await supabase.auth.signInWithPassword({ email: trimmed, password })
-      : await supabase.auth.signInWithPassword({ phone: `+91${trimmed}`, password });
-
+    const name = isEmail ? trimmed.split('@')[0] : trimmed;
+    mockSignIn(name, isEmail ? trimmed : undefined);
     setLoading(false);
-    if (authError) {
-      setError(authError.message);
-      return;
-    }
-    // RootNavigator's onAuthStateChange listener switches to Main once the
-    // session updates.
   };
 
   return (

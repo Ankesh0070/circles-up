@@ -59,9 +59,8 @@ export default function SignupScreen({ navigation }: Props) {
   if (picked === 'email') return <EmailSignupForm onBack={() => setPicked(null)} />;
   if (picked === 'phone') return <PhoneSignupForm onBack={() => setPicked(null)} navigation={navigation} />;
 
-  // Gmail only appears when Google OAuth is actually configured (see
-  // googleAuth.ts). Otherwise it's a dead end that just tells people to use
-  // email/phone — so it's dropped, and Email becomes the highlighted option.
+  // Demo build: Email and Phone both work (fake auth / fake OTP). Gmail needs
+  // a real Google OAuth client, so it stays hidden behind GOOGLE_AUTH_ENABLED.
   const methods = [
     ...(GOOGLE_AUTH_ENABLED
       ? [{ key: 'gmail' as const, title: 'Continue with Gmail', sub: 'Fastest — use your Google account', primary: true }]
