@@ -3,7 +3,7 @@ import { View, Text, TextInput, Pressable, FlatList, Image, ActivityIndicator, M
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import * as ImagePicker from 'expo-image-picker';
 import { AudioModule, useAudioPlayer, useAudioRecorder, RecordingPresets } from 'expo-audio';
-import { Phone, Video, Camera, Mic, Send, MoreVertical } from 'lucide-react-native';
+import { ArrowLeft, Phone, Video, Camera, Mic, Send, MoreVertical } from 'lucide-react-native';
 import Avatar from '../../shared/components/Avatar';
 import AlertModal from '../../shared/components/AlertModal';
 import { supabase } from '../../shared/api/supabase';
@@ -220,6 +220,9 @@ export default function ChatDetailScreen({ route, navigation }: Props) {
           borderBottomColor: OUTLINE_VARIANT,
         }}
       >
+        <Pressable onPress={() => navigation.goBack()} hitSlop={8}>
+          <ArrowLeft size={22} color={ON_SURFACE} strokeWidth={2.2} />
+        </Pressable>
         <Avatar name={meta.displayName} size={40} />
         <Text style={{ flex: 1, fontSize: 16, fontWeight: '700', color: ON_SURFACE }}>{meta.displayName}</Text>
         {!meta.isGroup && (

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { View, Text, Pressable, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Phone, PhoneOff } from 'lucide-react-native';
+import { ArrowLeft, Phone, PhoneOff } from 'lucide-react-native';
 import Avatar from '../../shared/components/Avatar';
 
 const DELAYS = [
@@ -45,6 +45,9 @@ export default function FakeCallScreen() {
   if (stage === 'setup') {
     return (
       <View className="flex-1 bg-white px-6 pt-10">
+        <Pressable onPress={() => navigation.goBack()} hitSlop={8} className="mb-4 self-start">
+          <ArrowLeft size={22} color="#181C20" strokeWidth={2.2} />
+        </Pressable>
         <Text className="text-[18px] font-bold text-[#181C20]">Fake Check-in Call</Text>
         <Text className="text-[13px] text-ink-muted mt-1.5 leading-relaxed">
           Schedule a simulated incoming call to give yourself a reason to leave a situation.
