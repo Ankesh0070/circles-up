@@ -34,7 +34,7 @@ const FEATURE_CARDS = [
   { key: 'Bazaar' as const, label: 'Bazaar', icon: ShoppingBag, color: '#F59E0B', tab: true },
   { key: 'Scenes' as const, label: 'Scenes', icon: PartyPopper, color: SECONDARY },
   { key: 'Genie' as const, label: 'Genie', icon: Sparkles, color: PRIMARY },
-  { key: 'Guard' as const, label: 'Guard', icon: Shield, color: SOS_RED, tab: true },
+  { key: 'Guard' as const, label: 'Guard', icon: Shield, color: SOS_RED },
   // Group I: pages hub (Personal/Business/NGO) — landing on MyPages rather
   // than the type-selector directly, since most taps after the first visit
   // are "manage what I already have", not "create a new one".

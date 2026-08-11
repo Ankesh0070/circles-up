@@ -15,6 +15,8 @@ import TrustedContactsScreen from '../features/guard/TrustedContactsScreen';
 import ShareLocationScreen from '../features/guard/ShareLocationScreen';
 import FakeCallScreen from '../features/guard/FakeCallScreen';
 import SilentPhraseScreen from '../features/guard/SilentPhraseScreen';
+import ExploreTab from '../features/explore/ExploreTab';
+import GuardScreen from '../features/guard/GuardScreen';
 import UserProfileScreen from '../features/explore/UserProfileScreen';
 import NeighbourhoodSheet from '../features/explore/NeighbourhoodSheet';
 import AddNeighbourhoodScreen from '../features/explore/AddNeighbourhoodScreen';
@@ -144,6 +146,12 @@ export default function RootNavigator() {
       )}
 
       <Stack.Group screenOptions={{ presentation: 'modal', headerShown: true }}>
+        {/* Explore and Guard left the tab bar in the nav redesign — they're
+            pushed here now (Explore from the Home header compass, Guard from the
+            SOS pill). Empty title = just a back chevron over each screen's own
+            header. */}
+        <Stack.Screen name="Explore" component={ExploreTab} options={{ title: '' }} />
+        <Stack.Screen name="Guard" component={GuardScreen} options={{ title: '' }} />
         <Stack.Screen name="CreatePost" component={CreatePostSheet} options={{ title: 'New post' }} />
         <Stack.Screen name="PostDetail" component={PostDetailScreen} options={{ title: 'Post' }} />
         <Stack.Screen name="Chats" component={ChatsTab} options={{ title: 'Chats' }} />

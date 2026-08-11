@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Plus, Bell, ChevronDown, MessageCircle } from 'lucide-react-native';
+import { Plus, Bell, ChevronDown, Compass } from 'lucide-react-native';
 import GradientText from '../../shared/components/GradientText';
 import { supabase } from '../../shared/api/supabase';
 import { SURFACE, ON_SURFACE_MUTED, ON_SURFACE, SOS_RED, OUTLINE_VARIANT } from '../../shared/theme/tokens';
@@ -61,8 +61,10 @@ export default function TopBar({ hasUnread = false }: { hasUnread?: boolean }) {
         <GradientText style={{ fontSize: 22, fontWeight: '700', letterSpacing: -0.4 }}>Circle Up</GradientText>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
-          <Pressable onPress={() => navigation.navigate('Chats')} hitSlop={8}>
-            <MessageCircle size={21} color={ON_SURFACE} strokeWidth={2} />
+          {/* Chat moved to the bottom nav; this slot now opens Explore
+              (discovery + Scenes / Genie / Pages), which left the tab bar. */}
+          <Pressable onPress={() => navigation.navigate('Explore')} hitSlop={8}>
+            <Compass size={21} color={ON_SURFACE} strokeWidth={2} />
           </Pressable>
 
           <Pressable onPress={() => navigation.navigate('Notifications')} hitSlop={8}>
@@ -88,7 +90,7 @@ export default function TopBar({ hasUnread = false }: { hasUnread?: boolean }) {
               Guard screen's own SOS button so this stays a shortcut, not a
               trigger. */}
           <Pressable
-            onPress={() => navigation.navigate('Main', { screen: 'Guard' } as never)}
+            onPress={() => navigation.navigate('Guard')}
             hitSlop={8}
             style={{
               paddingHorizontal: 13,

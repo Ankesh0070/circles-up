@@ -1,28 +1,26 @@
 import { View, Text, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { Compass, Newspaper, Shield, Store, User, type LucideIcon } from 'lucide-react-native';
+import { Home, Film, MessageCircle, Store, User, type LucideIcon } from 'lucide-react-native';
 import {
   SURFACE,
-  OUTLINE_VARIANT,
   NAV_GRADIENT_COLORS,
   NAV_GRADIENT_LOCATIONS,
   NAV_GRADIENT_ANGLE,
 } from '../shared/theme/tokens';
 
 const ICONS: Record<string, LucideIcon> = {
-  Explore: Compass,
-  Feed: Newspaper,
-  Guard: Shield,
+  Home: Home,
+  Reels: Film,
+  Chat: MessageCircle,
   Bazaar: Store,
   Profile: User,
 };
 
-// Nav redesign (Circle Up Nav Redesign.dc.html): the active tab is marked by a
+// Nav redesign (Circle Up Nav Redesign): the active tab is marked by a
 // gradient-filled rounded square behind a white icon, inactive tabs sit in a
-// muted slate, and the centre tab — Guard, the app's safety differentiator — is
-// lifted into a raised circular gradient button so it reads as the hub of the
-// bar. The five routes and their screens are unchanged; only the chrome is new.
+// muted slate, and the centre tab — Chat — is lifted into a raised circular
+// gradient button so it reads as the hub of the bar.
 const INACTIVE = '#8FA9BC'; // muted slate for unselected icons + labels
 const ACTIVE_LABEL = '#0B72A8'; // mid-gradient blue for the selected label
 
@@ -35,7 +33,7 @@ export default function BottomNav({ state, descriptors, navigation }: BottomTabB
         justifyContent: 'space-around',
         backgroundColor: SURFACE,
         borderTopWidth: 1,
-        borderTopColor: OUTLINE_VARIANT,
+        borderTopColor: '#C9E4F5',
         paddingHorizontal: 4,
         paddingTop: 8,
         paddingBottom: 20,
@@ -52,7 +50,7 @@ export default function BottomNav({ state, descriptors, navigation }: BottomTabB
           if (!focused && !event.defaultPrevented) navigation.navigate(route.name);
         };
 
-        // Centre route (Guard) is the raised gradient hub button.
+        // Centre route (Chat) is the raised gradient hub button.
         const isCentre = index === Math.floor(state.routes.length / 2);
         if (isCentre) {
           return (
