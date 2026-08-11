@@ -49,6 +49,7 @@ export default function PostCard({ post, onChanged }: { post: FeedPost; onChange
 
   const cat = categoryMeta(post.category);
   const Icon = cat.icon;
+  const postAge = timeAgo(post.created_at);
   const isNewAccount = post.author && Date.now() - new Date(post.author.created_at).getTime() < NEW_ACCOUNT_DAYS * 86400000;
 
   // The bookmark used to be local-only state with a comment saying no
@@ -119,7 +120,7 @@ export default function PostCard({ post, onChanged }: { post: FeedPost; onChange
               </View>
             )}
           </View>
-          <Text style={{ fontSize: 12.5, color: ON_SURFACE_MUTED, marginTop: 1 }}>{timeAgo(post.created_at)} ago</Text>
+          <Text style={{ fontSize: 12.5, color: ON_SURFACE_MUTED, marginTop: 1 }}>{postAge === 'now' ? 'just now' : `${postAge} ago`}</Text>
         </View>
 
         <View

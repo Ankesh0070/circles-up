@@ -44,6 +44,20 @@ function sessionOf(user: MockUser | null) {
   return user ? { user, access_token: 'mock-token', expires_at: Math.floor(Date.now() / 1000) + 3600 } : null;
 }
 
+// Patch the seed "me" profile from the stored user so the typed name shows up
+// everywhere — on login AND after a refresh (module reloads reset the seed to
+// its default "You", so this has to re-run whenever the session is read).
+function syncMeProfile() {
+  const u = readUser();
+  if (!u) return;
+  const me = seed.profiles.find((p) => p.id === seed.ME_ID);
+  if (me) {
+    me.name = u.name;
+    me.username = (u.name || 'you').toLowerCase().replace(/\s+/g, '') || 'you';
+  }
+}
+syncMeProfile();
+
 function notifyAuth(event: string) {
   const session = sessionOf(readUser());
   authListeners.forEach((fn) => fn(event, session));
@@ -57,12 +71,7 @@ export function mockSignIn(name: string, email?: string): MockUser {
     name: (name || 'You').trim() || 'You',
   };
   writeUser(user);
-  // Keep the seed "me" profile in sync so the typed name shows up everywhere.
-  const me = seed.profiles.find((p) => p.id === seed.ME_ID);
-  if (me) {
-    me.name = user.name;
-    me.username = user.name.toLowerCase().replace(/\s+/g, '') || 'you';
-  }
+  syncMeProfile();
   notifyAuth('SIGNED_IN');
   return user;
 }
@@ -73,9 +82,11 @@ export function mockCurrentUser(): MockUser | null {
 
 const auth = {
   async getSession() {
+    syncMeProfile();
     return { data: { session: sessionOf(readUser()) }, error: null };
   },
   async getUser() {
+    syncMeProfile();
     const user = readUser();
     return { data: { user }, error: null as any };
   },
@@ -140,18 +151,22 @@ const tables: Record<string, Row[]> = {
   pages: seed.pages,
   neighbourhoods: seed.neighbourhoods,
   society_memberships: seed.society_memberships,
+  chats: seed.chats,
+  chat_members: [],
   conversations: seed.conversations,
   messages: seed.messages,
   notifications: seed.notifications,
   safety_alerts: seed.safety_alerts,
+  reactions: seed.reactions,
   // Write-heavy / relationship tables that screens read but we keep empty:
   hidden_posts: [],
   muted_users: [],
   blocked_users: [],
   circle_connections: [],
-  reactions: [],
+  comment_likes: [],
   saved_posts: [],
   trusted_contacts: [],
+  event_rsvps: seed.event_rsvps,
   event_attendees: [],
   page_followers: [],
   donations: [],
@@ -159,6 +174,78 @@ const tables: Record<string, Row[]> = {
   stories: [],
   reports: [],
 };
+
+// Natural-key conflict targets for upsert/insert on join tables that have no
+// client-supplied id — matches the real schema's unique constraints so a
+// second like/save/RSVP updates the existing row instead of piling up.
+const CONFLICT_KEYS: Record<string, string[]> = {
+  reactions: ['post_id', 'user_id'],
+  comment_likes: ['comment_id', 'user_id'],
+  saved_posts: ['user_id', 'post_id'],
+  event_rsvps: ['event_id', 'user_id'],
+  event_attendees: ['event_id', 'user_id'],
+  page_followers: ['page_id', 'user_id'],
+  circle_connections: ['user_id', 'connected_user_id'],
+  dm_blocks: ['blocker_id', 'blocked_id'],
+  hidden_posts: ['user_id', 'post_id'],
+  muted_users: ['user_id', 'muted_user_id'],
+};
+
+// A trimmed profile the way the nested `author:profiles(...)` selects expect it.
+function profileLite(id: string) {
+  const p = (tables.profiles as Row[]).find((x) => x.id === id);
+  return p ? { name: p.name, avatar_url: p.avatar_url ?? null, created_at: p.created_at } : null;
+}
+
+// Resolve the relationship fields screens read via join syntax (`author:...`,
+// `reactions(...)`, `comments(...)`). The real backend does these joins; here we
+// compute them from the backing tables so rows inserted at runtime (a new post,
+// a fresh reaction) join up exactly like the seeded ones do.
+function withRelations(table: string, rows: Row[]): Row[] {
+  switch (table) {
+    case 'posts':
+      return rows.map((r) => ({
+        ...r,
+        author: r.author ?? profileLite(r.author_id),
+        reactions: (tables.reactions as Row[]).filter((x) => x.post_id === r.id),
+        comments: (tables.comments as Row[]).filter((c) => c.post_id === r.id).map((c) => ({ id: c.id })),
+      }));
+    case 'comments':
+      return rows.map((r) => ({
+        ...r,
+        author: r.author ?? profileLite(r.author_id),
+        comment_likes: (tables.comment_likes as Row[]).filter((x) => x.comment_id === r.id),
+      }));
+    case 'listings':
+    case 'bazaar_listings':
+      return rows.map((r) => ({ ...r, seller: r.seller ?? profileLite(r.seller_id) }));
+    case 'events':
+    case 'scenes':
+      return rows.map((r) => ({
+        ...r,
+        host: r.host ?? profileLite(r.host_id),
+        event_rsvps: (tables.event_rsvps as Row[]).filter((x) => x.event_id === r.id),
+      }));
+    case 'event_rsvps':
+      return rows.map((r) => ({
+        ...r,
+        guest: r.guest ?? profileLite(r.user_id),
+        event: r.event ?? (tables.events as Row[]).find((e) => e.id === r.event_id) ?? null,
+      }));
+    case 'pages':
+      return rows.map((r) => ({ ...r, owner: r.owner ?? profileLite(r.owner_id) }));
+    case 'messages':
+      return rows.map((r) => ({ ...r, author: r.author ?? profileLite(r.author_id) }));
+    case 'saved_posts':
+      return rows.map((r) => ({ ...r, post: r.post ?? (tables.posts as Row[]).find((p) => p.id === r.post_id) ?? null }));
+    case 'circle_connections':
+      return rows.map((r) => ({ ...r, connected: r.connected ?? profileLite(r.connected_user_id) }));
+    case 'dm_blocks':
+      return rows.map((r) => ({ ...r, blocked: r.blocked ?? profileLite(r.blocked_id) }));
+    default:
+      return rows;
+  }
+}
 
 function tableFor(name: string): Row[] {
   if (!(name in tables)) tables[name] = [];
@@ -294,13 +381,18 @@ class QueryBuilder<T = any> implements PromiseLike<{ data: any; error: any }> {
 
     if (this.mode === 'insert' || this.mode === 'upsert') {
       const items = Array.isArray(this.payload) ? this.payload : [this.payload];
+      const conflictKeys = CONFLICT_KEYS[this.table];
       const inserted = items.map((it) => ({ id: it.id ?? uuid(), created_at: new Date().toISOString(), ...it }));
-      // upsert: replace rows with matching id
       inserted.forEach((row) => {
-        const idx = store.findIndex((r) => r.id === row.id);
+        // Match an existing row by natural key (join tables) or by id, so an
+        // upsert updates in place instead of duplicating.
+        const idx = conflictKeys
+          ? store.findIndex((r) => conflictKeys.every((k) => r[k] === row[k]))
+          : store.findIndex((r) => r.id === row.id);
         if (idx >= 0) store[idx] = { ...store[idx], ...row };
         else store.unshift(row);
       });
+      inserted.forEach((row) => emitRealtime(this.table, 'INSERT', row));
       const data = this.singleMode !== 'none' ? inserted[0] ?? null : inserted;
       return { data, error: null };
     }
@@ -334,6 +426,9 @@ class QueryBuilder<T = any> implements PromiseLike<{ data: any; error: any }> {
       });
     }
     if (this.limitN != null) rows = rows.slice(0, this.limitN);
+
+    // Resolve join-style relationship fields (author, reactions, comments, …).
+    rows = withRelations(this.table, rows);
 
     if (this.singleMode === 'single') {
       return rows.length ? { data: rows[0], error: null } : { data: null, error: { code: 'PGRST116', message: 'No rows' } };
@@ -373,17 +468,56 @@ const storage = {
 };
 
 // --------------------------------------------------------------- realtime --
-function channel() {
+// A tiny working pub/sub so screens that rely on Realtime (chat is the main
+// one) actually update when a row is inserted, instead of silently doing
+// nothing. `insert` calls emitRealtime, which fans out to matching listeners.
+type RealtimeSub = { table: string; event: string; field?: string; value?: string; cb: (payload: any) => void };
+const realtimeSubs: RealtimeSub[] = [];
+
+function emitRealtime(table: string, event: string, row: Row) {
+  realtimeSubs.forEach((s) => {
+    if (s.table !== table) return;
+    if (s.event !== '*' && s.event !== event) return;
+    if (s.field && String(row[s.field]) !== String(s.value)) return;
+    setTimeout(() => s.cb({ eventType: event, new: row, old: {}, schema: 'public', table }), 0);
+  });
+}
+
+function channel(_name?: string) {
+  const mine: RealtimeSub[] = [];
   const ch: any = {
-    on() { return ch; },
-    subscribe() { return ch; },
-    unsubscribe() { return Promise.resolve('ok'); },
+    on(type: string, opts: any, cb: (payload: any) => void) {
+      if (type === 'postgres_changes' && opts?.table) {
+        let field: string | undefined;
+        let value: string | undefined;
+        const m = typeof opts.filter === 'string' ? /([^=]+)=eq\.(.+)/.exec(opts.filter) : null;
+        if (m) {
+          field = m[1];
+          value = m[2];
+        }
+        const sub: RealtimeSub = { table: opts.table, event: opts.event || '*', field, value, cb };
+        mine.push(sub);
+        realtimeSubs.push(sub);
+      }
+      return ch;
+    },
+    subscribe(cb?: (status: string) => void) {
+      if (typeof cb === 'function') setTimeout(() => cb('SUBSCRIBED'), 0);
+      return ch;
+    },
+    unsubscribe() {
+      mine.forEach((s) => {
+        const i = realtimeSubs.indexOf(s);
+        if (i >= 0) realtimeSubs.splice(i, 1);
+      });
+      return Promise.resolve('ok');
+    },
   };
   return ch;
 }
 
 // --------------------------------------------------------------------- rpc --
-async function rpc(name: string, _params?: any) {
+async function rpc(name: string, params?: any) {
   switch (name) {
     case 'discover_circle_nearby':
       return { data: seed.discover_nearby, error: null };
@@ -405,6 +539,88 @@ async function rpc(name: string, _params?: any) {
       return { data: 'm1', error: null };
     case 'request_account_deletion':
       return { data: null, error: null };
+
+    // A neighbour's public profile, shaped the way UserProfileScreen expects.
+    // Falls back to the city-discovery list for cross-neighbourhood people.
+    case 'get_public_profile': {
+      const id = params?.p_target_user_id;
+      const p = (tables.profiles as Row[]).find((x) => x.id === id);
+      if (p) {
+        const membership = (seed.society_memberships as Row[]).find((m) => m.user_id === id);
+        return {
+          data: {
+            name: p.name,
+            bio: p.bio ?? null,
+            vibes: p.vibes ?? [],
+            neighbourhood_name: p.neighbourhood?.name ?? 'HSR Layout',
+            tower: membership?.tower ?? null,
+            flat: membership?.flat ?? null,
+            is_same_neighbourhood: true,
+          },
+          error: null,
+        };
+      }
+      const city = (seed.discover_city as Row[]).find((c) => c.user_id === id);
+      if (city) {
+        return {
+          data: {
+            name: city.name,
+            bio: null,
+            vibes: [],
+            neighbourhood_name: city.neighbourhood_name,
+            tower: null,
+            flat: null,
+            is_same_neighbourhood: false,
+          },
+          error: null,
+        };
+      }
+      return { data: null, error: null };
+    }
+
+    case 'mutual_circle':
+      return { data: [], error: null };
+
+    // Return the existing DM with this person, or spin up a fresh one.
+    case 'get_or_create_dm': {
+      const otherId = params?.p_other_user_id;
+      const meId = readUser()?.id ?? seed.ME_ID;
+      const chats = tables.chats as Row[];
+      let chat = chats.find(
+        (c) => !c.is_group && (c.chat_members ?? []).some((m: Row) => m.user_id === otherId) && (c.chat_members ?? []).some((m: Row) => m.user_id === meId)
+      );
+      if (!chat) {
+        chat = {
+          id: 'chat_' + otherId,
+          is_group: false,
+          name: null,
+          emoji: null,
+          chat_members: [
+            { user_id: meId, user: { name: profileLite(meId)?.name ?? 'You' } },
+            { user_id: otherId, user: { name: profileLite(otherId)?.name ?? 'Neighbour' } },
+          ],
+        };
+        chats.unshift(chat);
+      }
+      return { data: chat.id, error: null };
+    }
+
+    case 'get_achievements':
+      return {
+        data: {
+          total_points: 120,
+          donations_count: 1,
+          events_attended_count: 2,
+          validated_alerts_count: 1,
+          city_rank: 7,
+          city_member_count: 214,
+          safety_star: false,
+          helping_hand: false,
+          scene_regular: false,
+        },
+        error: null,
+      };
+
     default:
       return { data: null, error: null };
   }
@@ -414,7 +630,9 @@ export const mockSupabase = {
   auth,
   storage,
   channel,
-  removeChannel() {},
+  removeChannel(ch: any) {
+    ch?.unsubscribe?.();
+  },
   rpc,
   from(table: string) {
     return new QueryBuilder(table);

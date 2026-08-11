@@ -51,6 +51,16 @@ export const IG_GRADIENT_ANGLE = { start: { x: 0, y: 0 }, end: { x: 1, y: 0 } };
 // Story rings run a touch warmer so they read apart from CTA buttons.
 export const STORY_GRADIENT_COLORS = [PRIMARY, SECONDARY, TERTIARY] as const;
 
+// Bottom-nav gradient (deep navy -> sky). Its own teal-blue ramp, distinct from
+// the violet brand gradient, so the tab bar's active pills and the raised
+// centre chat button read as one cohesive control. Matches the Claude Design
+// "Circle Up Nav Redesign" 135° gradient exactly.
+export const NAV_GRADIENT_COLORS = ['#063355', '#0B72A8', '#0EA5B7', '#7DD3FC'] as const;
+export const NAV_GRADIENT_LOCATIONS = [0, 0.4, 0.7, 1] as const;
+export const NAV_GRADIENT_ANGLE = { start: { x: 0, y: 0 }, end: { x: 1, y: 1 } }; // 135deg
+// Inactive tab icon/label grey from the redesign (cooler than ON_SURFACE_MUTED).
+export const NAV_INACTIVE = '#8FA9BC';
+
 export const RED_GRADIENT_COLORS = ['#FF4D4D', '#FF1744', SOS_RED] as const;
 export const RED_GRADIENT_LOCATIONS = [0, 0.45, 1] as const;
 

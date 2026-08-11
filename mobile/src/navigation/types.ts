@@ -12,13 +12,15 @@ export type AuthStackParamList = {
   ProfileSetup: undefined;
 };
 
-// Stitch design system tab set. `Search` was removed (never implemented, and
-// absent from the design); `Chats` moved to a Feed header action so its
-// fully-built flow stays reachable — see MainTabs.tsx.
+// Nav Redesign tab set: Feed(Home) / Explore / Chat(centre) / Bazaar / Profile.
+// Chat is now a first-class centre tab (a raised gradient button — see
+// BottomNav). Guard left the tab bar and lives inside Profile as the "Safety &
+// society" section; it's registered as a stack screen (see ModalStackParamList
+// + RootNavigator) so Profile can open it in one tap.
 export type MainTabsParamList = {
-  Explore: undefined;
   Feed: undefined;
-  Guard: undefined;
+  Explore: undefined;
+  Chat: undefined;
   Bazaar: undefined;
   Profile: undefined;
 };

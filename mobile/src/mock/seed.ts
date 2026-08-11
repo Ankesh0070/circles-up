@@ -211,6 +211,18 @@ export const posts = [
   },
 ];
 
+// Reactions live in their own table (mirrors the real schema) so that a
+// reaction the user adds at runtime merges with the seeded ones — the mock
+// client resolves post.reactions from here, not from the embedded arrays above.
+export const reactions = posts.flatMap((p) =>
+  (p.reactions ?? []).map((r, i) => ({
+    id: `${p.id}_react_${i}`,
+    post_id: p.id,
+    user_id: r.user_id,
+    type: r.type,
+  }))
+);
+
 export const comments = [
   { id: 'c1', post_id: 'p1', author_id: 'u_arjun', text: 'Reserve one sourdough for me please!', created_at: ago(30), author: authorOf('u_arjun') },
   { id: 'c2', post_id: 'p1', author_id: 'u_fatima', text: 'Your banana bread is the best in HSR 😍', created_at: ago(25), author: authorOf('u_fatima') },
@@ -293,8 +305,19 @@ export const listings = [
   }),
 ];
 
+// event_type / privacy_tier / guest_limit / status:'active' match what
+// ScenesScreen and EventDetail query for. starts_at is in the future
+// (negative "mins ago") so events land in the upcoming tab.
+const event = (o: Record<string, any>) => ({
+  privacy_tier: 'open',
+  guest_limit: null,
+  cover_url: null,
+  status: 'active',
+  ...o,
+});
+
 export const events = [
-  {
+  event({
     id: 'e1',
     host_id: 'u_ravi',
     neighbourhood_id: NBHD_ID,
@@ -302,14 +325,11 @@ export const events = [
     description: 'Join us to plant 40 saplings at the HSR BDA park. Gloves and water provided for the first 20.',
     location: 'HSR BDA Park, Sector 3',
     starts_at: ago(-60 * 24 * 2),
-    category: 'Community',
-    cover_url: null,
-    status: 'upcoming',
+    event_type: 'Community',
     created_at: ago(300),
     host: authorOf('u_ravi'),
-    attendee_count: 18,
-  },
-  {
+  }),
+  event({
     id: 'e2',
     host_id: 'u_priya',
     neighbourhood_id: NBHD_ID,
@@ -317,14 +337,11 @@ export const events = [
     description: 'Bring a bake to share and swap recipes. Casual evening at the HSR club lawn.',
     location: 'HSR Club Lawn',
     starts_at: ago(-60 * 24 * 5),
-    category: 'Food',
-    cover_url: null,
-    status: 'upcoming',
+    event_type: 'Food',
     created_at: ago(700),
     host: authorOf('u_priya'),
-    attendee_count: 9,
-  },
-  {
+  }),
+  event({
     id: 'e3',
     host_id: 'u_arjun',
     neighbourhood_id: NBHD_ID,
@@ -332,27 +349,41 @@ export const events = [
     description: '20 km easy ride around HSR and Agara Lake. All levels welcome, helmets mandatory.',
     location: 'Meet at 27th Main signal',
     starts_at: ago(-60 * 24 * 1),
-    category: 'Sports',
-    cover_url: null,
-    status: 'upcoming',
+    event_type: 'Sports',
     created_at: ago(900),
     host: authorOf('u_arjun'),
-    attendee_count: 12,
-  },
+  }),
 ];
 
+// A few going RSVPs so Scenes shows live guest counts and EventDetail has a
+// guest list; the current user can add/'change their own on top.
+export const event_rsvps = [
+  { id: 'rsvp1', event_id: 'e1', user_id: 'u_priya', status: 'going' },
+  { id: 'rsvp2', event_id: 'e1', user_id: 'u_fatima', status: 'going' },
+  { id: 'rsvp3', event_id: 'e1', user_id: 'u_arjun', status: 'going' },
+  { id: 'rsvp4', event_id: 'e2', user_id: 'u_ravi', status: 'going' },
+  { id: 'rsvp5', event_id: 'e2', user_id: 'u_fatima', status: 'going' },
+  { id: 'rsvp6', event_id: 'e3', user_id: 'u_priya', status: 'going' },
+];
+
+// page_type / bio / ngo_approval_status match what MyPagesScreen and
+// PageDetailScreen query for (the old type/description/verified shape crashed
+// the card renderer because page_type was undefined).
 export const pages = [
   {
     id: 'pg1',
     owner_id: 'u_ravi',
     neighbourhood_id: NBHD_ID,
-    type: 'ngo',
+    page_type: 'ngo',
     name: 'Green HSR Foundation',
-    description: 'Community-run NGO greening HSR Layout one park at a time. Donations fund saplings and upkeep.',
-    category: 'Environment',
+    bio: 'Community-run NGO greening HSR Layout one park at a time. Donations fund saplings and upkeep.',
+    ngo_approval_status: 'approved',
+    darpan_id: 'KA/2019/0234567',
+    address: 'Sector 3, HSR Layout',
+    geocode_status: 'verified',
+    profession: null,
+    gst_number: null,
     avatar_url: null,
-    verified: true,
-    donation_enabled: true,
     created_at: ago(5000),
     owner: authorOf('u_ravi'),
   },
@@ -360,13 +391,16 @@ export const pages = [
     id: 'pg2',
     owner_id: 'u_priya',
     neighbourhood_id: NBHD_ID,
-    type: 'business',
+    page_type: 'business',
     name: 'Priya’s Home Bakes',
-    description: 'Small-batch sourdough, banana bread, and celebration cakes. Order a day in advance.',
-    category: 'Food & Beverage',
+    bio: 'Small-batch sourdough, banana bread, and celebration cakes. Order a day in advance.',
+    ngo_approval_status: 'not_applicable',
+    gst_number: '29ABCDE1234F1Z5',
+    address: 'Sector 2, HSR Layout',
+    geocode_status: 'verified',
+    profession: null,
+    darpan_id: null,
     avatar_url: null,
-    verified: false,
-    donation_enabled: false,
     created_at: ago(3000),
     owner: authorOf('u_priya'),
   },
@@ -403,33 +437,35 @@ export const discover_city = [
   { user_id: 'u_city3', name: 'Ananya Das', neighbourhood_name: 'Koramangala', shared_vibes_count: 1 },
 ];
 
-export const conversations = [
-  {
-    id: 'conv1',
-    other: { id: 'u_priya', name: 'Priya Sharma', avatar_url: null },
-    last_message: 'Sure, I’ll reserve a sourdough for you!',
-    last_message_at: ago(20),
-    unread: 1,
-  },
-  {
-    id: 'conv2',
-    other: { id: 'u_arjun', name: 'Arjun Menon', avatar_url: null },
-    last_message: 'The ride starts at 6:30, see you there 🚴',
-    last_message_at: ago(300),
-    unread: 0,
-  },
+// Chat uses the chats / chat_members / messages schema. Members embed a `user`
+// object the way the nested `chat_members(user:profiles(...))` select expects;
+// message authors are resolved from profiles by the mock client.
+const member = (id: string) => ({ user_id: id, user: { name: profiles.find((p) => p.id === id)?.name ?? null } });
+
+export const chats = [
+  { id: 'chat1', is_group: false, name: null as string | null, emoji: null as string | null, chat_members: [member(ME_ID), member('u_priya')] },
+  { id: 'chat2', is_group: false, name: null as string | null, emoji: null as string | null, chat_members: [member(ME_ID), member('u_arjun')] },
+  { id: 'chat3', is_group: true, name: 'HSR Runners', emoji: '🏃', chat_members: [member(ME_ID), member('u_arjun'), member('u_ravi')] },
 ];
+
+// Kept for any legacy reference; the live chat screens read `chats` above.
+export const conversations = chats;
 
 export const messages = [
-  { id: 'msg1', conversation_id: 'conv1', sender_id: 'u_priya', text: 'Hi! Saw you liked my post 🙂', created_at: ago(40) },
-  { id: 'msg2', conversation_id: 'conv1', sender_id: ME_ID, text: 'Yes! Can I get one sourdough for the weekend?', created_at: ago(30) },
-  { id: 'msg3', conversation_id: 'conv1', sender_id: 'u_priya', text: 'Sure, I’ll reserve a sourdough for you!', created_at: ago(20) },
+  { id: 'msg1', chat_id: 'chat1', author_id: 'u_priya', kind: 'text', text: 'Hi! Saw you liked my post 🙂', media_url: null, media_duration_ms: null, created_at: ago(40) },
+  { id: 'msg2', chat_id: 'chat1', author_id: ME_ID, kind: 'text', text: 'Yes! Can I get one sourdough for the weekend?', media_url: null, media_duration_ms: null, created_at: ago(30) },
+  { id: 'msg3', chat_id: 'chat1', author_id: 'u_priya', kind: 'text', text: 'Sure, I’ll reserve a sourdough for you!', media_url: null, media_duration_ms: null, created_at: ago(20) },
+  { id: 'msg4', chat_id: 'chat2', author_id: 'u_arjun', kind: 'text', text: 'The ride starts at 6:30, see you there 🚴', media_url: null, media_duration_ms: null, created_at: ago(300) },
+  { id: 'msg5', chat_id: 'chat3', author_id: 'u_ravi', kind: 'text', text: 'Great run today everyone! Same time next week?', media_url: null, media_duration_ms: null, created_at: ago(180) },
 ];
 
+// type/title/related_id match NotificationsScreen (title was missing before, so
+// every row rendered with a blank heading). circle_connection + related_id
+// lights up the "+ Circle back" button.
 export const notifications = [
-  { id: 'n1', user_id: ME_ID, type: 'reaction', body: 'Priya Sharma loved your post', read: false, created_at: ago(15) },
-  { id: 'n2', user_id: ME_ID, type: 'comment', body: 'Arjun Menon commented on the tree-planting drive', read: false, created_at: ago(90) },
-  { id: 'n3', user_id: ME_ID, type: 'connection', body: 'Fatima Khan connected with you', read: true, created_at: ago(1200) },
+  { id: 'n1', user_id: ME_ID, type: 'points_awarded', title: 'You earned 10 points', body: 'Priya Sharma loved your post', related_id: null as string | null, read: false, created_at: ago(15) },
+  { id: 'n2', user_id: ME_ID, type: 'event_reminder', title: 'New comment', body: 'Arjun Menon commented on the tree-planting drive', related_id: null as string | null, read: false, created_at: ago(90) },
+  { id: 'n3', user_id: ME_ID, type: 'circle_connection', title: 'New connection', body: 'Fatima Khan added you to their circle', related_id: 'u_fatima', read: true, created_at: ago(1200) },
 ];
 
 export const safety_alerts = [
