@@ -4,6 +4,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Briefcase, User, HeartHandshake, MapPin, AlertTriangle, Megaphone } from 'lucide-react-native';
 import { supabase } from '../../shared/api/supabase';
+import PageGenieWidget from './PageGenieWidget';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PageDetail'>;
@@ -192,6 +193,12 @@ export default function PageDetailScreen({ route, navigation }: Props) {
           )}
         </View>
       )}
+
+      {/* Business/NGO pages don't have someone online to answer questions —
+          embed a page-scoped Genie so visitors get grounded answers about
+          donations, contact, and location right here. Not shown on personal
+          pages, which don't carry that kind of structured info. */}
+      {(page.page_type === 'business' || page.page_type === 'ngo') && <PageGenieWidget page={page} />}
     </ScrollView>
   );
 }

@@ -15,6 +15,7 @@ import TrustedContactsScreen from '../features/guard/TrustedContactsScreen';
 import ShareLocationScreen from '../features/guard/ShareLocationScreen';
 import FakeCallScreen from '../features/guard/FakeCallScreen';
 import SilentPhraseScreen from '../features/guard/SilentPhraseScreen';
+import HeaderBackButton from './HeaderBackButton';
 import ExploreTab from '../features/explore/ExploreTab';
 import GuardScreen from '../features/guard/GuardScreen';
 import UserProfileScreen from '../features/explore/UserProfileScreen';
@@ -145,7 +146,9 @@ export default function RootNavigator() {
         <Stack.Screen name="Auth" component={AuthStack} />
       )}
 
-      <Stack.Group screenOptions={{ presentation: 'modal', headerShown: true }}>
+      <Stack.Group
+        screenOptions={{ presentation: 'modal', headerShown: true, headerLeft: () => <HeaderBackButton /> }}
+      >
         {/* Explore and Guard left the tab bar in the nav redesign — they're
             pushed here now (Explore from the Home header compass, Guard from the
             SOS pill). Empty title = just a back chevron over each screen's own
