@@ -192,6 +192,17 @@ const CONFLICT_KEYS: Record<string, string[]> = {
   muted_users: ['user_id', 'muted_user_id'],
 };
 
+// Columns the real Postgres schema fills via DEFAULT (0, false, …) that a
+// screen never sets explicitly on insert — e.g. ad_campaigns.budget_spent
+// only ever gets written by a server-side spend tracker, never the create
+// form. Without this, a freshly-inserted row is missing the field entirely
+// (undefined, not 0), and any screen doing arithmetic or `.toFixed()` on it
+// crashes the whole app. Applied as fallbacks so an explicit payload value
+// always wins.
+const INSERT_DEFAULTS: Record<string, Row> = {
+  ad_campaigns: { budget_spent: 0, impressions: 0, clicks: 0 },
+};
+
 // A trimmed profile the way the nested `author:profiles(...)` selects expect it.
 function profileLite(id: string) {
   const p = (tables.profiles as Row[]).find((x) => x.id === id);
@@ -384,7 +395,13 @@ class QueryBuilder<T = any> implements PromiseLike<{ data: any; error: any }> {
     if (this.mode === 'insert' || this.mode === 'upsert') {
       const items = Array.isArray(this.payload) ? this.payload : [this.payload];
       const conflictKeys = CONFLICT_KEYS[this.table];
-      const inserted = items.map((it) => ({ id: it.id ?? uuid(), created_at: new Date().toISOString(), ...it }));
+      const defaults = INSERT_DEFAULTS[this.table];
+      const inserted = items.map((it) => ({
+        id: it.id ?? uuid(),
+        created_at: new Date().toISOString(),
+        ...defaults,
+        ...it,
+      }));
       inserted.forEach((row) => {
         // Match an existing row by natural key (join tables) or by id, so an
         // upsert updates in place instead of duplicating.

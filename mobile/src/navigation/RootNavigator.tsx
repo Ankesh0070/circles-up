@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 import type { Session } from '@supabase/supabase-js';
+import type { NavigationContainerRefWithCurrent } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AuthStack from './AuthStack';
 import MainTabs from './MainTabs';
@@ -49,7 +50,11 @@ import type { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export default function RootNavigator() {
+export default function RootNavigator({
+  navigationRef,
+}: {
+  navigationRef: NavigationContainerRefWithCurrent<RootStackParamList>;
+}) {
   // `undefined` = still checking; `null` = signed out.
   const [session, setSession] = useState<Session | null | undefined>(undefined);
   // Mirrors architecture.md's routing rule: signup runs the full
@@ -57,6 +62,10 @@ export default function RootNavigator() {
   // straight into Main. `undefined` = still checking (only meaningful once a
   // session exists).
   const [onboarded, setOnboarded] = useState<boolean | undefined>(undefined);
+  // Tracks whether we've ever HAD a session, so the reset effect below only
+  // fires on a genuine sign-out transition (truthy -> null), never on the
+  // very first render where session starts at `undefined`.
+  const hadSessionRef = useRef(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session));
@@ -65,6 +74,26 @@ export default function RootNavigator() {
     });
     return () => subscription.subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (session) hadSessionRef.current = true;
+  }, [session]);
+
+  // Conditionally swapping which screen sits at index 0 (Main vs Auth, below)
+  // only changes what a NEW navigation state would render — it does nothing
+  // about screens already pushed on top from the OLD state, like Settings.
+  // Signing out from inside Settings left people stuck staring at it with no
+  // session and no way back in, because the stack still had ['Main',
+  // 'Settings'] and 'Main' had just stopped being a valid screen out from
+  // under it. resetRoot() throws out the entire navigation state and
+  // rebuilds it from scratch, which is the only way to guarantee every
+  // pushed modal actually goes away the instant the session does.
+  useEffect(() => {
+    if (session === null && hadSessionRef.current && navigationRef.isReady()) {
+      navigationRef.resetRoot({ index: 0, routes: [{ name: 'Auth' }] });
+      hadSessionRef.current = false;
+    }
+  }, [session, navigationRef]);
 
   useEffect(() => {
     if (!session) {

@@ -1,7 +1,7 @@
 import './src/styles/global.css';
 import { useEffect } from 'react';
 import * as Sentry from '@sentry/react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -17,6 +17,8 @@ Sentry.init({
 });
 
 function App() {
+  const navigationRef = useNavigationContainerRef();
+
   useEffect(() => {
     // Phase 48 — Android SOS notification channel setup. Safe to run
     // unconditionally on every launch (idempotent, no permission prompt).
@@ -26,8 +28,8 @@ function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <NavigationContainer>
-          <RootNavigator />
+        <NavigationContainer ref={navigationRef}>
+          <RootNavigator navigationRef={navigationRef} />
         </NavigationContainer>
         <StatusBar style="auto" />
       </SafeAreaProvider>

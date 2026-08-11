@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { View, Text, Pressable, FlatList, useWindowDimensions } from 'react-native';
+import { View, Text, Pressable, FlatList, Share, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as Clipboard from 'expo-clipboard';
 import { Heart, MessageCircle, Share2, Bookmark, Play } from 'lucide-react-native';
 import Avatar from '../../shared/components/Avatar';
 
@@ -26,6 +27,22 @@ const REELS: Reel[] = [
 export default function ReelsScreen() {
   const { height } = useWindowDimensions();
   const [liked, setLiked] = useState<Record<string, boolean>>({});
+  const [saved, setSaved] = useState<Record<string, boolean>>({});
+  const [justCopiedId, setJustCopiedId] = useState<string | null>(null);
+
+  const share = async (item: Reel) => {
+    const message = `@${item.username} on Circle Up Reels: ${item.caption}`;
+    try {
+      await Share.share({ message });
+    } catch {
+      // Share.share() rejects outright where navigator.share isn't available
+      // (most desktop browsers) — fall back to copying so the tap still does
+      // something rather than silently failing.
+      await Clipboard.setStringAsync(message);
+      setJustCopiedId(item.id);
+      setTimeout(() => setJustCopiedId(null), 1500);
+    }
+  };
 
   // Full-bleed page height; the tab bar overlays the bottom edge.
   const pageHeight = height;
@@ -41,6 +58,7 @@ export default function ReelsScreen() {
         decelerationRate="fast"
         renderItem={({ item }) => {
           const isLiked = !!liked[item.id];
+          const isSaved = !!saved[item.id];
           const likeCount = item.likes + (isLiked ? 1 : 0);
           return (
             <View style={{ height: pageHeight, width: '100%' }}>
@@ -85,8 +103,15 @@ export default function ReelsScreen() {
                   <MessageCircle size={29} color="#fff" strokeWidth={2} />
                   <Text style={{ color: '#fff', fontSize: 11, fontWeight: '600' }}>{item.comments}</Text>
                 </View>
-                <Share2 size={27} color="#fff" strokeWidth={2} />
-                <Bookmark size={27} color="#fff" strokeWidth={2} />
+                <Pressable onPress={() => share(item)} style={{ alignItems: 'center', gap: 4 }} hitSlop={8}>
+                  <Share2 size={27} color="#fff" strokeWidth={2} />
+                  {justCopiedId === item.id && (
+                    <Text style={{ color: '#fff', fontSize: 10, fontWeight: '600' }}>Copied</Text>
+                  )}
+                </Pressable>
+                <Pressable onPress={() => setSaved((s) => ({ ...s, [item.id]: !s[item.id] }))} hitSlop={8}>
+                  <Bookmark size={27} color={isSaved ? '#FFD34D' : '#fff'} fill={isSaved ? '#FFD34D' : 'transparent'} strokeWidth={2} />
+                </Pressable>
               </View>
 
               {/* Author + caption */}

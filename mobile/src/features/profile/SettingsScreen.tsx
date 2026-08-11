@@ -114,13 +114,13 @@ export default function SettingsScreen() {
 
       <Pressable
         onPress={async () => {
+          // RootNavigator remounts its whole navigator on session change
+          // (keyed on signed-in-or-not), which discards Settings and any
+          // other open modal along with it — no imperative pop needed here,
+          // and calling one against a navigator that's mid-remount was
+          // exactly what used to leave people stuck staring at a Settings
+          // screen for an account they were no longer signed into.
           await supabase.auth.signOut();
-          // Signing out swaps the root screen from Main to Auth, but Settings
-          // is a modal sitting ON TOP of that swap — leave it there and the
-          // person keeps staring at a Settings screen for an account they're
-          // no longer signed into, as if the button did nothing. Pop back so
-          // the Login screen underneath is what they actually see.
-          navigation.popToTop();
         }}
         className="flex-row items-center justify-center gap-2 mx-5 mt-6 py-3.5 rounded-xl bg-white"
       >

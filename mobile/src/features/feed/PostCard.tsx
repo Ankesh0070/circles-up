@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { View, Text, Image, Pressable } from 'react-native';
+import { View, Text, Image, Pressable, Share } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MessageCircle, MoreHorizontal, Bookmark } from 'lucide-react-native';
@@ -46,6 +47,7 @@ export default function PostCard({ post, onChanged }: { post: FeedPost; onChange
   const [pickerOpen, setPickerOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [justCopied, setJustCopied] = useState(false);
 
   const cat = categoryMeta(post.category);
   const Icon = cat.icon;
@@ -104,6 +106,20 @@ export default function PostCard({ post, onChanged }: { post: FeedPost; onChange
   };
 
   const quickLike = () => react('like');
+
+  const share = async () => {
+    const message = `${post.author?.name ?? 'A neighbour'} on Circle Up: ${post.caption}`;
+    try {
+      await Share.share({ message });
+    } catch {
+      // Share.share() rejects outright where navigator.share isn't available
+      // (most desktop browsers) — fall back to copying so the tap still does
+      // something rather than silently failing.
+      await Clipboard.setStringAsync(message);
+      setJustCopied(true);
+      setTimeout(() => setJustCopied(false), 1500);
+    }
+  };
 
   return (
     <Card padded={false} style={{ padding: 16 }}>
@@ -177,8 +193,9 @@ export default function PostCard({ post, onChanged }: { post: FeedPost; onChange
           <Text style={{ fontSize: 13.5, color: ON_SURFACE_MUTED, fontWeight: '600' }}>{post.commentCount}</Text>
         </Pressable>
 
-        <Pressable hitSlop={8}>
-          <PremiumShareIcon size={19} />
+        <Pressable onPress={share} hitSlop={8} style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+          <PremiumShareIcon size={19} color={justCopied ? PRIMARY : '#181C20'} />
+          {justCopied && <Text style={{ fontSize: 11.5, color: PRIMARY, fontWeight: '600' }}>Copied</Text>}
         </Pressable>
 
         <Pressable onPress={toggleSave} hitSlop={8} style={{ marginLeft: 'auto' }}>

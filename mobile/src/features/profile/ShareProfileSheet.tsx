@@ -49,7 +49,15 @@ export default function ShareProfileSheet() {
   };
 
   const shareLink = async () => {
-    await Share.share({ message: `Check out ${profile.name} on Circle Up: ${link}` });
+    try {
+      await Share.share({ message: `Check out ${profile.name} on Circle Up: ${link}` });
+    } catch {
+      // Share.share() rejects outright on browsers without navigator.share
+      // (most desktop browsers) rather than failing silently — fall back to
+      // copying the link so the button still does something useful instead
+      // of looking broken.
+      await copyLink();
+    }
   };
 
   return (

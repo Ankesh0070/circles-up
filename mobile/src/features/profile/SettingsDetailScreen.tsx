@@ -404,18 +404,16 @@ function NotificationPrefsSection() {
 }
 
 function DeleteAccountSection() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [confirmText, setConfirmText] = useState('');
   const [deleting, setDeleting] = useState(false);
 
   const confirmDelete = async () => {
     setDeleting(true);
     await supabase.rpc('request_account_deletion');
+    // RootNavigator remounts its whole navigator on session change (keyed on
+    // signed-in-or-not) once signOut() flips it, which discards this modal
+    // along with everything else on the stack — no imperative pop needed.
     await supabase.auth.signOut();
-    // Signing out flips RootNavigator's session listener back to the Auth
-    // stack, but that swap happens UNDERNEATH this modal — without popping,
-    // a just-deleted account is left looking at its own settings screen.
-    navigation.popToTop();
   };
 
   return (

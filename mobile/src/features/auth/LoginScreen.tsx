@@ -6,6 +6,7 @@ import CircleUpLogo from '../../shared/components/CircleUpLogo';
 import GradientText from '../../shared/components/GradientText';
 import GradientButton from '../../shared/components/GradientButton';
 import TextField from '../../shared/components/TextField';
+import AlertModal from '../../shared/components/AlertModal';
 import GoogleLogo from './GoogleLogo';
 import { supabase, mockSignIn } from '../../shared/api/supabase';
 import { signInWithGoogle, GOOGLE_AUTH_ENABLED } from '../../shared/api/googleAuth';
@@ -30,6 +31,7 @@ export default function LoginScreen({ navigation }: Props) {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [forgotOpen, setForgotOpen] = useState(false);
 
   const handleGoogle = async () => {
     if (googleLoading) return;
@@ -106,7 +108,7 @@ export default function LoginScreen({ navigation }: Props) {
         <View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, marginLeft: 4 }}>
             <Text style={{ fontSize: 13, fontWeight: '600', color: ON_SURFACE_MUTED }}>Password</Text>
-            <Pressable hitSlop={6}>
+            <Pressable onPress={() => setForgotOpen(true)} hitSlop={6}>
               <Text style={{ fontSize: 13, fontWeight: '700', color: PRIMARY }}>Forgot password?</Text>
             </Pressable>
           </View>
@@ -176,6 +178,13 @@ export default function LoginScreen({ navigation }: Props) {
           <Text style={{ color: ON_SURFACE, fontWeight: '600' }}>Privacy</Text>
         </Text>
       </View>
+
+      <AlertModal
+        visible={forgotOpen}
+        title="No password reset needed"
+        message="This is a demo build — there's no real account or password behind it. Just type any name and any password (6+ characters) on the login screen to sign in."
+        onClose={() => setForgotOpen(false)}
+      />
     </ScrollView>
   );
 }
