@@ -9,7 +9,7 @@ import TextField from '../../shared/components/TextField';
 import Card from '../../shared/components/Card';
 import GoogleLogo from './GoogleLogo';
 import { supabase } from '../../shared/api/supabase';
-import { signInWithGoogle } from '../../shared/api/googleAuth';
+import { signInWithGoogle, GOOGLE_AUTH_ENABLED } from '../../shared/api/googleAuth';
 import {
   SURFACE,
   ON_SURFACE,
@@ -59,9 +59,20 @@ export default function SignupScreen({ navigation }: Props) {
   if (picked === 'email') return <EmailSignupForm onBack={() => setPicked(null)} />;
   if (picked === 'phone') return <PhoneSignupForm onBack={() => setPicked(null)} navigation={navigation} />;
 
+  // Gmail only appears when Google OAuth is actually configured (see
+  // googleAuth.ts). Otherwise it's a dead end that just tells people to use
+  // email/phone — so it's dropped, and Email becomes the highlighted option.
   const methods = [
-    { key: 'gmail' as const, title: 'Continue with Gmail', sub: 'Fastest — use your Google account', primary: true },
-    { key: 'email' as const, title: 'Sign up with Email', sub: 'Use any email + a password', icon: Mail },
+    ...(GOOGLE_AUTH_ENABLED
+      ? [{ key: 'gmail' as const, title: 'Continue with Gmail', sub: 'Fastest — use your Google account', primary: true }]
+      : []),
+    {
+      key: 'email' as const,
+      title: 'Sign up with Email',
+      sub: 'Use any email + a password',
+      icon: Mail,
+      primary: !GOOGLE_AUTH_ENABLED,
+    },
     { key: 'phone' as const, title: 'Sign up with Phone', sub: '+91 number + OTP verification', icon: Smartphone },
   ];
 
@@ -151,12 +162,18 @@ export default function SignupScreen({ navigation }: Props) {
                 borderRadius: 22,
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: m.primary ? SURFACE : `${PRIMARY}14`,
-                borderWidth: m.primary ? 1 : 0,
+                // Google's card uses a plain surface plate for its logo; the
+                // others use a tinted circle behind their lucide icon.
+                backgroundColor: m.key === 'gmail' ? SURFACE : `${PRIMARY}14`,
+                borderWidth: m.key === 'gmail' ? 1 : 0,
                 borderColor: OUTLINE_VARIANT,
               }}
             >
-              {m.primary ? <GoogleLogo size={22} /> : m.icon ? <m.icon size={20} color={PRIMARY} strokeWidth={2.1} /> : null}
+              {m.key === 'gmail' ? (
+                <GoogleLogo size={22} />
+              ) : m.icon ? (
+                <m.icon size={20} color={PRIMARY} strokeWidth={2.1} />
+              ) : null}
             </View>
             <View style={{ flex: 1 }}>
               <Text style={{ fontSize: 15, fontWeight: '700', color: ON_SURFACE }}>

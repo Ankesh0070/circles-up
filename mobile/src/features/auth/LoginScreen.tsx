@@ -8,7 +8,7 @@ import GradientButton from '../../shared/components/GradientButton';
 import TextField from '../../shared/components/TextField';
 import GoogleLogo from './GoogleLogo';
 import { supabase } from '../../shared/api/supabase';
-import { signInWithGoogle } from '../../shared/api/googleAuth';
+import { signInWithGoogle, GOOGLE_AUTH_ENABLED } from '../../shared/api/googleAuth';
 import {
   SURFACE,
   ON_SURFACE,
@@ -148,32 +148,36 @@ export default function LoginScreen({ navigation }: Props) {
         </GradientButton>
       </View>
 
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, marginVertical: 28 }}>
-        <View style={{ flex: 1, height: 1, backgroundColor: OUTLINE_VARIANT }} />
-        <Text style={{ fontSize: 12, color: ON_SURFACE_MUTED, fontWeight: '700', letterSpacing: 1 }}>OR</Text>
-        <View style={{ flex: 1, height: 1, backgroundColor: OUTLINE_VARIANT }} />
-      </View>
+      {GOOGLE_AUTH_ENABLED && (
+        <>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16, marginVertical: 28 }}>
+            <View style={{ flex: 1, height: 1, backgroundColor: OUTLINE_VARIANT }} />
+            <Text style={{ fontSize: 12, color: ON_SURFACE_MUTED, fontWeight: '700', letterSpacing: 1 }}>OR</Text>
+            <View style={{ flex: 1, height: 1, backgroundColor: OUTLINE_VARIANT }} />
+          </View>
 
-      <Pressable
-        onPress={handleGoogle}
-        disabled={googleLoading}
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 12,
-          paddingVertical: 16,
-          borderRadius: RADIUS.chip,
-          borderWidth: 1.5,
-          borderColor: OUTLINE_VARIANT,
-          opacity: googleLoading ? 0.6 : 1,
-        }}
-      >
-        <GoogleLogo size={20} />
-        <Text style={{ fontSize: 15, fontWeight: '600', color: ON_SURFACE }}>
-          {googleLoading ? 'Opening Google…' : 'Continue with Google'}
-        </Text>
-      </Pressable>
+          <Pressable
+            onPress={handleGoogle}
+            disabled={googleLoading}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 12,
+              paddingVertical: 16,
+              borderRadius: RADIUS.chip,
+              borderWidth: 1.5,
+              borderColor: OUTLINE_VARIANT,
+              opacity: googleLoading ? 0.6 : 1,
+            }}
+          >
+            <GoogleLogo size={20} />
+            <Text style={{ fontSize: 15, fontWeight: '600', color: ON_SURFACE }}>
+              {googleLoading ? 'Opening Google…' : 'Continue with Google'}
+            </Text>
+          </Pressable>
+        </>
+      )}
 
       <View style={{ marginTop: 'auto', paddingTop: 32, alignItems: 'center' }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>

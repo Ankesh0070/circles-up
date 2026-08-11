@@ -1,6 +1,13 @@
 import { Platform } from 'react-native';
 import { supabase } from './supabase';
 
+// Whether to show the "Continue with Google" option at all. Google OAuth needs
+// a Google Cloud client wired into Supabase, which isn't set up on this
+// project — so by default the button is hidden rather than shown as a dead end
+// that just tells people to use email/phone. Set EXPO_PUBLIC_GOOGLE_AUTH=1
+// once the provider is enabled to bring it back.
+export const GOOGLE_AUTH_ENABLED = process.env.EXPO_PUBLIC_GOOGLE_AUTH === '1';
+
 // Real Google sign-in via Supabase's OAuth flow. Replaces the prototype's
 // UI-only Google sheet, which collected credentials it never sent anywhere
 // and dead-ended on a "not wired yet" note.
