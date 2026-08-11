@@ -171,7 +171,8 @@ const tables: Record<string, Row[]> = {
   page_followers: [],
   donations: [],
   ads: [],
-  stories: [],
+  stories: seed.stories,
+  story_views: [],
   reports: [],
 };
 
@@ -235,6 +236,7 @@ function withRelations(table: string, rows: Row[]): Row[] {
     case 'pages':
       return rows.map((r) => ({ ...r, owner: r.owner ?? profileLite(r.owner_id) }));
     case 'messages':
+    case 'stories':
       return rows.map((r) => ({ ...r, author: r.author ?? profileLite(r.author_id) }));
     case 'saved_posts':
       return rows.map((r) => ({ ...r, post: r.post ?? (tables.posts as Row[]).find((p) => p.id === r.post_id) ?? null }));

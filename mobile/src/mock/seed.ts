@@ -84,6 +84,26 @@ export const profiles = [
     created_at: ago(60 * 24 * 400),
     neighbourhood: { id: NBHD_ID, name: 'HSR Layout', city: 'Bengaluru' },
   },
+  ...([
+    ['u_sneha', 'Sneha Iyer', 'snehai', 'Yoga teacher · Sector 4', ['Yogi', 'Reader', 'Tea Person']],
+    ['u_karan', 'Karan Reddy', 'karanr', 'Weekend cyclist · Photographer', ['Cyclist', 'Photographer', 'Coffee Snob']],
+    ['u_ananya', 'Ananya Das', 'ananyad', 'Potter & painter · Tower 9', ['Artist', 'Potter', 'Foodie']],
+    ['u_vikram', 'Vikram Nair', 'vikramn', 'Dad of two · Cricket on Sundays', ['Cricketer', 'Dad', 'Runner']],
+    ['u_deepa', 'Deepa Rao', 'deepar', 'Home chef · Loves farmers markets', ['Chef', 'Baker', 'Gardener']],
+    ['u_imran', 'Imran Sheikh', 'imrans', 'Musician · Guitar teacher', ['Musician', 'Guitarist', 'Foodie']],
+  ] as const).map(([id, name, username, bio, vibes], i) => ({
+    id,
+    name,
+    username,
+    bio,
+    avatar_url: null as string | null,
+    vibes: vibes as unknown as string[],
+    active_neighbourhood_id: NBHD_ID,
+    onboarding_completed: true,
+    points: 150 + i * 45,
+    created_at: ago(60 * 24 * (70 + i * 20)),
+    neighbourhood: { id: NBHD_ID, name: 'HSR Layout', city: 'Bengaluru' },
+  })),
 ];
 
 const authorOf = (id: string) => {
@@ -91,7 +111,7 @@ const authorOf = (id: string) => {
   return { name: p.name, avatar_url: p.avatar_url, created_at: p.created_at };
 };
 
-export const posts = [
+const basePosts = [
   {
     id: 'p1',
     author_id: 'u_priya',
@@ -210,6 +230,83 @@ export const posts = [
     comments: [],
   },
 ];
+
+// ---------------------------------------------------------------------------
+// 100+ image posts — studio-quality, activity-matched Unsplash photos so the
+// feed, profile grids and thumbnails all have real imagery. Each activity's
+// photo id is verified-resolving; captions carry the HSR-neighbourhood voice.
+// ---------------------------------------------------------------------------
+const IMG = (id: string) => `https://images.unsplash.com/photo-${id}?w=800&q=80&auto=format&fit=crop`;
+
+const ACTIVITIES: { img: string; cat: string; cap: string }[] = [
+  { img: '1509440159596-0249088772ff', cat: 'recommend', cap: 'Fresh cinnamon rolls straight out of the oven 🥐 DM to reserve a box — Sector 2 pickup.' },
+  { img: '1541625602330-2277a4c46182', cat: 'event', cap: 'Sunday ride around Agara Lake done — 22 km, perfect weather 🚴 Join us next weekend!' },
+  { img: '1495474472287-4d71bcdd2085', cat: 'recommend', cap: 'The filter coffee at the new place on 27th Main is unreal ☕ ₹40 and proper Mysore style.' },
+  { img: '1416879595882-3373a0480b5b', cat: 'general', cap: 'Spent the morning in the community garden 🌱 tomatoes are finally coming in.' },
+  { img: '1552674605-db6ffd4facb5', cat: 'event', cap: 'Morning run crew hit 5 km before sunrise 🏃 same time Wednesday if anyone wants in.' },
+  { img: '1544367567-0f2fcb009e0b', cat: 'event', cap: 'Rooftop yoga session was so peaceful this morning 🧘 mats extra if you forget yours.' },
+  { img: '1513364776144-60967b0f800f', cat: 'general', cap: 'Finished this little canvas over the weekend 🎨 slow mornings hit different.' },
+  { img: '1481627834876-b7833e8f5570', cat: 'general', cap: 'Book club pick for the month is done 📖 loved every page. Meet Sunday at the club?' },
+  { img: '1450778869180-41d0601e046e', cat: 'general', cap: 'Evening walk with this good boy 🐕 he says hi to the whole block.' },
+  { img: '1488459716781-31db52582fe9', cat: 'recommend', cap: 'Farmers market haul today 🥬 organic greens, local honey, the works. Go early!' },
+  { img: '1466637574441-749b8f19452f', cat: 'recommend', cap: 'Sunday biryani experiment turned out great 🍚 recipe in comments if anyone wants it.' },
+  { img: '1511671782779-c97d3d27a1d4', cat: 'general', cap: 'Late-night riff session 🎸 teaching a beginners class Saturdays if anyone’s keen.' },
+  { img: '1466692476868-aef1dfb1e735', cat: 'general', cap: 'My balcony jungle is officially out of control 🌿 free cuttings to anyone starting out.' },
+  { img: '1565193566173-7a0ee3dbe261', cat: 'general', cap: 'Wheel-throwing afternoon at the studio 🏺 there’s something meditative about clay.' },
+  { img: '1529699211952-734e80c4d42b', cat: 'event', cap: 'Chess evenings are back at the clubhouse ♟️ all levels welcome, Thursdays 6 PM.' },
+  { img: '1626224583764-f87db24ac4ea', cat: 'event', cap: 'Badminton doubles on the community court tonight 🏸 need two more players!' },
+  { img: '1452587925148-ce544e77e70d', cat: 'general', cap: 'Golden hour on the terrace 📷 HSR skies have been showing off lately.' },
+  { img: '1551632811-561732d1e306', cat: 'event', cap: 'Weekend trek to Nandi Hills — sunrise above the clouds ⛰️ planning another soon.' },
+  { img: '1544787219-7f47ccb76574', cat: 'general', cap: 'Perfect evening for a cup of adrak chai 🍵 monsoon vibes finally here.' },
+  { img: '1504674900247-0877df9cc836', cat: 'recommend', cap: 'Street food crawl through the block was a win 🌮 that dosa cart near Gate 3, wow.' },
+  { img: '1531415074968-036ba1b575da', cat: 'event', cap: 'Sunday gully cricket got competitive 🏏 rematch next week, bring your A game.' },
+  { img: '1530103862676-de8c9debad1d', cat: 'general', cap: 'Little one turned five today 🎂 thank you to everyone who dropped by!' },
+  { img: '1506126613408-eca07ce68773', cat: 'general', cap: 'Quiet morning meditation before the city wakes up 🧘‍♀️ ten minutes changes the day.' },
+  { img: '1470252649378-9c29740c9fa8', cat: 'general', cap: 'Caught the sunrise from the terrace today 🌅 worth the early alarm.' },
+  { img: '1524492412937-b28074a5d7da', cat: 'general', cap: 'Morning visit to the temple before the crowds 🛕 calm start to the week.' },
+  { img: '1514888286974-6c03e2ca1dba', cat: 'lost_found', cap: 'This cat has been hanging around Tower 7 for two days 🐈 anyone missing her?' },
+  { img: '1504148455328-c376907d081c', cat: 'general', cap: 'Built a little bookshelf this weekend 🪚 first woodworking project, hooked already.' },
+  { img: '1431324155629-1a6deb1dec8d', cat: 'event', cap: 'Evening football at the ground was electric ⚽ we play Saturdays, come through.' },
+  { img: '1508700115892-45ecd05ae2ad', cat: 'event', cap: 'Dance class this weekend was so much fun 💃 beginners batch starting next month.' },
+  { img: '1542838132-92c53300491e', cat: 'recommend', cap: 'Sunday flea market was buzzing 🛍️ picked up some gorgeous handmade pottery.' },
+  { img: '1526401485004-46910ecc8e51', cat: 'event', cap: 'Picnic at the park with the block families 🧺 potluck next Sunday, all welcome!' },
+  { img: '1530549387789-4c1017266635', cat: 'general', cap: 'Early morning laps at the community pool 🏊 best way to beat the heat.' },
+  { img: '1493225457124-a3eb161ffa5f', cat: 'event', cap: 'Open mic night at the clubhouse was magic 🎶 next one’s in two weeks, sign up!' },
+  { img: '1550831107-1553da8c8464', cat: 'general', cap: 'Cozy knitting evening 🧶 making winter scarves — taking a couple of custom orders.' },
+];
+
+const GEN_AUTHORS = ['u_priya', 'u_arjun', 'u_fatima', 'u_ravi', 'u_sneha', 'u_karan', 'u_ananya', 'u_vikram', 'u_deepa', 'u_imran'];
+
+// Synthetic reaction rows (padding) purely so counts vary; the mock only needs
+// reactions.length for the count and whether ME_ID is present for "you reacted".
+const genReactions = (postId: string, count: number, meReacts: boolean) => {
+  const arr: { user_id: string; type: string }[] = [];
+  for (let i = 0; i < count; i++) arr.push({ user_id: `${postId}_r${i}`, type: i % 4 === 0 ? 'love' : 'like' });
+  if (meReacts) arr.push({ user_id: ME_ID, type: 'love' });
+  return arr;
+};
+
+// author is intentionally omitted — the mock client resolves it from profiles
+// at read time, so ME-authored posts pick up the name typed at login.
+const generatedPosts = Array.from({ length: 100 }, (_, i) => {
+  const a = ACTIVITIES[i % ACTIVITIES.length];
+  const author_id = i % 11 === 5 ? ME_ID : GEN_AUTHORS[i % GEN_AUTHORS.length];
+  const id = `gp${i + 1}`;
+  return {
+    id,
+    author_id,
+    neighbourhood_id: NBHD_ID,
+    category: a.cat,
+    caption: a.cap,
+    media_urls: [IMG(a.img)],
+    image_urls: [IMG(a.img)],
+    created_at: ago(45 + i * 33),
+    reactions: genReactions(id, 3 + ((i * 7) % 44), i % 6 === 0),
+    comments: [] as { id: string }[],
+  };
+});
+
+export const posts = [...basePosts, ...generatedPosts];
 
 // Reactions live in their own table (mirrors the real schema) so that a
 // reaction the user adds at runtime merges with the seeded ones — the mock
@@ -466,6 +563,18 @@ export const notifications = [
   { id: 'n1', user_id: ME_ID, type: 'points_awarded', title: 'You earned 10 points', body: 'Priya Sharma loved your post', related_id: null as string | null, read: false, created_at: ago(15) },
   { id: 'n2', user_id: ME_ID, type: 'event_reminder', title: 'New comment', body: 'Arjun Menon commented on the tree-planting drive', related_id: null as string | null, read: false, created_at: ago(90) },
   { id: 'n3', user_id: ME_ID, type: 'circle_connection', title: 'New connection', body: 'Fatima Khan added you to their circle', related_id: 'u_fatima', read: true, created_at: ago(1200) },
+];
+
+// Stories — image-backed, one per neighbour, newest first. media_url points at
+// the same studio Unsplash set; the mock client resolves `author` from profiles.
+export const stories = [
+  { id: 'st1', author_id: 'u_priya', media_url: IMG('1509440159596-0249088772ff'), caption: 'Fresh bakes ☀️', created_at: ago(20) },
+  { id: 'st2', author_id: 'u_arjun', media_url: IMG('1541625602330-2277a4c46182'), caption: 'Morning ride 🚴', created_at: ago(55) },
+  { id: 'st3', author_id: 'u_ananya', media_url: IMG('1565193566173-7a0ee3dbe261'), caption: 'Studio day 🏺', created_at: ago(90) },
+  { id: 'st4', author_id: 'u_ravi', media_url: IMG('1416879595882-3373a0480b5b'), caption: 'In the garden 🌱', created_at: ago(120) },
+  { id: 'st5', author_id: 'u_sneha', media_url: IMG('1544367567-0f2fcb009e0b'), caption: 'Rooftop yoga 🧘', created_at: ago(150) },
+  { id: 'st6', author_id: 'u_imran', media_url: IMG('1511671782779-c97d3d27a1d4'), caption: 'Jam session 🎸', created_at: ago(200) },
+  { id: 'st7', author_id: 'u_deepa', media_url: IMG('1488459716781-31db52582fe9'), caption: 'Market haul 🥬', created_at: ago(240) },
 ];
 
 export const safety_alerts = [
