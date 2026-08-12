@@ -68,15 +68,10 @@ export default function RootNavigator({
   const hadSessionRef = useRef(false);
 
   useEffect(() => {
-    // Public demo link: every fresh visit should land on the login screen,
-    // not silently resume whatever account was last signed in on this
-    // browser (a previous visitor, an earlier testing session, ...) via the
-    // localStorage session a normal app would intentionally persist. Signing
-    // out before the first session check means the link always opens to
-    // Login; logging in during that visit still works normally.
-    supabase.auth.signOut().finally(() => {
-      supabase.auth.getSession().then(({ data }) => setSession(data.session));
-    });
+    // Resume whatever account was last signed in on this browser — both the
+    // session (AUTH_KEY) and everything that account created/changed
+    // (PERSIST_KEY, see mock/client.ts) survive a reload, same as a real app.
+    supabase.auth.getSession().then(({ data }) => setSession(data.session));
     const { data: subscription } = supabase.auth.onAuthStateChange((_event, newSession) => {
       setSession(newSession);
     });

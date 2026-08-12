@@ -11,6 +11,10 @@ type Row = Record<string, any>;
 
 // -------------------------------------------------------------- fake auth --
 const AUTH_KEY = 'mock_user';
+// Everything a signed-in person creates or changes (posts, profile edits,
+// RSVPs, listings, ...) — separate from AUTH_KEY, which is just "who's
+// signed in." See loadPersisted()/persist() near the table store below.
+const PERSIST_KEY = 'mock_db_v1';
 
 export interface MockUser {
   id: string;
@@ -56,7 +60,6 @@ function syncMeProfile() {
     me.username = (u.name || 'you').toLowerCase().replace(/\s+/g, '') || 'you';
   }
 }
-syncMeProfile();
 
 function notifyAuth(event: string) {
   const session = sessionOf(readUser());
@@ -97,6 +100,7 @@ export function mockSignUp(name: string, email?: string): MockUser {
   for (let i = seed.society_memberships.length - 1; i >= 0; i--) {
     if (seed.society_memberships[i].user_id === seed.ME_ID) seed.society_memberships.splice(i, 1);
   }
+  persist();
   return user;
 }
 
@@ -303,6 +307,45 @@ function tableFor(name: string): Row[] {
   return tables[name];
 }
 
+// -------------------------------------------------------------- persistence --
+// Mirrors the whole table store into localStorage after every mutation, and
+// restores it — in place, so every file's direct `seed.X` array reference
+// stays the SAME object, just with different contents — the moment this
+// module loads. This is what makes a new post, an edited profile, an RSVP,
+// etc. survive a page reload instead of resetting to the seed defaults every
+// time. Auth (who's signed in) stays a separate concern tracked by AUTH_KEY;
+// this key is purely "what has that account created or changed."
+function persist() {
+  try {
+    if (typeof localStorage === 'undefined') return;
+    localStorage.setItem(PERSIST_KEY, JSON.stringify(tables));
+  } catch {
+    // Storage full/unavailable (e.g. private browsing) — this session just
+    // stays in-memory-only rather than crashing on every write.
+  }
+}
+
+function loadPersisted() {
+  try {
+    const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(PERSIST_KEY) : null;
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    for (const name of Object.keys(saved)) {
+      const rows = saved[name];
+      if (!Array.isArray(rows)) continue;
+      const arr = tableFor(name);
+      arr.length = 0;
+      arr.push(...rows);
+    }
+  } catch {
+    // Corrupt or outdated snapshot (e.g. from a previous build's shape) —
+    // fall back to the fresh seed defaults rather than getting stuck.
+  }
+}
+
+loadPersisted();
+syncMeProfile();
+
 function uuid() {
   return 'id_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
 }
@@ -450,6 +493,7 @@ class QueryBuilder<T = any> implements PromiseLike<{ data: any; error: any }> {
         else store.unshift(row);
       });
       inserted.forEach((row) => emitRealtime(this.table, 'INSERT', row));
+      persist();
       const data = this.singleMode !== 'none' ? inserted[0] ?? null : inserted;
       return { data, error: null };
     }
@@ -468,6 +512,7 @@ class QueryBuilder<T = any> implements PromiseLike<{ data: any; error: any }> {
         const updatedMe = current && matched.find((r) => r.id === current.id);
         if (updatedMe) writeUser({ ...current, name: updatedMe.name });
       }
+      persist();
       const data = this.singleMode !== 'none' ? matched[0] ?? null : matched;
       return { data, error: null };
     }
@@ -478,6 +523,7 @@ class QueryBuilder<T = any> implements PromiseLike<{ data: any; error: any }> {
         const idx = store.indexOf(row);
         if (idx >= 0) store.splice(idx, 1);
       });
+      persist();
       return { data: matched, error: null };
     }
 
