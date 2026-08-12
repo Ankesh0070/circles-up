@@ -76,6 +76,30 @@ export function mockSignIn(name: string, email?: string): MockUser {
   return user;
 }
 
+// Signup screens call this instead of mockSignIn — a returning user
+// (mockSignIn) keeps whatever onboarding state the demo profile already has,
+// but a brand-new account has to actually walk the Address -> ProfileSetup
+// gauntlet the way it was designed to. Resets onboarding_completed to false
+// and wipes the previous demo session's profile/membership data so that
+// gauntlet has something real to fill in rather than resuming an
+// already-"onboarded" seed profile.
+export function mockSignUp(name: string, email?: string): MockUser {
+  const user = mockSignIn(name, email);
+  const me = seed.profiles.find((p) => p.id === seed.ME_ID);
+  if (me) {
+    me.onboarding_completed = false;
+    me.bio = null;
+    me.vibes = [];
+    me.avatar_url = null;
+    me.active_neighbourhood_id = null;
+    me.neighbourhood = null;
+  }
+  for (let i = seed.society_memberships.length - 1; i >= 0; i--) {
+    if (seed.society_memberships[i].user_id === seed.ME_ID) seed.society_memberships.splice(i, 1);
+  }
+  return user;
+}
+
 export function mockCurrentUser(): MockUser | null {
   return readUser();
 }
@@ -111,14 +135,19 @@ const auth = {
     return { data: { user, session: sessionOf(user) }, error: null as any };
   },
   async signUp({ email }: { email?: string; phone?: string; password: string }) {
-    const user = mockSignIn(email?.split('@')[0] ?? 'You', email);
+    const user = mockSignUp(email?.split('@')[0] ?? 'You', email);
     return { data: { user, session: sessionOf(user) }, error: null as any };
   },
   async signInWithOtp() {
     return { data: {}, error: null as any };
   },
   async verifyOtp() {
-    const user = readUser() ?? mockSignIn('You');
+    // edgecase.md §1.10 — verifying a number that's already fully onboarded
+    // signs into that existing account rather than silently creating a
+    // second identity; anything else (never onboarded, or mid-gauntlet) is a
+    // fresh signup and gets routed through Address -> ProfileSetup.
+    const alreadyOnboarded = seed.profiles.find((p) => p.id === seed.ME_ID)?.onboarding_completed;
+    const user = alreadyOnboarded ? mockSignIn('You') : mockSignUp('New Neighbour');
     return { data: { user, session: sessionOf(user) }, error: null as any };
   },
   async signInWithOAuth() {
@@ -134,6 +163,15 @@ const auth = {
   },
   async resend() {
     return { data: {}, error: null as any };
+  },
+  async refreshSession() {
+    // ProfileSetupScreen calls this right after flipping
+    // profiles.onboarding_completed to true, to force RootNavigator's
+    // session listener to re-fire — a plain state update on this end can't
+    // reach a component tree whose top-level route is about to swap out from
+    // under it (Address/ProfileSetup -> Main).
+    notifyAuth('TOKEN_REFRESHED');
+    return { data: { session: sessionOf(readUser()) }, error: null as any };
   },
 };
 
@@ -419,6 +457,17 @@ class QueryBuilder<T = any> implements PromiseLike<{ data: any; error: any }> {
     if (this.mode === 'update') {
       const matched = this.applyFilters(store);
       matched.forEach((row) => Object.assign(row, this.payload));
+      // Keep the locally-stored auth identity's name in sync with the
+      // profile's name. Without this, syncMeProfile() — called on every
+      // getUser()/getSession() — patches the profile's name back to the
+      // stale signup-time name (e.g. the email-derived placeholder) on the
+      // very next auth check, silently discarding whatever ProfileSetup or
+      // Edit Profile just saved.
+      if (this.table === 'profiles' && 'name' in this.payload) {
+        const current = readUser();
+        const updatedMe = current && matched.find((r) => r.id === current.id);
+        if (updatedMe) writeUser({ ...current, name: updatedMe.name });
+      }
       const data = this.singleMode !== 'none' ? matched[0] ?? null : matched;
       return { data, error: null };
     }

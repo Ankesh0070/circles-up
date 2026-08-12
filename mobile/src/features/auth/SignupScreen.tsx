@@ -8,7 +8,7 @@ import CircleUpLogo from '../../shared/components/CircleUpLogo';
 import TextField from '../../shared/components/TextField';
 import Card from '../../shared/components/Card';
 import GoogleLogo from './GoogleLogo';
-import { supabase, mockSignIn } from '../../shared/api/supabase';
+import { supabase, mockSignUp } from '../../shared/api/supabase';
 import {
   SURFACE,
   ON_SURFACE,
@@ -36,7 +36,7 @@ export default function SignupScreen({ navigation }: Props) {
   const handleGoogle = async () => {
     if (googleLoading) return;
     setGoogleLoading(true);
-    mockSignIn('Google User', 'google.user@gmail.com');
+    mockSignUp('Google User', 'google.user@gmail.com');
     setGoogleLoading(false);
   };
 
