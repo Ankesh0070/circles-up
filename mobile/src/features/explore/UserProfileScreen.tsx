@@ -1,10 +1,11 @@
 import { useCallback, useState } from 'react';
-import { View, Text, Pressable, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, Pressable, Image, ActivityIndicator, ScrollView } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { MessageCircle, Check } from 'lucide-react-native';
+import { MessageCircle, MessageSquare, Check } from 'lucide-react-native';
 import Avatar from '../../shared/components/Avatar';
+import { categoryMeta } from '../../shared/data/categories';
 import { supabase } from '../../shared/api/supabase';
 import type { RootStackParamList } from '../../navigation/types';
 
@@ -20,6 +21,8 @@ type Profile = {
   is_same_neighbourhood: boolean;
 };
 
+type PostThumb = { id: string; media_urls: string[]; category: string };
+
 // Ported from the prototype's UserProfileScreen (lines 6407–6582) — Add to
 // Circle / Message, mutual-circle chips. Uses get_public_profile (Phase 60
 // migration) rather than a direct table query so it works identically for
@@ -29,6 +32,7 @@ export default function UserProfileScreen({ route }: Props) {
   const { userId } = route.params;
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [profile, setProfile] = useState<Profile | null | 'blocked-or-not-found'>(null);
+  const [posts, setPosts] = useState<PostThumb[] | null>(null);
   const [mutuals, setMutuals] = useState<{ user_id: string; name: string }[]>([]);
   const [connected, setConnected] = useState(false);
   const [connecting, setConnecting] = useState(false);
@@ -43,12 +47,14 @@ export default function UserProfileScreen({ route }: Props) {
     }
     setProfile(row);
 
-    const [{ data: mutualRows }, { data: myConnections }] = await Promise.all([
+    const [{ data: mutualRows }, { data: myConnections }, { data: postRows }] = await Promise.all([
       supabase.rpc('mutual_circle', { p_target_user_id: userId }),
       supabase.from('circle_connections').select('connected_user_id').eq('connected_user_id', userId),
+      supabase.from('posts').select('id, media_urls, category, created_at').eq('author_id', userId).order('created_at', { ascending: false }),
     ]);
     setMutuals(mutualRows ?? []);
     setConnected((myConnections ?? []).length > 0);
+    setPosts((postRows ?? []).map((r) => ({ id: r.id, media_urls: r.media_urls, category: r.category })));
   }, [userId]);
 
   useFocusEffect(
@@ -151,6 +157,38 @@ export default function UserProfileScreen({ route }: Props) {
           {opening ? <ActivityIndicator size="small" color="#181C20" /> : <MessageCircle size={16} color="#181C20" />}
           <Text className="text-[13px] font-bold text-ink">Message</Text>
         </Pressable>
+      </View>
+
+      <View className="flex-row flex-wrap mt-8 -mx-6" style={{ borderTopWidth: 1, borderTopColor: '#EBEEF4', paddingTop: 8 }}>
+        {posts === null ? (
+          <ActivityIndicator style={{ marginTop: 24, width: '100%' }} color="#006290" />
+        ) : posts.length === 0 ? (
+          <View className="items-center py-10" style={{ width: '100%' }}>
+            <MessageSquare size={28} color="#BEC7D1" />
+            <Text className="text-center text-ink-muted text-[13px] mt-2">No posts yet.</Text>
+          </View>
+        ) : (
+          posts.map((item) => {
+            const thumb = item.media_urls[0];
+            const meta = categoryMeta(item.category);
+            const Icon = meta.icon;
+            return (
+              <Pressable
+                key={item.id}
+                onPress={() => navigation.navigate('PostDetail', { postId: item.id })}
+                style={{ width: '33.33%', aspectRatio: 1, padding: 1 }}
+              >
+                {thumb ? (
+                  <Image source={{ uri: thumb }} style={{ flex: 1 }} resizeMode="cover" />
+                ) : (
+                  <View className="flex-1 items-center justify-center" style={{ backgroundColor: `${meta.color}1A` }}>
+                    <Icon size={20} color={meta.color} />
+                  </View>
+                )}
+              </Pressable>
+            );
+          })
+        )}
       </View>
     </ScrollView>
   );

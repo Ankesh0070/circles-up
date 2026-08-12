@@ -5,7 +5,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Flag } from 'lucide-react-native';
 import Avatar from '../../shared/components/Avatar';
 import { bazaarCategoryMeta } from '../../shared/data/bazaarCategories';
-import { supabase } from '../../shared/api/supabase';
+import { supabase, mockCurrentUser } from '../../shared/api/supabase';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ListingDetail'>;
@@ -89,6 +89,14 @@ export default function ListingDetailScreen({ route, navigation }: Props) {
   const meta = bazaarCategoryMeta(listing.category);
   const isOwner = myUserId === listing.seller_id;
 
+  const openSellerProfile = () => {
+    if (mockCurrentUser()?.id === listing.seller_id) {
+      navigation.navigate('Main', { screen: 'Profile' } as never);
+    } else {
+      navigation.navigate('UserProfile', { userId: listing.seller_id });
+    }
+  };
+
   return (
     <ScrollView className="flex-1 bg-white">
       {listing.image_urls[0] ? (
@@ -117,7 +125,7 @@ export default function ListingDetailScreen({ route, navigation }: Props) {
         <Text className="text-[16px] font-semibold text-[#F59E0B] mt-1">{listing.price ? `₹${listing.price}` : 'Free'}</Text>
         <Text className="text-[14px] text-ink-muted mt-3 leading-5">{listing.description}</Text>
 
-        <View className="flex-row items-center gap-2.5 mt-5 pt-4 border-t border-outline-variant">
+        <Pressable onPress={openSellerProfile} className="flex-row items-center gap-2.5 mt-5 pt-4 border-t border-outline-variant">
           <Avatar name={listing.seller?.name ?? '?'} size={36} />
           <View>
             <Text className="text-[13px] font-semibold text-[#181C20]">{listing.seller?.name ?? 'Neighbour'}</Text>
@@ -126,7 +134,7 @@ export default function ListingDetailScreen({ route, navigation }: Props) {
                 nothing about trustworthiness as a seller. */}
             <Text className="text-[11px] text-ink-muted">Verified neighbour</Text>
           </View>
-        </View>
+        </Pressable>
 
         {/* edgecase.md §6.2: Bazaar is listing-only, no escrow/payment —
             surfaced here, not just buried in ToS. */}

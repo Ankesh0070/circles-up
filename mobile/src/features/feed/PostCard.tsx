@@ -9,7 +9,7 @@ import Card from '../../shared/components/Card';
 import HumanHeart from '../../shared/components/HumanHeart';
 import PremiumShareIcon from '../../shared/components/PremiumShareIcon';
 import { categoryMeta } from '../../shared/data/categories';
-import { supabase } from '../../shared/api/supabase';
+import { supabase, mockCurrentUser } from '../../shared/api/supabase';
 import ReactionPicker, { REACTIONS, type ReactionId } from './ReactionPicker';
 import ModerationMenu from './ModerationMenu';
 import { ON_SURFACE, ON_SURFACE_MUTED, PRIMARY, WARNING, OUTLINE_VARIANT, RADIUS } from '../../shared/theme/tokens';
@@ -107,6 +107,17 @@ export default function PostCard({ post, onChanged }: { post: FeedPost; onChange
 
   const quickLike = () => react('like');
 
+  // Tapping the author opens their profile — your own posts open the Profile
+  // tab (UserProfileScreen's "Add to Circle"/"Message" buttons don't make
+  // sense pointed at yourself), anyone else's open UserProfileScreen.
+  const openAuthorProfile = () => {
+    if (mockCurrentUser()?.id === post.author_id) {
+      navigation.navigate('Main', { screen: 'Profile' } as never);
+    } else {
+      navigation.navigate('UserProfile', { userId: post.author_id });
+    }
+  };
+
   const share = async () => {
     const message = `${post.author?.name ?? 'A neighbour'} on Circle Up: ${post.caption}`;
     try {
@@ -124,20 +135,22 @@ export default function PostCard({ post, onChanged }: { post: FeedPost; onChange
   return (
     <Card padded={false} style={{ padding: 16 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Avatar name={post.author?.name ?? '?'} size={42} />
-        <View style={{ marginLeft: 12, flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <Text style={{ fontSize: 15, fontWeight: '700', color: ON_SURFACE }}>
-              {post.author?.name ?? 'Neighbour'}
-            </Text>
-            {isNewAccount && (
-              <View style={{ paddingHorizontal: 6, paddingVertical: 2, borderRadius: 999, backgroundColor: `${WARNING}1F` }}>
-                <Text style={{ fontSize: 9, fontWeight: '800', color: '#92400E' }}>NEW NEIGHBOUR</Text>
-              </View>
-            )}
+        <Pressable onPress={openAuthorProfile} style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+          <Avatar name={post.author?.name ?? '?'} size={42} />
+          <View style={{ marginLeft: 12, flex: 1 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Text style={{ fontSize: 15, fontWeight: '700', color: ON_SURFACE }}>
+                {post.author?.name ?? 'Neighbour'}
+              </Text>
+              {isNewAccount && (
+                <View style={{ paddingHorizontal: 6, paddingVertical: 2, borderRadius: 999, backgroundColor: `${WARNING}1F` }}>
+                  <Text style={{ fontSize: 9, fontWeight: '800', color: '#92400E' }}>NEW NEIGHBOUR</Text>
+                </View>
+              )}
+            </View>
+            <Text style={{ fontSize: 12.5, color: ON_SURFACE_MUTED, marginTop: 1 }}>{postAge === 'now' ? 'just now' : `${postAge} ago`}</Text>
           </View>
-          <Text style={{ fontSize: 12.5, color: ON_SURFACE_MUTED, marginTop: 1 }}>{postAge === 'now' ? 'just now' : `${postAge} ago`}</Text>
-        </View>
+        </Pressable>
 
         <View
           style={{

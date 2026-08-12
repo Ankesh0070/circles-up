@@ -288,23 +288,35 @@ const genReactions = (postId: string, count: number, meReacts: boolean) => {
 
 // author is intentionally omitted — the mock client resolves it from profiles
 // at read time, so ME-authored posts pick up the name typed at login.
-const generatedPosts = Array.from({ length: 100 }, (_, i) => {
-  const a = ACTIVITIES[i % ACTIVITIES.length];
-  const author_id = i % 11 === 5 ? ME_ID : GEN_AUTHORS[i % GEN_AUTHORS.length];
-  const id = `gp${i + 1}`;
-  return {
-    id,
-    author_id,
-    neighbourhood_id: NBHD_ID,
-    category: a.cat,
-    caption: a.cap,
-    media_urls: [IMG(a.img)],
-    image_urls: [IMG(a.img)],
-    created_at: ago(45 + i * 33),
-    reactions: genReactions(id, 3 + ((i * 7) % 44), i % 6 === 0),
-    comments: [] as { id: string }[],
-  };
-});
+//
+// Deterministic per-author generation (not a global i%N scatter) — every
+// profile, including ME, needs its OWN grid to be worth opening, so each
+// author here gets a guaranteed POSTS_PER_AUTHOR posts rather than "however
+// many the modulo happens to land on."
+const POST_AUTHORS = [...GEN_AUTHORS, ME_ID];
+const POSTS_PER_AUTHOR = 10;
+
+const generatedPosts: Record<string, any>[] = [];
+let genCounter = 0;
+for (const author_id of POST_AUTHORS) {
+  for (let j = 0; j < POSTS_PER_AUTHOR; j++) {
+    const a = ACTIVITIES[genCounter % ACTIVITIES.length];
+    const id = `gp${genCounter + 1}`;
+    generatedPosts.push({
+      id,
+      author_id,
+      neighbourhood_id: NBHD_ID,
+      category: a.cat,
+      caption: a.cap,
+      media_urls: [IMG(a.img)],
+      image_urls: [IMG(a.img)],
+      created_at: ago(45 + genCounter * 33),
+      reactions: genReactions(id, 3 + ((genCounter * 7) % 44), genCounter % 6 === 0),
+      comments: [] as { id: string }[],
+    });
+    genCounter++;
+  }
+}
 
 export const posts = [...basePosts, ...generatedPosts];
 

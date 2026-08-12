@@ -223,8 +223,14 @@ export default function ChatDetailScreen({ route, navigation }: Props) {
         <Pressable onPress={() => navigation.goBack()} hitSlop={8}>
           <ArrowLeft size={22} color={ON_SURFACE} strokeWidth={2.2} />
         </Pressable>
-        <Avatar name={meta.displayName} size={40} />
-        <Text style={{ flex: 1, fontSize: 16, fontWeight: '700', color: ON_SURFACE }}>{meta.displayName}</Text>
+        <Pressable
+          onPress={() => meta.otherUserId && navigation.navigate('UserProfile', { userId: meta.otherUserId })}
+          disabled={!meta.otherUserId}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 }}
+        >
+          <Avatar name={meta.displayName} size={40} />
+          <Text style={{ flex: 1, fontSize: 16, fontWeight: '700', color: ON_SURFACE }}>{meta.displayName}</Text>
+        </Pressable>
         {!meta.isGroup && (
           <>
             <Pressable onPress={() => setCallActive('voice')} hitSlop={6}>

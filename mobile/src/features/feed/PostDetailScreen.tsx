@@ -16,7 +16,7 @@ import {
   PRIMARY,
   RADIUS,
 } from '../../shared/theme/tokens';
-import { supabase } from '../../shared/api/supabase';
+import { supabase, mockCurrentUser } from '../../shared/api/supabase';
 import { embedCommentFireAndForget } from '../../shared/api/genie';
 import type { RootStackParamList } from '../../navigation/types';
 
@@ -35,7 +35,7 @@ type Comment = {
 
 // Ported from the prototype's PostDetailScreen (lines 3673–3821) — full
 // comment thread with reply-to and comment likes, real persistence.
-export default function PostDetailScreen({ route }: Props) {
+export default function PostDetailScreen({ route, navigation }: Props) {
   const { postId } = route.params;
   const [comments, setComments] = useState<Comment[] | null>(null);
   const [text, setText] = useState('');
@@ -111,6 +111,15 @@ export default function PostDetailScreen({ route }: Props) {
     load();
   };
 
+  // Own comments open the Profile tab; anyone else's open UserProfileScreen.
+  const openCommenterProfile = (authorId: string) => {
+    if (mockCurrentUser()?.id === authorId) {
+      navigation.navigate('Main', { screen: 'Profile' } as never);
+    } else {
+      navigation.navigate('UserProfile', { userId: authorId });
+    }
+  };
+
   if (comments === null) {
     return (
       <View className="flex-1 items-center justify-center bg-white">
@@ -127,14 +136,18 @@ export default function PostDetailScreen({ route }: Props) {
         contentContainerStyle={{ padding: 16, gap: 10 }}
         renderItem={({ item }) => (
           <Card style={{ flexDirection: 'row', gap: 12, marginLeft: item.parent_comment_id ? 24 : 0 }}>
-            <Avatar name={item.author?.name ?? '?'} size={34} />
+            <Pressable onPress={() => openCommenterProfile(item.author_id)} hitSlop={4}>
+              <Avatar name={item.author?.name ?? '?'} size={34} />
+            </Pressable>
             <View style={{ flex: 1 }}>
               {item.parent_comment_id && (
                 <Text style={{ fontSize: 11, color: ON_SURFACE_MUTED, fontWeight: '600', marginBottom: 2 }}>Reply</Text>
               )}
-              <Text style={{ fontSize: 14, fontWeight: '700', color: ON_SURFACE }}>
-                {item.author?.name ?? 'Neighbour'}
-              </Text>
+              <Pressable onPress={() => openCommenterProfile(item.author_id)} hitSlop={4}>
+                <Text style={{ fontSize: 14, fontWeight: '700', color: ON_SURFACE }}>
+                  {item.author?.name ?? 'Neighbour'}
+                </Text>
+              </Pressable>
               <Text style={{ fontSize: 14, color: ON_SURFACE, marginTop: 3, lineHeight: 20 }}>{item.text}</Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14, marginTop: 8 }}>
                 <Pressable onPress={() => setReplyTo({ id: item.id, name: item.author?.name ?? 'Neighbour' })}>

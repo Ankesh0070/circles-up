@@ -4,7 +4,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MapPin, Users } from 'lucide-react-native';
 import Avatar from '../../shared/components/Avatar';
-import { supabase } from '../../shared/api/supabase';
+import { supabase, mockCurrentUser } from '../../shared/api/supabase';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'EventDetail'>;
@@ -37,7 +37,7 @@ function formatWhen(iso: string): string {
 // (the migration's SECURITY DEFINER RPC) does the status update AND the
 // notification fan-out atomically, so there's no window where the event
 // looks cancelled but nobody's been told.
-export default function EventDetailScreen({ route }: Props) {
+export default function EventDetailScreen({ route, navigation }: Props) {
   const { eventId } = route.params;
   const [event, setEvent] = useState<EventDetail | null>(null);
   const [rsvps, setRsvps] = useState<Rsvp[]>([]);
@@ -101,6 +101,15 @@ export default function EventDetailScreen({ route }: Props) {
   const maybe = rsvps.filter((r) => r.status === 'maybe');
   const waitlisted = rsvps.filter((r) => r.status === 'waitlisted');
 
+  // Own profile opens the Profile tab; anyone else's opens UserProfileScreen.
+  const openProfile = (userId: string) => {
+    if (mockCurrentUser()?.id === userId) {
+      navigation.navigate('Main', { screen: 'Profile' } as never);
+    } else {
+      navigation.navigate('UserProfile', { userId });
+    }
+  };
+
   return (
     <ScrollView className="flex-1 bg-white px-5 pt-4" contentContainerStyle={{ paddingBottom: 40 }}>
       {event.status === 'cancelled' && (
@@ -115,7 +124,11 @@ export default function EventDetailScreen({ route }: Props) {
         <MapPin size={13} color="#6F7881" />
         <Text className="text-[13px] text-ink-muted">{event.location}</Text>
       </View>
-      <Text className="text-[13px] text-ink-muted mt-1">Hosted by {event.host?.name ?? 'a neighbour'}</Text>
+      <Pressable onPress={() => openProfile(event.host_id)}>
+        <Text className="text-[13px] text-ink-muted mt-1">
+          Hosted by <Text className="font-semibold text-[#181C20]">{event.host?.name ?? 'a neighbour'}</Text>
+        </Text>
+      </Pressable>
       <Text className="text-[14px] text-ink-muted mt-3 leading-5">{event.description}</Text>
 
       {event.status === 'active' && !isHost && (
@@ -175,11 +188,11 @@ export default function EventDetailScreen({ route }: Props) {
           </Text>
         </View>
         {rsvps.map((r) => (
-          <View key={r.user_id} className="flex-row items-center gap-2.5 py-1.5">
+          <Pressable key={r.user_id} onPress={() => openProfile(r.user_id)} className="flex-row items-center gap-2.5 py-1.5">
             <Avatar name={r.guest?.name ?? '?'} size={28} />
             <Text className="text-[13px] text-[#181C20] flex-1">{r.guest?.name ?? 'Neighbour'}</Text>
             <Text className="text-[11px] text-ink-muted capitalize">{r.status}</Text>
-          </View>
+          </Pressable>
         ))}
       </View>
     </ScrollView>
