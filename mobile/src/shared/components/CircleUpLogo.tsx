@@ -1,77 +1,45 @@
-import Svg, { Defs, LinearGradient, Stop, Circle, Path, G } from 'react-native-svg';
-import { PRIMARY, SECONDARY, TERTIARY } from '../theme/tokens';
+import Svg, { Defs, LinearGradient, Stop, Circle, Path } from 'react-native-svg';
+import { NAV_GRADIENT_COLORS, NAV_GRADIENT_LOCATIONS } from '../theme/tokens';
 
-// Stitch design-system mark: three overlapping circles reading as a
-// neighbourhood radius / a small group standing together. The circles are
-// stroked (not filled) so the overlaps stay visible as the "belonging" idea,
-// and the shared centre is filled to anchor the mark at small sizes.
-//
-// Geometry: three circles of radius R arranged on a triangle around (50,50),
-// two on the bottom and one on top — matching the design's lockup.
-const R = 20;
+// Brand mark: a location-pin holding an infinity/interlocking-rings glyph —
+// "find your people nearby" as a single shape. Pin fill reuses the app's
+// established teal->navy brand ramp (NAV_GRADIENT_COLORS, same one driving
+// the bottom-nav gradient) rather than inventing a new palette.
 const CX = 50;
-const CY = 50;
-const SPREAD = 13;
+const CY = 44;
+const R = 32;
 
-const CIRCLES = [
-  { cx: CX, cy: CY - SPREAD, stroke: 'url(#cuTop)' }, // top
-  { cx: CX - SPREAD * 1.15, cy: CY + SPREAD * 0.75, stroke: 'url(#cuLeft)' }, // bottom-left
-  { cx: CX + SPREAD * 1.15, cy: CY + SPREAD * 0.75, stroke: 'url(#cuRight)' }, // bottom-right
-];
+// Parametric teardrop/pin outline: a rounded head tapering to a point,
+// symmetric about the vertical centreline.
+const PIN_PATH = `M ${CX} ${CY - R}
+  C ${CX + R * 1.1} ${CY - R * 1.1}, ${CX + R * 1.3} ${CY + R * 0.3}, ${CX} ${CY + R * 2.2}
+  C ${CX - R * 1.3} ${CY + R * 0.3}, ${CX - R * 1.1} ${CY - R * 1.1}, ${CX} ${CY - R}
+  Z`;
 
 export default function CircleUpLogo({
   size = 80,
   mono,
 }: {
   size?: number;
-  /** Single-colour version for tab bars / dark surfaces. */
+  /** Single-colour pin fill for dark surfaces; the inner ring/infinity stay white. */
   mono?: string;
 }) {
   return (
-    <Svg width={size} height={size} viewBox="0 0 100 100" fill="none">
+    <Svg width={size} height={(size * 125) / 100} viewBox="0 0 100 125" fill="none">
       <Defs>
-        <LinearGradient id="cuTop" x1="0%" y1="0%" x2="100%" y2="100%">
-          <Stop offset="0%" stopColor={PRIMARY} />
-          <Stop offset="100%" stopColor={SECONDARY} />
-        </LinearGradient>
-        <LinearGradient id="cuLeft" x1="0%" y1="0%" x2="100%" y2="100%">
-          <Stop offset="0%" stopColor={PRIMARY} />
-          <Stop offset="100%" stopColor="#4A47B8" />
-        </LinearGradient>
-        <LinearGradient id="cuRight" x1="0%" y1="0%" x2="100%" y2="100%">
-          <Stop offset="0%" stopColor={SECONDARY} />
-          <Stop offset="100%" stopColor={TERTIARY} />
-        </LinearGradient>
-        <LinearGradient id="cuCore" x1="0%" y1="0%" x2="100%" y2="100%">
-          <Stop offset="0%" stopColor={PRIMARY} />
-          <Stop offset="100%" stopColor={SECONDARY} />
+        <LinearGradient id="cuPin" x1="0%" y1="0%" x2="100%" y2="100%">
+          {NAV_GRADIENT_COLORS.map((c, i) => (
+            <Stop key={c} offset={`${NAV_GRADIENT_LOCATIONS[i] * 100}%`} stopColor={c} />
+          ))}
         </LinearGradient>
       </Defs>
 
-      <G>
-        {CIRCLES.map((c, i) => (
-          <Circle
-            key={i}
-            cx={c.cx}
-            cy={c.cy}
-            r={R}
-            stroke={mono ?? c.stroke}
-            strokeWidth={6}
-            strokeLinejoin="round"
-            fill="none"
-            opacity={mono ? 1 : 0.95}
-          />
-        ))}
+      <Path d={PIN_PATH} fill={mono ?? 'url(#cuPin)'} />
 
-        {/* Shared centre — the overlap where all three circles meet. Reads as
-            a pin head at large sizes and keeps the mark legible at 24px. */}
-        <Path
-          d={`M ${CX} ${CY - 6.5}
-              C ${CX + 6} ${CY - 11}, ${CX + 12} ${CY - 3}, ${CX} ${CY + 7}
-              C ${CX - 12} ${CY - 3}, ${CX - 6} ${CY - 11}, ${CX} ${CY - 6.5} Z`}
-          fill={mono ?? 'url(#cuCore)'}
-        />
-      </G>
+      {/* Halo ring + interlocking loops read as an infinity mark inside the pin head. */}
+      <Circle cx={CX} cy={CY - 4} r={20} stroke="#FFFFFF" strokeWidth={2.5} opacity={0.5} fill="none" />
+      <Circle cx={CX - 8.5} cy={CY - 4} r={9} stroke="#FFFFFF" strokeWidth={4.5} fill="none" />
+      <Circle cx={CX + 8.5} cy={CY - 4} r={9} stroke="#FFFFFF" strokeWidth={4.5} fill="none" />
     </Svg>
   );
 }
