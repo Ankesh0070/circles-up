@@ -72,7 +72,7 @@ export default function GoogleAccountSheet({
 
   const initial = email.trim().charAt(0).toUpperCase() || 'G';
   const headline = step === 'password' ? 'Welcome' : mode === 'signup' ? 'Use your Google Account' : 'Sign in';
-  const subhead = mode === 'signup' ? 'to create your Circle Up account' : 'to continue to Circle Up';
+  const subhead = mode === 'signup' ? 'to create your Circles Up account' : 'to continue to Circles Up';
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
@@ -183,7 +183,7 @@ export default function GoogleAccountSheet({
               <View className="py-10 items-center">
                 <GoogleLogo size={34} />
                 <ActivityIndicator size="large" color="#1A73E8" className="mt-6" />
-                <Text className="text-[15px] text-[#202124] mt-5 font-medium">Connecting to Circle Up…</Text>
+                <Text className="text-[15px] text-[#202124] mt-5 font-medium">Connecting to Circles Up…</Text>
                 <Text className="text-[12px] text-ink-muted mt-1.5 text-center">
                   Signed in as <Text className="font-medium text-[#202124]">{email}</Text>
                 </Text>

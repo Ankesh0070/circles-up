@@ -51,7 +51,7 @@ export default function SplashScreen({ navigation }: Props) {
         <Animated.View style={[{ overflow: 'hidden' }, panelStyle]}>
           <View style={{ width: TEXT_PANEL_WIDTH, paddingLeft: 14 }}>
             <Text style={{ fontSize: 30, fontWeight: '800', letterSpacing: -0.5 }}>
-              <Text style={{ color: '#FFFFFF' }}>Circle</Text>
+              <Text style={{ color: '#FFFFFF' }}>Circles</Text>
               <Text style={{ color: ACCENT }}>Up</Text>
             </Text>
             <Text style={{ fontSize: 11.5, fontWeight: '700', color: ACCENT, opacity: 0.85, letterSpacing: 1.6, marginTop: 4 }}>

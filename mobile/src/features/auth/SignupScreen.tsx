@@ -115,13 +115,13 @@ export default function SignupScreen({ navigation }: Props) {
 
       <View style={{ marginTop: 'auto', paddingTop: 32, alignItems: 'center' }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-          <Text style={{ fontSize: 14, color: ON_SURFACE_MUTED }}>Already on Circle Up?</Text>
+          <Text style={{ fontSize: 14, color: ON_SURFACE_MUTED }}>Already on Circles Up?</Text>
           <Pressable onPress={() => navigation.goBack()} hitSlop={6}>
             <GradientText style={{ fontSize: 15, fontWeight: '700' }}>Log in</GradientText>
           </Pressable>
         </View>
         <Text style={{ fontSize: 11.5, color: ON_SURFACE_MUTED, marginTop: 18, textAlign: 'center', lineHeight: 17 }}>
-          By continuing, you agree to Circle Up's <Text style={{ color: ON_SURFACE, fontWeight: '600' }}>Terms</Text> &{' '}
+          By continuing, you agree to Circles Up's <Text style={{ color: ON_SURFACE, fontWeight: '600' }}>Terms</Text> &{' '}
           <Text style={{ color: ON_SURFACE, fontWeight: '600' }}>Privacy</Text>
         </Text>
       </View>

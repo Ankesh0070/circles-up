@@ -12,7 +12,7 @@ type PrivacyTier = 'verified' | 'close_friends' | 'open';
 const PRIVACY_OPTIONS: { value: PrivacyTier; label: string; blurb: string }[] = [
   { value: 'verified', label: 'My neighbourhood', blurb: 'Visible to verified members of your neighbourhood.' },
   { value: 'close_friends', label: 'Close friends', blurb: 'Visible only to people you\'ve added to your Circle.' },
-  { value: 'open', label: 'Open invite', blurb: 'Visible to any verified Circle Up user, even outside your neighbourhood.' },
+  { value: 'open', label: 'Open invite', blurb: 'Visible to any verified Circles Up user, even outside your neighbourhood.' },
 ];
 
 // Phase 73 (Group H). edgecase.md §7.2 (🟠): "open invite" is real reduced

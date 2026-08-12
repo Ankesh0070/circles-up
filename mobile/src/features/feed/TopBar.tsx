@@ -58,7 +58,7 @@ export default function TopBar({ hasUnread = false }: { hasUnread?: boolean }) {
           <Plus size={24} color={ON_SURFACE} strokeWidth={2.2} />
         </Pressable>
 
-        <GradientText style={{ fontSize: 22, fontWeight: '700', letterSpacing: -0.4 }}>Circle Up</GradientText>
+        <GradientText style={{ fontSize: 22, fontWeight: '700', letterSpacing: -0.4 }}>Circles Up</GradientText>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
           {/* Chat moved to the bottom nav; this slot now opens Explore

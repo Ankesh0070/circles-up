@@ -139,7 +139,7 @@ export default function ListingDetailScreen({ route, navigation }: Props) {
         {/* edgecase.md §6.2: Bazaar is listing-only, no escrow/payment —
             surfaced here, not just buried in ToS. */}
         <Text className="text-[11px] text-ink-muted mt-4">
-          Circle Up only connects buyers and sellers — payment and pickup happen directly between you, off-platform.
+          Circles Up only connects buyers and sellers — payment and pickup happen directly between you, off-platform.
         </Text>
 
         {isOwner && listing.status === 'active' && (

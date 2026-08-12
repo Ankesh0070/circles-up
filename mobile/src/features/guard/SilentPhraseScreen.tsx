@@ -81,7 +81,7 @@ export default function SilentPhraseScreen() {
     <View className="flex-1 bg-white px-6 pt-8">
       <Text className="text-[18px] font-bold text-[#181C20]">Silent Phrase</Text>
       <Text className="text-[13px] text-ink-muted mt-1.5 leading-relaxed">
-        Say your phrase while Circle Up is open to silently trigger SOS — no need to touch the screen.
+        Say your phrase while Circles Up is open to silently trigger SOS — no need to touch the screen.
       </Text>
       <View className="bg-amber-50 rounded-xl px-3 py-2.5 mt-3">
         <Text className="text-[11px] text-amber-800 leading-relaxed">

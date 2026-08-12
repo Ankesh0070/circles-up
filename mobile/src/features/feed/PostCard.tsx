@@ -119,7 +119,7 @@ export default function PostCard({ post, onChanged }: { post: FeedPost; onChange
   };
 
   const share = async () => {
-    const message = `${post.author?.name ?? 'A neighbour'} on Circle Up: ${post.caption}`;
+    const message = `${post.author?.name ?? 'A neighbour'} on Circles Up: ${post.caption}`;
     try {
       await Share.share({ message });
     } catch {

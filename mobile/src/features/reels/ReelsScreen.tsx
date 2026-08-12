@@ -31,7 +31,7 @@ export default function ReelsScreen() {
   const [justCopiedId, setJustCopiedId] = useState<string | null>(null);
 
   const share = async (item: Reel) => {
-    const message = `@${item.username} on Circle Up Reels: ${item.caption}`;
+    const message = `@${item.username} on Circles Up Reels: ${item.caption}`;
     try {
       await Share.share({ message });
     } catch {

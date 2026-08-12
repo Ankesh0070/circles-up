@@ -71,8 +71,8 @@ export async function queryPageGenie(page: PageGenieInfo, question: string): Pro
   if (/donat|contribut|fund/.test(q)) {
     if (isNgo) {
       return page.ngo_approval_status === 'approved'
-        ? `Yes — ${page.name} is an approved NGO on Circle Up. Tap "Donate" on their page to contribute directly.`
-        : `${page.name} hasn't been approved to accept donations through Circle Up yet — their approval is still pending review.`;
+        ? `Yes — ${page.name} is an approved NGO on Circles Up. Tap "Donate" on their page to contribute directly.`
+        : `${page.name} hasn't been approved to accept donations through Circles Up yet — their approval is still pending review.`;
     }
     return `${page.name} is a business page, not an NGO, so it doesn't accept donations here. You're welcome to ask about their products or services instead.`;
   }
@@ -102,8 +102,8 @@ export async function queryPageGenie(page: PageGenieInfo, question: string): Pro
   if (/verif|trust|approv|genuine|real/.test(q)) {
     if (isNgo) {
       return page.ngo_approval_status === 'approved'
-        ? `${page.name} is approved and verified to accept donations on Circle Up.`
-        : `${page.name}'s NGO status is self-declared and still pending Circle Up's review — donations aren't enabled until approval.`;
+        ? `${page.name} is approved and verified to accept donations on Circles Up.`
+        : `${page.name}'s NGO status is self-declared and still pending Circles Up's review — donations aren't enabled until approval.`;
     }
     return `${page.name}'s business details are self-declared and haven't been independently verified yet.`;
   }
