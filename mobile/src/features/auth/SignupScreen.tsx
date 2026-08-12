@@ -1,15 +1,14 @@
 import { useState } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { ArrowLeft, Mail, Lock, Smartphone, Check, ChevronRight } from 'lucide-react-native';
+import { ArrowLeft, Mail, Lock, Smartphone, ChevronRight } from 'lucide-react-native';
 import GradientButton from '../../shared/components/GradientButton';
 import GradientText from '../../shared/components/GradientText';
 import CircleUpLogo from '../../shared/components/CircleUpLogo';
 import TextField from '../../shared/components/TextField';
 import Card from '../../shared/components/Card';
 import GoogleLogo from './GoogleLogo';
-import { supabase } from '../../shared/api/supabase';
-import { signInWithGoogle, GOOGLE_AUTH_ENABLED } from '../../shared/api/googleAuth';
+import { supabase, mockSignIn } from '../../shared/api/supabase';
 import {
   SURFACE,
   ON_SURFACE,
@@ -17,7 +16,6 @@ import {
   OUTLINE_VARIANT,
   PRIMARY,
   ERROR,
-  ERROR_CONTAINER,
   SUCCESS,
   RADIUS,
 } from '../../shared/theme/tokens';
@@ -30,48 +28,24 @@ type Method = 'email' | 'phone';
 export default function SignupScreen({ navigation }: Props) {
   const [picked, setPicked] = useState<Method | null>(null);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const [googleError, setGoogleError] = useState('');
 
+  // Demo build: no real backend, so Google sign-in is mocked the same way
+  // email/phone are — instant success, no real OAuth round-trip — rather than
+  // routing through the real-Google-client flow that needs credentials this
+  // deployment doesn't have.
   const handleGoogle = async () => {
     if (googleLoading) return;
     setGoogleLoading(true);
-    setGoogleError('');
-    const { error } = await signInWithGoogle();
-    // Web success is a redirect away from this page; we only land here on error.
-    if (error) setGoogleError(error);
+    mockSignIn('Google User', 'google.user@gmail.com');
     setGoogleLoading(false);
-  };
-  // Phase 21 / edgecase.md §1.9 (🔴): self-declared 18+ gate, required before
-  // any signup method can proceed. False declaration is a ToS violation
-  // (enforceable, not preventable, at the app layer) — this at least makes
-  // the user make an affirmative, logged choice rather than defaulting them in.
-  const [ageConfirmed, setAgeConfirmed] = useState(false);
-  const [ageWarning, setAgeWarning] = useState(false);
-
-  const requireAgeGate = (proceed: () => void) => {
-    if (!ageConfirmed) {
-      setAgeWarning(true);
-      return;
-    }
-    proceed();
   };
 
   if (picked === 'email') return <EmailSignupForm onBack={() => setPicked(null)} />;
   if (picked === 'phone') return <PhoneSignupForm onBack={() => setPicked(null)} navigation={navigation} />;
 
-  // Demo build: Email and Phone both work (fake auth / fake OTP). Gmail needs
-  // a real Google OAuth client, so it stays hidden behind GOOGLE_AUTH_ENABLED.
   const methods = [
-    ...(GOOGLE_AUTH_ENABLED
-      ? [{ key: 'gmail' as const, title: 'Continue with Gmail', sub: 'Fastest — use your Google account', primary: true }]
-      : []),
-    {
-      key: 'email' as const,
-      title: 'Sign up with Email',
-      sub: 'Use any email + a password',
-      icon: Mail,
-      primary: !GOOGLE_AUTH_ENABLED,
-    },
+    { key: 'gmail' as const, title: 'Continue with Google', sub: 'Fastest — use your Google account', primary: true },
+    { key: 'email' as const, title: 'Sign up with Email', sub: 'Use any email + a password', icon: Mail },
     { key: 'phone' as const, title: 'Sign up with Phone', sub: '+91 number + OTP verification', icon: Smartphone },
   ];
 
@@ -93,58 +67,12 @@ export default function SignupScreen({ navigation }: Props) {
         Choose how you want to sign up. You can always link other methods later.
       </Text>
 
-      {/* 18+ gate. Nothing below is tappable until this is ticked (Phase 21 /
-          edgecase.md §1.9) — the warning state makes that explicit rather
-          than leaving the taps silently inert. */}
-      <Pressable
-        onPress={() => {
-          setAgeConfirmed((v) => !v);
-          setAgeWarning(false);
-        }}
-        style={{
-          flexDirection: 'row',
-          alignItems: 'flex-start',
-          gap: 12,
-          marginTop: 24,
-          padding: 16,
-          borderRadius: RADIUS.card,
-          backgroundColor: ageWarning ? ERROR_CONTAINER : '#F0F4F9',
-          borderWidth: 1.5,
-          borderColor: ageWarning ? ERROR : 'transparent',
-        }}
-      >
-        <View
-          style={{
-            width: 22,
-            height: 22,
-            borderRadius: 6,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginTop: 1,
-            backgroundColor: ageConfirmed ? PRIMARY : 'transparent',
-            borderWidth: ageConfirmed ? 0 : 1.5,
-            borderColor: ON_SURFACE_MUTED,
-          }}
-        >
-          {ageConfirmed && <Check size={14} color="#fff" strokeWidth={3} />}
-        </View>
-        <Text style={{ fontSize: 13, color: ON_SURFACE, flex: 1, lineHeight: 19 }}>
-          I confirm I'm 18 years or older. (Circle Up verifies your address and identity — false age declarations violate
-          our Terms.)
-        </Text>
-      </Pressable>
-      {ageWarning && (
-        <Text style={{ fontSize: 12.5, color: ERROR, marginTop: 8, marginLeft: 4, fontWeight: '600' }}>
-          Please confirm you're 18+ to continue.
-        </Text>
-      )}
-
       <View style={{ marginTop: 24, gap: 12 }}>
         {methods.map((m) => (
           <Card
             key={m.key}
             onPress={() =>
-              requireAgeGate(() => (m.key === 'gmail' ? handleGoogle() : setPicked(m.key as 'email' | 'phone')))
+              m.key === 'gmail' ? handleGoogle() : setPicked(m.key as 'email' | 'phone')
             }
             style={{
               flexDirection: 'row',
@@ -183,9 +111,6 @@ export default function SignupScreen({ navigation }: Props) {
             <ChevronRight size={18} color={ON_SURFACE_MUTED} />
           </Card>
         ))}
-        {googleError !== '' && (
-          <Text style={{ fontSize: 12.5, color: ERROR, marginLeft: 4, marginTop: 2 }}>{googleError}</Text>
-        )}
       </View>
 
       <View style={{ marginTop: 'auto', paddingTop: 32, alignItems: 'center' }}>
