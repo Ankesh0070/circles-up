@@ -111,6 +111,11 @@ const authorOf = (id: string) => {
   return { name: p.name, avatar_url: p.avatar_url, created_at: p.created_at };
 };
 
+// Every post carries a photo — image_urls and media_urls both set (different
+// screens read different names, see the `listing()` helper's comment below
+// for the same pattern). Photo ids are verified-resolving.
+const POST_IMG = (id: string) => `https://images.unsplash.com/photo-${id}?w=800&q=80&auto=format&fit=crop`;
+
 const basePosts = [
   {
     id: 'p1',
@@ -119,7 +124,8 @@ const basePosts = [
     category: 'Recommendations',
     caption:
       'Fresh sourdough and banana bread coming out of my oven this weekend! DM me to reserve a loaf 🍞 Sector 2 pickup.',
-    media_urls: [],
+    media_urls: [POST_IMG('1509440159596-0249088772ff')],
+    image_urls: [POST_IMG('1509440159596-0249088772ff')],
     created_at: ago(35),
     author: authorOf('u_priya'),
     reactions: [
@@ -136,7 +142,8 @@ const basePosts = [
     category: 'Announcement',
     caption:
       '🌳 Tree-planting drive this Sunday 7 AM at the HSR BDA park. We have 40 saplings — bring gloves and water. Kids welcome!',
-    media_urls: [],
+    media_urls: [POST_IMG('1416879595882-3373a0480b5b')],
+    image_urls: [POST_IMG('1416879595882-3373a0480b5b')],
     created_at: ago(120),
     author: authorOf('u_ravi'),
     reactions: [
@@ -153,7 +160,8 @@ const basePosts = [
     neighbourhood_id: NBHD_ID,
     category: 'Question',
     caption: 'Anyone know a reliable AC servicing guy in HSR? Mine is leaking water. Would appreciate a number 🙏',
-    media_urls: [],
+    media_urls: [POST_IMG('1581092160607-ee22621dd758')],
+    image_urls: [POST_IMG('1581092160607-ee22621dd758')],
     created_at: ago(240),
     author: authorOf('u_arjun'),
     reactions: [{ user_id: 'u_fatima', type: 'like' }],
@@ -165,7 +173,8 @@ const basePosts = [
     neighbourhood_id: NBHD_ID,
     category: 'General',
     caption: 'My monstera finally put out a new leaf 🌿 Giving away free cuttings to anyone starting their plant journey!',
-    media_urls: [],
+    media_urls: [POST_IMG('1466692476868-aef1dfb1e735')],
+    image_urls: [POST_IMG('1466692476868-aef1dfb1e735')],
     created_at: ago(400),
     author: authorOf('u_fatima'),
     reactions: [
@@ -180,7 +189,8 @@ const basePosts = [
     neighbourhood_id: NBHD_ID,
     category: 'Lost & Found',
     caption: 'FOUND: a set of car keys near the Sector 3 bus stop this morning. Comment if they’re yours 🔑',
-    media_urls: [],
+    media_urls: [POST_IMG('1582139329536-e7284fece509')],
+    image_urls: [POST_IMG('1582139329536-e7284fece509')],
     created_at: ago(600),
     author: authorOf('u_arjun'),
     reactions: [{ user_id: 'u_ravi', type: 'like' }],
@@ -192,7 +202,8 @@ const basePosts = [
     neighbourhood_id: NBHD_ID,
     category: 'Recommendations',
     caption: 'The new filter coffee place near 27th Main is SO good. ₹40 a cup, proper Mysore style. Go before it gets crowded ☕',
-    media_urls: [],
+    media_urls: [POST_IMG('1495474472287-4d71bcdd2085')],
+    image_urls: [POST_IMG('1495474472287-4d71bcdd2085')],
     created_at: ago(900),
     author: authorOf('u_priya'),
     reactions: [
@@ -207,7 +218,8 @@ const basePosts = [
     neighbourhood_id: NBHD_ID,
     category: 'Safety',
     caption: '⚠️ Heads up: a few bike thefts reported near Sector 6 parking this week. Please double-lock and report anything suspicious.',
-    media_urls: [],
+    media_urls: [POST_IMG('1517649763962-0c623066013b')],
+    image_urls: [POST_IMG('1517649763962-0c623066013b')],
     created_at: ago(1500),
     author: authorOf('u_ravi'),
     reactions: [{ user_id: 'u_fatima', type: 'like' }],
@@ -219,7 +231,8 @@ const basePosts = [
     neighbourhood_id: NBHD_ID,
     category: 'General',
     caption: 'Sunday farmers market at the HSR club is back! Organic veggies, local honey, and someone selling amazing pickles 🥭',
-    media_urls: [],
+    media_urls: [POST_IMG('1488459716781-31db52582fe9')],
+    image_urls: [POST_IMG('1488459716781-31db52582fe9')],
     created_at: ago(2000),
     author: authorOf('u_fatima'),
     reactions: [

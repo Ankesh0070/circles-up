@@ -14,7 +14,13 @@ const AUTH_KEY = 'mock_user';
 // Everything a signed-in person creates or changes (posts, profile edits,
 // RSVPs, listings, ...) — separate from AUTH_KEY, which is just "who's
 // signed in." See loadPersisted()/persist() near the table store below.
-const PERSIST_KEY = 'mock_db_v1';
+//
+// Bump the version suffix whenever a seed.ts CONTENT fix (not a schema/shape
+// change) needs to reach browsers that already have an old snapshot saved —
+// a stale snapshot always wins over fresh seed defaults by design (that's
+// the whole point of persisting), so without this, someone who visited
+// before a seed fix landed would keep seeing the old data forever.
+const PERSIST_KEY = 'mock_db_v2';
 
 export interface MockUser {
   id: string;
