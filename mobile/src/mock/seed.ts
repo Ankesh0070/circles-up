@@ -15,9 +15,78 @@ export const neighbourhoods = [
   { id: 'indiranagar', name: 'Indiranagar', city: 'Bengaluru' },
 ];
 
+// Every randomuser.me portrait used anywhere in this file (avatars, selfies)
+// comes from a per-profile block of 5 consecutive indices (see `profileRow`
+// and the post generator below), so no two profiles — and no two posts —
+// ever end up showing the same face.
+const RANDOMUSER = (gender: 'men' | 'women', n: number) => `https://randomuser.me/api/portraits/${gender}/${n}.jpg`;
+
+// 20 women + 20 men = 40 named neighbours. Tuple: [id, name, username, bio, vibes].
+const FEMALE_DATA = [
+  ['u_priya', 'Priya Sharma', 'priyas', 'Home baker · Sector 2', ['Foodie', 'Baker', 'Chai Lover']],
+  ['u_fatima', 'Fatima Khan', 'fatimak', 'Plant mom 🌿 · Sector 7', ['Gardener', 'Reader', 'Tea Person']],
+  ['u_sneha', 'Sneha Iyer', 'snehai', 'Yoga teacher · Sector 4', ['Yogi', 'Reader', 'Tea Person']],
+  ['u_ananya', 'Ananya Das', 'ananyad', 'Potter & painter · Tower 9', ['Artist', 'Potter', 'Foodie']],
+  ['u_deepa', 'Deepa Rao', 'deepar', 'Home chef · Loves farmers markets', ['Chef', 'Baker', 'Gardener']],
+  ['u_meera', 'Meera Pillai', 'meerap', 'Classical dancer · Sector 5', ['Dancer', 'Artist', 'Foodie']],
+  ['u_kavya', 'Kavya Krishnan', 'kavyak', 'Software engineer · Weekend trekker', ['Techie', 'Trekker', 'Reader']],
+  ['u_aisha', 'Aisha Siddiqui', 'aishas', 'Pediatrician · Dog mom · Tower 4', ['Doctor', 'Pet Parent', 'Reader']],
+  ['u_nandini', 'Nandini Bhat', 'nandinib', 'Freelance illustrator · Sector 1', ['Artist', 'Foodie', 'Coffee Snob']],
+  ['u_pooja', 'Pooja Verma', 'poojav', 'Startup founder · Fitness enthusiast', ['Entrepreneur', 'Runner', 'Foodie']],
+  ['u_ritu', 'Ritu Malhotra', 'ritum', 'Interior designer · Tower 3', ['Designer', 'Reader', 'Chai Lover']],
+  ['u_shalini', 'Shalini Gupta', 'shalinig', 'School teacher · Book club regular', ['Teacher', 'Bookworm', 'Tea Person']],
+  ['u_neha', 'Neha Kapoor', 'nehak', 'Marketing manager · Weekend baker', ['Baker', 'Foodie', 'Runner']],
+  ['u_divya', 'Divya Menon', 'divyam', 'Physiotherapist · Morning runner', ['Runner', 'Yogi', 'Foodie']],
+  ['u_swati', 'Swati Joshi', 'swatij', 'Content writer · Cat mom', ['Writer', 'Pet Parent', 'Reader']],
+  ['u_lakshmi', 'Lakshmi Narayanan', 'lakshmin', 'Classical singer · Sector 6', ['Musician', 'Foodie', 'Tea Person']],
+  ['u_zara', 'Zara Ahmed', 'zaraa', 'Graphic designer · Vintage collector', ['Designer', 'Artist', 'Coffee Snob']],
+  ['u_anjali', 'Anjali Bose', 'anjalib', 'Bank manager · Weekend gardener', ['Gardener', 'Reader', 'Chai Lover']],
+  ['u_radhika', 'Radhika Shetty', 'radhikas', 'Café chef · Foodie · Sector 2', ['Chef', 'Foodie', 'Baker']],
+  ['u_preeti', 'Preeti Chawla', 'preetic', 'HR professional · Marathon runner', ['Runner', 'Fitness', 'Foodie']],
+] as const;
+
+const MALE_DATA = [
+  ['u_arjun', 'Arjun Menon', 'arjunm', 'Cyclist · Coffee snob · Tower B', ['Cyclist', 'Coffee Snob', 'Runner']],
+  ['u_ravi', 'Ravi Kulkarni', 'ravik', 'RWA volunteer · Founder, Green HSR', ['Volunteer', 'Runner', 'Gardener']],
+  ['u_karan', 'Karan Reddy', 'karanr', 'Weekend cyclist · Photographer', ['Cyclist', 'Photographer', 'Coffee Snob']],
+  ['u_vikram', 'Vikram Nair', 'vikramn', 'Dad of two · Cricket on Sundays', ['Cricketer', 'Dad', 'Runner']],
+  ['u_imran', 'Imran Sheikh', 'imrans', 'Musician · Guitar teacher', ['Musician', 'Guitarist', 'Foodie']],
+  ['u_rohan', 'Rohan Kapoor', 'rohank', 'Product manager · Badminton player', ['Techie', 'Athlete', 'Foodie']],
+  ['u_siddharth', 'Siddharth Iyer', 'siddharthi', 'Chartered accountant · Chess enthusiast', ['Chess', 'Reader', 'Coffee Snob']],
+  ['u_aditya', 'Aditya Bhatt', 'adityab', 'Civil engineer · Weekend trekker', ['Trekker', 'Photographer', 'Runner']],
+  ['u_manish', 'Manish Agarwal', 'manisha', 'Restaurant owner · Foodie', ['Chef', 'Foodie', 'Entrepreneur']],
+  ['u_rahul', 'Rahul Verma', 'rahulv', 'Data scientist · Marathon runner', ['Runner', 'Techie', 'Reader']],
+  ['u_sanjay', 'Sanjay Pillai', 'sanjayp', 'Architect · Amateur photographer', ['Architect', 'Photographer', 'Artist']],
+  ['u_naveen', 'Naveen Kumar', 'naveenk', 'Doctor · Fitness enthusiast', ['Doctor', 'Runner', 'Cyclist']],
+  ['u_gaurav', 'Gaurav Malhotra', 'gauravm', 'Lawyer · Weekend footballer', ['Athlete', 'Reader', 'Coffee Snob']],
+  ['u_amit', 'Amit Joshi', 'amitj', 'Teacher · Carnatic music lover', ['Teacher', 'Musician', 'Tea Person']],
+  ['u_rajesh', 'Rajesh Nair', 'rajeshn', 'Retired army officer · Morning walker', ['Volunteer', 'Gardener', 'Reader']],
+  ['u_vivek', 'Vivek Chandran', 'vivekc', 'Startup founder · Gym regular', ['Entrepreneur', 'Fitness', 'Techie']],
+  ['u_yash', 'Yash Mehta', 'yashm', 'Investment banker · Weekend golfer', ['Golfer', 'Runner', 'Foodie']],
+  ['u_kunal', 'Kunal Bose', 'kunalb', 'Software architect · Amateur chef', ['Techie', 'Chef', 'Foodie']],
+  ['u_harish', 'Harish Shetty', 'harishs', 'Physical trainer · Cricket coach', ['Cricketer', 'Fitness', 'Volunteer']],
+  ['u_farhan', 'Farhan Ali', 'farhana', 'Journalist · Street food explorer', ['Foodie', 'Writer', 'Photographer']],
+] as const;
+
+type ProfileRow = readonly [string, string, string, string, readonly string[]];
+
+const profileRow = ([id, name, username, bio, vibes]: ProfileRow, gender: 'men' | 'women', k: number, pointsBase: number) => ({
+  id,
+  name,
+  username,
+  bio,
+  avatar_url: RANDOMUSER(gender, k * 5) as string | null,
+  vibes: vibes as unknown as string[],
+  active_neighbourhood_id: NBHD_ID,
+  onboarding_completed: true,
+  points: pointsBase + k * 27,
+  created_at: ago(60 * 24 * (60 + k * 19)),
+  neighbourhood: { id: NBHD_ID, name: 'HSR Layout', city: 'Bengaluru' },
+});
+
 // The current user's profile. `name`/`username` are patched from the fake-auth
 // store at read time (see client.ts) so whatever name they type on login shows
-// up everywhere.
+// up everywhere. No avatar_url — we don't fabricate a photo for the real user.
 export const profiles = [
   {
     id: ME_ID,
@@ -32,78 +101,8 @@ export const profiles = [
     created_at: ago(60 * 24 * 30),
     neighbourhood: { id: NBHD_ID, name: 'HSR Layout', city: 'Bengaluru' },
   },
-  {
-    id: 'u_priya',
-    name: 'Priya Sharma',
-    username: 'priyas',
-    bio: 'Home baker · Sector 2',
-    avatar_url: 'https://randomuser.me/api/portraits/women/44.jpg',
-    vibes: ['Foodie', 'Baker', 'Chai Lover'],
-    active_neighbourhood_id: NBHD_ID,
-    onboarding_completed: true,
-    points: 340,
-    created_at: ago(60 * 24 * 200),
-    neighbourhood: { id: NBHD_ID, name: 'HSR Layout', city: 'Bengaluru' },
-  },
-  {
-    id: 'u_arjun',
-    name: 'Arjun Menon',
-    username: 'arjunm',
-    bio: 'Cyclist · Coffee snob · Tower B',
-    avatar_url: 'https://randomuser.me/api/portraits/men/32.jpg',
-    vibes: ['Cyclist', 'Coffee Snob', 'Runner'],
-    active_neighbourhood_id: NBHD_ID,
-    onboarding_completed: true,
-    points: 210,
-    created_at: ago(60 * 24 * 150),
-    neighbourhood: { id: NBHD_ID, name: 'HSR Layout', city: 'Bengaluru' },
-  },
-  {
-    id: 'u_fatima',
-    name: 'Fatima Khan',
-    username: 'fatimak',
-    bio: 'Plant mom 🌿 · Sector 7',
-    avatar_url: 'https://randomuser.me/api/portraits/women/68.jpg',
-    vibes: ['Gardener', 'Reader', 'Tea Person'],
-    active_neighbourhood_id: NBHD_ID,
-    onboarding_completed: true,
-    points: 175,
-    created_at: ago(60 * 24 * 90),
-    neighbourhood: { id: NBHD_ID, name: 'HSR Layout', city: 'Bengaluru' },
-  },
-  {
-    id: 'u_ravi',
-    name: 'Ravi Kulkarni',
-    username: 'ravik',
-    bio: 'RWA volunteer · Founder, Green HSR',
-    avatar_url: 'https://randomuser.me/api/portraits/men/76.jpg',
-    vibes: ['Volunteer', 'Runner', 'Gardener'],
-    active_neighbourhood_id: NBHD_ID,
-    onboarding_completed: true,
-    points: 520,
-    created_at: ago(60 * 24 * 400),
-    neighbourhood: { id: NBHD_ID, name: 'HSR Layout', city: 'Bengaluru' },
-  },
-  ...([
-    ['u_sneha', 'Sneha Iyer', 'snehai', 'Yoga teacher · Sector 4', ['Yogi', 'Reader', 'Tea Person'], 'https://randomuser.me/api/portraits/women/21.jpg'],
-    ['u_karan', 'Karan Reddy', 'karanr', 'Weekend cyclist · Photographer', ['Cyclist', 'Photographer', 'Coffee Snob'], 'https://randomuser.me/api/portraits/men/54.jpg'],
-    ['u_ananya', 'Ananya Das', 'ananyad', 'Potter & painter · Tower 9', ['Artist', 'Potter', 'Foodie'], 'https://randomuser.me/api/portraits/women/33.jpg'],
-    ['u_vikram', 'Vikram Nair', 'vikramn', 'Dad of two · Cricket on Sundays', ['Cricketer', 'Dad', 'Runner'], 'https://randomuser.me/api/portraits/men/91.jpg'],
-    ['u_deepa', 'Deepa Rao', 'deepar', 'Home chef · Loves farmers markets', ['Chef', 'Baker', 'Gardener'], 'https://randomuser.me/api/portraits/women/12.jpg'],
-    ['u_imran', 'Imran Sheikh', 'imrans', 'Musician · Guitar teacher', ['Musician', 'Guitarist', 'Foodie'], 'https://randomuser.me/api/portraits/men/45.jpg'],
-  ] as const).map(([id, name, username, bio, vibes, avatarUrl], i) => ({
-    id,
-    name,
-    username,
-    bio,
-    avatar_url: avatarUrl as string | null,
-    vibes: vibes as unknown as string[],
-    active_neighbourhood_id: NBHD_ID,
-    onboarding_completed: true,
-    points: 150 + i * 45,
-    created_at: ago(60 * 24 * (70 + i * 20)),
-    neighbourhood: { id: NBHD_ID, name: 'HSR Layout', city: 'Bengaluru' },
-  })),
+  ...FEMALE_DATA.map((row, k) => profileRow(row, 'women', k, 140)),
+  ...MALE_DATA.map((row, k) => profileRow(row, 'men', k, 150)),
 ];
 
 const authorOf = (id: string) => {
@@ -245,9 +244,10 @@ const basePosts = [
 ];
 
 // ---------------------------------------------------------------------------
-// 100+ image posts — studio-quality, activity-matched Unsplash photos so the
-// feed, profile grids and thumbnails all have real imagery. Each activity's
-// photo id is verified-resolving; captions carry the HSR-neighbourhood voice.
+// Shared activity photo pool — studio-quality, activity-matched Unsplash
+// photos so the feed, profile grids and thumbnails all have real imagery.
+// Each photo id is verified-resolving; captions carry the HSR-neighbourhood
+// voice. Reused across every profile's generated posts (see below).
 // ---------------------------------------------------------------------------
 const IMG = (id: string) => `https://images.unsplash.com/photo-${id}?w=800&q=80&auto=format&fit=crop`;
 
@@ -262,7 +262,7 @@ const ACTIVITIES: { img: string; cat: string; cap: string }[] = [
   { img: '1481627834876-b7833e8f5570', cat: 'general', cap: 'Book club pick for the month is done 📖 loved every page. Meet Sunday at the club?' },
   { img: '1450778869180-41d0601e046e', cat: 'general', cap: 'Evening walk with this good boy 🐕 he says hi to the whole block.' },
   { img: '1488459716781-31db52582fe9', cat: 'recommend', cap: 'Farmers market haul today 🥬 organic greens, local honey, the works. Go early!' },
-  { img: '1466637574441-749b8f19452f', cat: 'recommend', cap: 'Sunday biryani experiment turned out great 🍚 recipe in comments if anyone wants it.' },
+  { img: '1630383249896-583d9f1baa64', cat: 'recommend', cap: 'Sunday dosa cart near Gate 3 never disappoints 🍽️ crispy, hot, and the chutney is next level.' },
   { img: '1511671782779-c97d3d27a1d4', cat: 'general', cap: 'Late-night riff session 🎸 teaching a beginners class Saturdays if anyone’s keen.' },
   { img: '1466692476868-aef1dfb1e735', cat: 'general', cap: 'My balcony jungle is officially out of control 🌿 free cuttings to anyone starting out.' },
   { img: '1565193566173-7a0ee3dbe261', cat: 'general', cap: 'Wheel-throwing afternoon at the studio 🏺 there’s something meditative about clay.' },
@@ -288,8 +288,6 @@ const ACTIVITIES: { img: string; cat: string; cap: string }[] = [
   { img: '1550831107-1553da8c8464', cat: 'general', cap: 'Cozy knitting evening 🧶 making winter scarves — taking a couple of custom orders.' },
 ];
 
-const GEN_AUTHORS = ['u_priya', 'u_arjun', 'u_fatima', 'u_ravi', 'u_sneha', 'u_karan', 'u_ananya', 'u_vikram', 'u_deepa', 'u_imran'];
-
 // Synthetic reaction rows (padding) purely so counts vary; the mock only needs
 // reactions.length for the count and whether ME_ID is present for "you reacted".
 const genReactions = (postId: string, count: number, meReacts: boolean) => {
@@ -299,44 +297,14 @@ const genReactions = (postId: string, count: number, meReacts: boolean) => {
   return arr;
 };
 
-// author is intentionally omitted — the mock client resolves it from profiles
-// at read time, so ME-authored posts pick up the name typed at login.
-//
-// Deterministic per-author generation (not a global i%N scatter) — every
-// profile, including ME, needs its OWN grid to be worth opening, so each
-// author here gets a guaranteed POSTS_PER_AUTHOR posts rather than "however
-// many the modulo happens to land on."
-const POST_AUTHORS = [...GEN_AUTHORS, ME_ID];
-const POSTS_PER_AUTHOR = 10;
-
-const generatedPosts: Record<string, any>[] = [];
-let genCounter = 0;
-for (const author_id of POST_AUTHORS) {
-  for (let j = 0; j < POSTS_PER_AUTHOR; j++) {
-    const a = ACTIVITIES[genCounter % ACTIVITIES.length];
-    const id = `gp${genCounter + 1}`;
-    generatedPosts.push({
-      id,
-      author_id,
-      neighbourhood_id: NBHD_ID,
-      category: a.cat,
-      caption: a.cap,
-      media_urls: [IMG(a.img)],
-      image_urls: [IMG(a.img)],
-      created_at: ago(45 + genCounter * 33),
-      reactions: genReactions(id, 3 + ((genCounter * 7) % 44), genCounter % 6 === 0),
-      comments: [] as { id: string }[],
-    });
-    genCounter++;
-  }
-}
-
 // ---------------------------------------------------------------------------
-// Selfies + friend photos — every named neighbour (not ME, whose real photo
-// we don't know) gets 5 selfie-style posts (grabbing a bite / asking for a
-// recommendation) and 2 "with friends" photos. Selfie faces are gender-
-// matched to that profile's avatar; every image below is used in exactly one
-// profile's slot, so no photo repeats across posts.
+// 30 posts per named profile (40 profiles × 30 = 1200 posts), all with real
+// photos and no repeats within a profile:
+//   - 5 selfies (gender-matched, eating something / asking for a recommendation)
+//   - 2 photos with friends
+//   - 23 activity / recommendation posts from the shared pool above
+// Every selfie face is unique across ALL 40 profiles (see the 5-per-profile
+// randomuser.me block in `profileRow`), so nobody's photo is duplicated.
 // ---------------------------------------------------------------------------
 const SELFIE_CAPTIONS = [
   'Grabbing a quick vada pav before work 😋 anyone know a better stall nearby?',
@@ -359,8 +327,6 @@ const FRIEND_CAPTIONS = [
   'Best part of the week — time with these two 💛',
 ];
 
-const RANDOMUSER = (gender: 'men' | 'women', n: number) => `https://randomuser.me/api/portraits/${gender}/${n}.jpg`;
-
 const FRIEND_PHOTOS = {
   f1: IMG('1529156069898-49953e39b3ac'), // group of friends, backs turned, viewpoint
   f2: IMG('1529333166437-7750a6dd5a70'), // three women, arms raised at sunset
@@ -371,27 +337,21 @@ const FRIEND_PHOTOS = {
   f7: IMG('1528605105345-5344ea20e269'), // group hangout, friend presenting
   f8: IMG('1573497491208-6b1acb260507'), // two friends chatting over a table
 } as const;
+const FRIEND_KEYS = Object.keys(FRIEND_PHOTOS) as (keyof typeof FRIEND_PHOTOS)[];
 
-const PROFILE_PHOTO_PLAN: Record<string, { gender: 'men' | 'women'; selfieNums: number[]; friends: [keyof typeof FRIEND_PHOTOS, keyof typeof FRIEND_PHOTOS] }> = {
-  u_priya: { gender: 'women', selfieNums: [1, 2, 3, 4, 6], friends: ['f1', 'f2'] },
-  u_fatima: { gender: 'women', selfieNums: [7, 8, 10, 11, 13], friends: ['f2', 'f4'] },
-  u_sneha: { gender: 'women', selfieNums: [15, 16, 18, 19, 20], friends: ['f7', 'f8'] },
-  u_ananya: { gender: 'women', selfieNums: [24, 26, 27, 28, 30], friends: ['f6', 'f8'] },
-  u_deepa: { gender: 'women', selfieNums: [35, 36, 37, 39, 40], friends: ['f2', 'f6'] },
-  u_arjun: { gender: 'men', selfieNums: [1, 2, 3, 4, 5], friends: ['f3', 'f4'] },
-  u_ravi: { gender: 'men', selfieNums: [7, 8, 9, 10, 11], friends: ['f5', 'f6'] },
-  u_karan: { gender: 'men', selfieNums: [13, 14, 15, 16, 17], friends: ['f1', 'f3'] },
-  u_vikram: { gender: 'men', selfieNums: [19, 20, 21, 22, 24], friends: ['f5', 'f7'] },
-  u_imran: { gender: 'men', selfieNums: [26, 27, 28, 29, 30], friends: ['f1', 'f5'] },
-};
+const NAMED_PROFILES: { id: string; gender: 'men' | 'women'; k: number }[] = [
+  ...FEMALE_DATA.map((row, k) => ({ id: row[0], gender: 'women' as const, k })),
+  ...MALE_DATA.map((row, k) => ({ id: row[0], gender: 'men' as const, k })),
+];
 
-const profilePosts: Record<string, any>[] = [];
-let ppCounter = 0;
-Object.entries(PROFILE_PHOTO_PLAN).forEach(([authorId, plan], profileIndex) => {
-  plan.selfieNums.forEach((n, i) => {
-    const id = `sf${ppCounter + 1}`;
-    const img = RANDOMUSER(plan.gender, n);
-    profilePosts.push({
+const namedPosts: Record<string, any>[] = [];
+let npCounter = 0;
+NAMED_PROFILES.forEach(({ id: authorId, gender, k }, profileIndex) => {
+  const selfies = [0, 1, 2, 3, 4].map((n) => RANDOMUSER(gender, k * 5 + n));
+
+  selfies.forEach((img, i) => {
+    const id = `pp${npCounter + 1}`;
+    namedPosts.push({
       id,
       author_id: authorId,
       neighbourhood_id: NBHD_ID,
@@ -399,33 +359,71 @@ Object.entries(PROFILE_PHOTO_PLAN).forEach(([authorId, plan], profileIndex) => {
       caption: SELFIE_CAPTIONS[(profileIndex + i) % SELFIE_CAPTIONS.length],
       media_urls: [img],
       image_urls: [img],
-      created_at: ago(50 + ppCounter * 41),
-      reactions: genReactions(id, 2 + ((ppCounter * 5) % 20), ppCounter % 5 === 0),
+      created_at: ago(40 + npCounter * 17),
+      reactions: genReactions(id, 2 + (npCounter % 18), npCounter % 5 === 0),
       comments: [] as { id: string }[],
     });
-    ppCounter++;
+    npCounter++;
   });
 
-  plan.friends.forEach((key, i) => {
-    const id = `sf${ppCounter + 1}`;
-    const img = FRIEND_PHOTOS[key];
-    profilePosts.push({
+  [0, 1].forEach((i) => {
+    const key = FRIEND_KEYS[(profileIndex * 2 + i) % FRIEND_KEYS.length];
+    const id = `pp${npCounter + 1}`;
+    namedPosts.push({
       id,
       author_id: authorId,
       neighbourhood_id: NBHD_ID,
       category: 'general',
       caption: FRIEND_CAPTIONS[(profileIndex + i) % FRIEND_CAPTIONS.length],
-      media_urls: [img],
-      image_urls: [img],
-      created_at: ago(60 + ppCounter * 41),
-      reactions: genReactions(id, 2 + ((ppCounter * 5) % 20), ppCounter % 5 === 0),
+      media_urls: [FRIEND_PHOTOS[key]],
+      image_urls: [FRIEND_PHOTOS[key]],
+      created_at: ago(45 + npCounter * 17),
+      reactions: genReactions(id, 2 + (npCounter % 18), npCounter % 5 === 0),
       comments: [] as { id: string }[],
     });
-    ppCounter++;
+    npCounter++;
   });
+
+  for (let j = 0; j < 23; j++) {
+    const a = ACTIVITIES[(profileIndex * 7 + j) % ACTIVITIES.length];
+    const id = `pp${npCounter + 1}`;
+    namedPosts.push({
+      id,
+      author_id: authorId,
+      neighbourhood_id: NBHD_ID,
+      category: a.cat,
+      caption: a.cap,
+      media_urls: [IMG(a.img)],
+      image_urls: [IMG(a.img)],
+      created_at: ago(50 + npCounter * 17),
+      reactions: genReactions(id, 2 + (npCounter % 18), npCounter % 6 === 0),
+      comments: [] as { id: string }[],
+    });
+    npCounter++;
+  }
 });
 
-export const posts = [...basePosts, ...generatedPosts, ...profilePosts];
+// ME gets activity-only posts — no fabricated selfie/friend photos for the
+// real signed-in user, just the same neutral activity pool everyone else draws on.
+const mePosts: Record<string, any>[] = [];
+for (let j = 0; j < 12; j++) {
+  const a = ACTIVITIES[(j * 5) % ACTIVITIES.length];
+  const id = `mp${j + 1}`;
+  mePosts.push({
+    id,
+    author_id: ME_ID,
+    neighbourhood_id: NBHD_ID,
+    category: a.cat,
+    caption: a.cap,
+    media_urls: [IMG(a.img)],
+    image_urls: [IMG(a.img)],
+    created_at: ago(60 + j * 53),
+    reactions: genReactions(id, 2 + (j % 10), j % 4 === 0),
+    comments: [] as { id: string }[],
+  });
+}
+
+export const posts = [...basePosts, ...namedPosts, ...mePosts];
 
 // Reactions live in their own table (mirrors the real schema) so that a
 // reaction the user adds at runtime merges with the seeded ones — the mock
@@ -455,71 +453,90 @@ export const comments = [
 // category values must be one of bazaarCategories: furniture | electronics |
 // books | clothing | free. image_urls/media_urls are both present (different
 // screens read different names) and updated_at drives the "still available?"
-// staleness chip.
-const listing = (o: Record<string, any>) => ({ image_urls: [], media_urls: [], status: 'active', updated_at: o.created_at, ...o });
+// staleness chip. `img` is a studio-style Unsplash packshot matched to the
+// listing's actual product — resolved through the same IMG() as everything else.
+const listing = (o: { img: string } & Record<string, any>) => {
+  const { img, ...rest } = o;
+  const url = IMG(img);
+  return { image_urls: [url], media_urls: [url], status: 'active', updated_at: o.created_at, ...rest };
+};
 
-export const listings = [
-  listing({
-    id: 'l1',
-    seller_id: 'u_arjun',
-    neighbourhood_id: NBHD_ID,
-    title: 'Sony noise-cancelling headphones',
-    description: 'WH-1000XM4, barely used, boxed with all accessories. Selling as I upgraded.',
-    price: 9500,
-    category: 'electronics',
-    condition: 'Like New',
-    created_at: ago(180),
-    seller: authorOf('u_arjun'),
-  }),
-  listing({
-    id: 'l2',
-    seller_id: 'u_fatima',
-    neighbourhood_id: NBHD_ID,
-    title: 'Solid wood bookshelf',
-    description: 'Sturdy 5-shelf bookshelf, teak finish. Great condition. Pickup from Sector 7.',
-    price: 3200,
-    category: 'furniture',
-    condition: 'Used',
-    created_at: ago(500),
-    seller: authorOf('u_fatima'),
-  }),
-  listing({
-    id: 'l3',
-    seller_id: 'u_priya',
-    neighbourhood_id: NBHD_ID,
-    title: 'Baking cookbook bundle (5 books)',
-    description: 'Five well-loved baking books incl. Tartine Bread. Perfect for a beginner baker.',
-    price: 800,
-    category: 'books',
-    condition: 'Used',
-    created_at: ago(1100),
-    seller: authorOf('u_priya'),
-  }),
-  listing({
-    id: 'l4',
-    seller_id: 'u_ravi',
-    neighbourhood_id: NBHD_ID,
-    title: 'Kids’ cycle (age 5–8)',
-    description: 'Free to a good home — my son outgrew it. Works fine, needs a little cleaning.',
-    price: null,
-    category: 'free',
-    condition: 'Used',
-    created_at: ago(2600),
-    seller: authorOf('u_ravi'),
-  }),
-  listing({
-    id: 'l5',
-    seller_id: 'u_arjun',
-    neighbourhood_id: NBHD_ID,
-    title: 'Winter jackets (M/L)',
-    description: 'Two lightly-used jackets, one North Face. Great for Bangalore December mornings.',
-    price: 1500,
-    category: 'clothing',
-    condition: 'Like New',
-    created_at: ago(4000),
-    seller: authorOf('u_arjun'),
-  }),
+const ALL_NAMED_IDS = NAMED_PROFILES.map((p) => p.id);
+const sellerOf = (i: number) => ALL_NAMED_IDS[i % ALL_NAMED_IDS.length];
+
+const LISTING_DATA: { seller: string; title: string; description: string; price: number | null; category: string; condition: string; img: string }[] = [
+  // Electronics
+  { seller: 'u_arjun', title: 'Sony WH-1000XM4 headphones', description: 'Noise-cancelling, barely used, boxed with all accessories. Selling as I upgraded.', price: 9500, category: 'electronics', condition: 'Like New', img: '1505740420928-5e560c06d30e' },
+  { seller: 'u_rohan', title: 'Apple Watch SE', description: '40mm, GPS, with two extra bands. Screen is flawless, minor case wear.', price: 12000, category: 'electronics', condition: 'Like New', img: '1523275335684-37898b6baf30' },
+  { seller: 'u_rahul', title: 'Mechanical keyboard (Keychron)', description: 'Hot-swappable, brown switches, great for WFH. Selling as I switched to a split board.', price: 4500, category: 'electronics', condition: 'Used', img: '1546868871-7041f2a55e12' },
+  { seller: 'u_kunal', title: 'MacBook Air 2019', description: 'i5, 8GB RAM, 256GB SSD. Battery health 84%. Charger included.', price: 38000, category: 'electronics', condition: 'Used', img: '1496181133206-80ce9b88a853' },
+  { seller: 'u_pooja', title: 'Wireless earbuds (boAt)', description: 'Used for 3 months, works perfectly, case included. Upgrading to a different brand.', price: 1800, category: 'electronics', condition: 'Like New', img: '1590658268037-6bf12165a8df' },
+  { seller: 'u_karan', title: 'Canon DSLR + kit lens', description: 'Great for someone starting photography. Shutter count low, comes with bag and extra battery.', price: 22000, category: 'electronics', condition: 'Used', img: '1516035069371-29a1b244cc32' },
+  { seller: 'u_imran', title: 'JBL Bluetooth speaker', description: 'Loud, great bass, barely used at a couple of jam sessions. Pickup from Sector 6.', price: 2800, category: 'electronics', condition: 'Like New', img: '1608043152269-423dbba4e7e1' },
+  { seller: 'u_naveen', title: 'Logitech wireless mouse', description: 'MX-series, smooth scroll, works great. Selling a spare I don’t need.', price: 900, category: 'electronics', condition: 'Like New', img: '1527814050087-3793815479db' },
+  { seller: 'u_vivek', title: 'iPhone 11, 128GB', description: 'Battery health 89%, no scratches, always used with a case and screen guard.', price: 21000, category: 'electronics', condition: 'Used', img: '1511707171634-5f897ff02aa9' },
+  { seller: 'u_harish', title: 'PS4 controller', description: 'Original Sony DualShock, sticks in great condition, no drift.', price: 2200, category: 'electronics', condition: 'Used', img: '1486401899868-0e435ed85128' },
+  // Furniture
+  { seller: 'u_ritu', title: 'Cream armchair', description: 'Comfortable reading chair, fabric in great condition. Moving to a smaller flat.', price: 6500, category: 'furniture', condition: 'Used', img: '1519947486511-46149fa0a254' },
+  { seller: 'u_zara', title: '3-seater grey sofa', description: 'Sturdy frame, machine-washable covers included. A few years old but very comfortable.', price: 12000, category: 'furniture', condition: 'Used', img: '1567538096630-e0c55bd6374c' },
+  { seller: 'u_fatima', title: 'Solid wood bookshelf', description: 'Sturdy 5-shelf bookshelf, teak finish. Great condition. Pickup from Sector 7.', price: 3200, category: 'furniture', condition: 'Used', img: '1504148455328-c376907d081c' },
+  { seller: 'u_nandini', title: 'Table lamp, brass base', description: 'Warm-light lamp, perfect for a study corner. Barely used.', price: 900, category: 'furniture', condition: 'Like New', img: '1524758631624-e2822e304c36' },
+  { seller: 'u_gaurav', title: 'Ergonomic office chair', description: 'Mesh back, adjustable height and armrests. Great for long WFH days.', price: 4200, category: 'furniture', condition: 'Used', img: '1580480055273-228ff5388ef8' },
+  { seller: 'u_manish', title: '6-seater dining table', description: 'Solid wood, minor scratches on top, otherwise sturdy and sold with chairs.', price: 15000, category: 'furniture', condition: 'Used', img: '1567016432779-094069958ea5' },
+  { seller: 'u_aisha', title: 'Queen-size bed frame', description: 'Wooden frame with storage underneath. Mattress not included.', price: 8500, category: 'furniture', condition: 'Used', img: '1505693416388-ac5ce068fe85' },
+  { seller: 'u_kavya', title: 'Study desk with drawers', description: 'Compact desk, perfect for a home office corner. Two drawers with working locks.', price: 3200, category: 'furniture', condition: 'Used', img: '1518455027359-f3f8164ba6bd' },
+  { seller: 'u_swati', title: 'Floating wall shelves (set of 3)', description: 'Easy to install, great for books or plants. Barely used, still have the fittings.', price: 1200, category: 'furniture', condition: 'Like New', img: '1594620302200-9a762244a156' },
+  { seller: 'u_yash', title: 'Bean bag, XXL', description: 'Filled with fresh beans a few months ago, super comfortable. Selling as I’m relocating.', price: 1500, category: 'furniture', condition: 'Used', img: '1595515106969-1ce29566ff1c' },
+  // Books
+  { seller: 'u_priya', title: 'Baking cookbook bundle (5 books)', description: 'Five well-loved baking books incl. Tartine Bread. Perfect for a beginner baker.', price: 800, category: 'books', condition: 'Used', img: '1495446815901-a7297e633e8d' },
+  { seller: 'u_shalini', title: 'Fiction collection (12 novels)', description: 'Mix of contemporary fiction, all in great condition. Great for a book club.', price: 1000, category: 'books', condition: 'Used', img: '1512820790803-83ca734da794' },
+  { seller: 'u_amit', title: 'Non-fiction + memoir stack', description: 'Biographies and essays I’ve finished and want to pass on. Well kept.', price: 600, category: 'books', condition: 'Used', img: '1481627834876-b7833e8f5570' },
+  { seller: 'u_preeti', title: 'Self-help book set', description: 'Popular titles on habits, productivity and mindfulness. Light shelf wear only.', price: 500, category: 'books', condition: 'Used', img: '1543002588-bfa74002ed7e' },
+  { seller: 'u_vikram', title: 'Kids’ picture books bundle', description: 'My kids have outgrown these — a dozen picture books in great shape.', price: 400, category: 'books', condition: 'Used', img: '1524578271613-d550eacf6090' },
+  { seller: 'u_aditya', title: 'Engineering textbooks (CS)', description: 'Data structures, algorithms and OS textbooks from my degree. Some highlighting inside.', price: 900, category: 'books', condition: 'Used', img: '1507842217343-583bb7270b66' },
+  { seller: 'u_lakshmi', title: 'Classic literature collection', description: 'A set of classics I’ve reread too many times to count — time to share the love.', price: 700, category: 'books', condition: 'Used', img: '1521123845560-14093637aa7d' },
+  { seller: 'u_sanjay', title: 'Travel guidebooks (India + SE Asia)', description: 'A handful of Lonely Planet guides from past trips, still useful and up to date.', price: 350, category: 'books', condition: 'Used', img: '1476275466078-4007374efbbe' },
+  { seller: 'u_farhan', title: 'Comics & graphic novels bundle', description: 'A mixed stack collected over the years — great condition, no torn pages.', price: 450, category: 'books', condition: 'Used', img: '1524995997946-a1c2e315a42f' },
+  { seller: 'u_anjali', title: 'Vintage hardcover collection', description: 'Old hardcover editions with a lot of character — great for a bookshelf display.', price: 1200, category: 'books', condition: 'Used', img: '1521587760476-6c12a4b040da' },
+  // Clothing
+  { seller: 'u_divya', title: 'Nike sneakers, UK 9', description: 'Worn a handful of times, no visible wear. Selling as they run slightly small.', price: 2800, category: 'clothing', condition: 'Like New', img: '1560769629-975ec94e6a86' },
+  { seller: 'u_meera', title: 'Hand-knit winter scarves (set)', description: 'Made a few extra while knitting this winter — soft wool, never worn.', price: 600, category: 'clothing', condition: 'Like New', img: '1550831107-1553da8c8464' },
+  { seller: 'u_radhika', title: 'Leather handbag', description: 'Genuine leather, roomy, barely used. Minor mark on the base, otherwise pristine.', price: 1800, category: 'clothing', condition: 'Used', img: '1584917865442-de89df76afd3' },
+  { seller: 'u_rajesh', title: 'Hiking backpack, 40L', description: 'Used on two treks, all zips and straps in perfect working order.', price: 2200, category: 'clothing', condition: 'Used', img: '1445205170230-053b83016050' },
+  { seller: 'u_arjun', title: 'Winter jackets (M/L)', description: 'Two lightly-used jackets, one North Face. Great for Bangalore December mornings.', price: 1500, category: 'clothing', condition: 'Like New', img: '1591047139829-d91aecb6caea' },
+  { seller: 'u_naveen', title: 'Cotton T-shirts bundle (6)', description: 'Plain and printed tees, good brands, gently used. Selling as a set.', price: 900, category: 'clothing', condition: 'Used', img: '1521572163474-6864f9cf17ab' },
+  { seller: 'u_gaurav', title: 'Fossil analog watch', description: 'Leather strap, recently serviced, keeps great time. Comes with the original box.', price: 1600, category: 'clothing', condition: 'Used', img: '1560243563-062bfc001d68' },
+  { seller: 'u_karan', title: 'Sunglasses, wayfarer style', description: 'UV-protected, barely scratched, comes with a hard case.', price: 700, category: 'clothing', condition: 'Like New', img: '1509631179647-0177331693ae' },
+  { seller: 'u_siddharth', title: 'Formal leather shoes', description: 'Size 9, worn a few times for office, still in great shape.', price: 1400, category: 'clothing', condition: 'Used', img: '1542291026-7eec264c27ff' },
+  { seller: 'u_rohan', title: 'Pullover hoodie, size L', description: 'Warm, soft fleece lining, no pilling. Selling as I have too many.', price: 800, category: 'clothing', condition: 'Used', img: '1602293589930-45821449641a' },
+  // Free
+  { seller: 'u_vikram', title: 'Kids’ cycle (age 5–8)', description: 'Free to a good home — my son outgrew it. Works fine, needs a little cleaning.', price: null, category: 'free', condition: 'Used', img: '1571333250630-f0230c320b6d' },
+  { seller: 'u_fatima', title: 'Free monstera plant cuttings', description: 'My monstera is thriving — happy to share cuttings with anyone starting a plant corner.', price: null, category: 'free', condition: 'Used', img: '1466692476868-aef1dfb1e735' },
+  { seller: 'u_ananya', title: 'Extra handmade pottery bowls', description: 'A few bowls from my last kiln batch that didn’t make the shop cut — still lovely, free to a good home.', price: null, category: 'free', condition: 'Like New', img: '1565193566173-7a0ee3dbe261' },
+  { seller: 'u_harish', title: 'Board games bundle', description: 'A stack of board games we’ve outgrown — all pieces included and counted.', price: null, category: 'free', condition: 'Used', img: '1558618666-fcd25c85cd64' },
+  { seller: 'u_swati', title: 'Old magazines & newspapers', description: 'Clearing out a stack — great for recycling, crafts, or packing material.', price: null, category: 'free', condition: 'Used', img: '1493711662062-fa541adb3fc8' },
+  { seller: 'u_deepa', title: 'Spare kitchenware (steel utensils)', description: 'Extra steel utensils from a house move, all clean and usable.', price: null, category: 'free', condition: 'Used', img: '1602143407151-7111542de6e8' },
+  { seller: 'u_anjali', title: 'Empty plant pots (assorted sizes)', description: 'Repotted everything into bigger pots — these are free for anyone starting a garden.', price: null, category: 'free', condition: 'Used', img: '1587654780291-39c9404d746b' },
+  { seller: 'u_aisha', title: 'Kids’ toys (assorted)', description: 'A box of gently-used toys my kids have outgrown — all clean and in working order.', price: null, category: 'free', condition: 'Used', img: '1558060370-d644479cb6f7' },
+  { seller: 'u_pooja', title: 'Baby items (rattles, bottles)', description: 'A small box of baby items we no longer need — sanitised and ready to use.', price: null, category: 'free', condition: 'Used', img: '1594736797933-d0d62e8beca9' },
+  { seller: 'u_yash', title: 'Cardboard moving boxes', description: 'Sturdy boxes left over from our move, various sizes, free for anyone relocating.', price: null, category: 'free', condition: 'Used', img: '1620916566398-39f1143ab7be' },
 ];
+
+export const listings = LISTING_DATA.map((d, i) =>
+  listing({
+    id: `l${i + 1}`,
+    seller_id: d.seller,
+    neighbourhood_id: NBHD_ID,
+    title: d.title,
+    description: d.description,
+    price: d.price,
+    category: d.category,
+    condition: d.condition,
+    created_at: ago(90 + i * 140),
+    seller: authorOf(d.seller),
+    img: d.img,
+  })
+);
 
 // event_type / privacy_tier / guest_limit / status:'active' match what
 // ScenesScreen and EventDetail query for. starts_at is in the future
