@@ -7,7 +7,7 @@ import PostCard, { type FeedPost } from './PostCard';
 import SponsoredCard from './SponsoredCard';
 import { supabase } from '../../shared/api/supabase';
 import { getBlockedUserIds } from '../../shared/api/blocks';
-import { fetchServedAd, type ServedAd } from '../../shared/api/ads';
+import { fetchAdPool, type ServedAd } from '../../shared/api/ads';
 import { BACKGROUND, PRIMARY, ON_SURFACE_MUTED } from '../../shared/theme/tokens';
 import type { ReactionId } from './ReactionPicker';
 
@@ -23,9 +23,12 @@ import type { ReactionId } from './ReactionPicker';
 // merged. Without this, switching neighbourhoods would have no visible
 // effect on the feed, which is exactly the kind of silent ambiguity
 // edgecase.md §9.1 warns about.
+const ADS_EVERY = 5;
+
+type FeedItem = { kind: 'post'; key: string; post: FeedPost } | { kind: 'ad'; key: string; ad: ServedAd };
+
 export default function HomeFeed() {
-  const [posts, setPosts] = useState<FeedPost[] | null>(null);
-  const [ad, setAd] = useState<ServedAd | null>(null);
+  const [items, setItems] = useState<FeedItem[] | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -38,13 +41,11 @@ export default function HomeFeed() {
     const { data: profile } = await supabase.from('profiles').select('active_neighbourhood_id').eq('id', user.id).single();
     const activeNeighbourhoodId = profile?.active_neighbourhood_id;
     if (!activeNeighbourhoodId) {
-      setPosts([]);
+      setItems([]);
       return;
     }
 
-    fetchServedAd(user.id, activeNeighbourhoodId).then(setAd);
-
-    const [{ data: rows }, { data: hidden }, { data: muted }, blockedIds] = await Promise.all([
+    const [{ data: rows }, { data: hidden }, { data: muted }, blockedIds, adPool] = await Promise.all([
       supabase
         .from('posts')
         // Explicit !posts_author_id_fkey — see StoriesBar.tsx's comment on
@@ -56,6 +57,9 @@ export default function HomeFeed() {
       supabase.from('hidden_posts').select('post_id').eq('user_id', user.id),
       supabase.from('muted_users').select('muted_user_id').eq('user_id', user.id),
       getBlockedUserIds(user.id),
+      // Offset by the day-of-year so the feed doesn't always lead with the
+      // exact same campaign every time it's reloaded within a session.
+      fetchAdPool(user.id, activeNeighbourhoodId, Math.floor(Date.now() / 86_400_000)),
     ]);
 
     const hiddenIds = new Set((hidden ?? []).map((h) => h.post_id));
@@ -80,7 +84,20 @@ export default function HomeFeed() {
         };
       });
 
-    setPosts(mapped);
+    // One sponsored card after every 5 posts (not just once at the top) —
+    // cycling through the ad pool rather than repeating a single campaign.
+    const merged: FeedItem[] = [];
+    let adCursor = 0;
+    mapped.forEach((post, i) => {
+      merged.push({ kind: 'post', key: post.id, post });
+      if (adPool.length > 0 && (i + 1) % ADS_EVERY === 0) {
+        const ad = adPool[adCursor % adPool.length];
+        merged.push({ kind: 'ad', key: `ad_${ad.campaign_id}_${i}`, ad });
+        adCursor++;
+      }
+    });
+
+    setItems(merged);
   }, []);
 
   useFocusEffect(
@@ -92,20 +109,17 @@ export default function HomeFeed() {
   return (
     <View style={{ flex: 1, backgroundColor: BACKGROUND }}>
       <TopBar />
-      {posts === null ? (
+      {items === null ? (
         <ActivityIndicator style={{ marginTop: 40 }} color={PRIMARY} />
       ) : (
         <FlatList
-          data={posts}
-          keyExtractor={(p) => p.id}
+          data={items}
+          keyExtractor={(item) => item.key}
           contentContainerStyle={{ padding: 16, paddingBottom: 32, gap: 14 }}
-          ListHeaderComponent={
-            <>
-              <StoriesBar />
-              {ad && userId && <SponsoredCard ad={ad} userId={userId} />}
-            </>
+          ListHeaderComponent={<StoriesBar />}
+          renderItem={({ item }) =>
+            item.kind === 'ad' ? <SponsoredCard ad={item.ad} userId={userId ?? ''} /> : <PostCard post={item.post} onChanged={load} />
           }
-          renderItem={({ item }) => <PostCard post={item} onChanged={load} />}
           ListEmptyComponent={
             <Text style={{ textAlign: 'center', color: ON_SURFACE_MUTED, marginTop: 40, fontSize: 13.5 }}>
               No posts yet — be the first to share something with your circle.

@@ -1,6 +1,9 @@
 import { View, Text, Image, Pressable } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Megaphone } from 'lucide-react-native';
 import { recordAdClickFireAndForget, type ServedAd } from '../../shared/api/ads';
+import type { RootStackParamList } from '../../navigation/types';
 
 // Phase 83 (Group I) — the one place `serve_ad_for_user`'s result actually
 // reaches a real screen (HomeFeed fetches it once per load, same as any
@@ -10,9 +13,16 @@ import { recordAdClickFireAndForget, type ServedAd } from '../../shared/api/ads'
 // needs to record a click, fire-and-forget, same pattern as Genie's embed
 // calls (never blocks or breaks the tap if it fails).
 export default function SponsoredCard({ ad, userId }: { ad: ServedAd; userId: string }) {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  const onPress = () => {
+    recordAdClickFireAndForget(ad.campaign_id, userId);
+    if (ad.page_id) navigation.navigate('PageDetail', { pageId: ad.page_id });
+  };
+
   return (
     <Pressable
-      onPress={() => recordAdClickFireAndForget(ad.campaign_id, userId)}
+      onPress={onPress}
       className="mx-4 mt-3 bg-white rounded-2xl overflow-hidden"
       style={{ borderWidth: 1, borderColor: '#EBEEF4' }}
     >

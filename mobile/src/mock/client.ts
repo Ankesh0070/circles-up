@@ -20,7 +20,7 @@ const AUTH_KEY = 'mock_user';
 // a stale snapshot always wins over fresh seed defaults by design (that's
 // the whole point of persisting), so without this, someone who visited
 // before a seed fix landed would keep seeing the old data forever.
-const PERSIST_KEY = 'mock_db_v5';
+const PERSIST_KEY = 'mock_db_v6';
 
 export interface MockUser {
   id: string;

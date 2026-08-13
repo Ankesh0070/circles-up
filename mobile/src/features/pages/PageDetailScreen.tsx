@@ -1,10 +1,13 @@
 import { useCallback, useState } from 'react';
-import { View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, Image, ScrollView, ActivityIndicator } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Briefcase, User, HeartHandshake, MapPin, AlertTriangle, Megaphone } from 'lucide-react-native';
+import { Briefcase, User, HeartHandshake, MapPin, AlertTriangle, Megaphone, Play } from 'lucide-react-native';
 import { supabase } from '../../shared/api/supabase';
 import PageGenieWidget from './PageGenieWidget';
+import PageReelModal from '../reels/PageReelModal';
+import { reels, type SeedReel } from '../../mock/seed';
 import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PageDetail'>;
@@ -36,6 +39,8 @@ export default function PageDetailScreen({ route, navigation }: Props) {
   const [myUserId, setMyUserId] = useState<string | null>(null);
   const [donationStats, setDonationStats] = useState<{ count: number; total: number } | null>(null);
   const [adStats, setAdStats] = useState<{ campaigns: number; spend: number } | null>(null);
+  const [openReel, setOpenReel] = useState<SeedReel | null>(null);
+  const pageReels = reels.filter((r) => r.pageId === pageId);
 
   const load = useCallback(async () => {
     const {
@@ -130,6 +135,34 @@ export default function PageDetailScreen({ route, navigation }: Props) {
           <Text className="text-[12px] text-ink-muted">{page.address}</Text>
         </View>
       )}
+
+      {pageReels.length > 0 && (
+        <View className="mt-6">
+          <Text className="text-[13px] font-bold text-[#181C20] mb-2">Reels</Text>
+          <View className="flex-row flex-wrap gap-2">
+            {pageReels.map((r) => (
+              <Pressable
+                key={r.id}
+                onPress={() => setOpenReel(r)}
+                style={{ width: 96, height: 128, borderRadius: 14, overflow: 'hidden', backgroundColor: '#06283D' }}
+              >
+                {r.img ? (
+                  <Image source={{ uri: r.img }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+                ) : (
+                  <LinearGradient colors={r.colors} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: '100%', height: '100%' }} />
+                )}
+                <View
+                  style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <Play size={20} color="#fff" fill="#fff" />
+                </View>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      )}
+
+      <PageReelModal reel={openReel} onClose={() => setOpenReel(null)} />
 
       {isOwner && page.geocode_status === 'mismatch' && (
         <View className="flex-row items-start gap-2 mt-4 px-3 py-2.5 rounded-xl bg-amber-50">

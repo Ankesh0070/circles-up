@@ -629,6 +629,149 @@ export const event_rsvps = [
   { id: 'rsvp6', event_id: 'e3', user_id: 'u_priya', status: 'going' },
 ];
 
+// ---------------------------------------------------------------------------
+// Local businesses — 200 shops across 24 categories. Each gets a business
+// page (Pages > Discover), an ad shown in the feed, and one reel. Names are
+// generated (prefix + category noun) rather than hand-typed 200 times;
+// sector numbers spread them around the neighbourhood.
+// ---------------------------------------------------------------------------
+const BIZ_PREFIXES = ['Royal', 'Sunrise', 'New', 'Shree', 'Metro', 'Prime', 'Golden', 'City', 'Green', 'Om', 'Sri', 'Star'];
+
+type BizCategory = { noun: string; imgs: string[]; cta: string; body: string; bio: string; count: number };
+
+const BIZ_CATEGORIES: BizCategory[] = [
+  { noun: 'Restaurant', imgs: ['1414235077428-338989a2e8c0', '1517248135467-4c7edcad34c4'], cta: 'Order Now', body: 'Fresh multi-cuisine meals, dine-in or delivery in 30 minutes.', bio: 'Multi-cuisine family restaurant serving HSR Layout.', count: 9 },
+  { noun: 'Dhaba', imgs: ['1517244683847-7456b63c5969', '1601050690597-df0568f70950'], cta: 'Order Now', body: 'Highway-style thalis, tandoori and butter chicken, made fresh daily.', bio: 'Famous roadside dhaba known for its tandoori and thalis.', count: 8 },
+  { noun: 'Electronics', imgs: ['1550009158-9ebf69173e03', '1523275335684-37898b6baf30'], cta: 'Shop Now', body: 'Phones, laptops and appliances at the best prices in HSR.', bio: 'Neighbourhood electronics store — sales, service and accessories.', count: 8 },
+  { noun: 'Clothing Store', imgs: ['1521572163474-6864f9cf17ab', '1445205170230-053b83016050'], cta: 'Shop Now', body: 'New festive collection just in — up to 30% off this week.', bio: 'Everyday and festive wear for the whole family.', count: 9 },
+  { noun: 'Paints', imgs: ['1562259949-e8e7689d7828'], cta: 'Visit Us', body: 'Every shade you need, free colour consultation on weekends.', bio: 'Paints, primers and colour consultation for home and office.', count: 8 },
+  { noun: 'Hardware Store', imgs: ['1581091226825-a6a2a5aee158'], cta: 'Visit Us', body: 'Tools, fittings and everything for your next home project.', bio: 'Hardware, tools and fittings — trusted by HSR contractors.', count: 8 },
+  { noun: 'Mall', imgs: ['1519389950473-47ba0277781c'], cta: 'Explore', body: 'Shopping, dining and a weekend of things to do, all under one roof.', bio: "HSR Layout's shopping and entertainment hub.", count: 8 },
+  { noun: 'Supermarket', imgs: ['1578916171728-46686eac8d58'], cta: 'Shop Now', body: 'Groceries, fresh produce and daily essentials, open till 11 PM.', bio: 'Your everyday grocery store — fresh produce daily.', count: 9 },
+  { noun: 'Bakery', imgs: ['1509440159596-0249088772ff', '1568254183919-78a4f43a2877'], cta: 'Order Now', body: 'Fresh breads, pastries and custom cakes baked every morning.', bio: 'Neighbourhood bakery — breads, pastries and celebration cakes.', count: 9 },
+  { noun: 'Pharmacy', imgs: ['1587854692152-cbe660dbde88'], cta: 'Visit Us', body: 'Medicines, health checks and home delivery within HSR Layout.', bio: 'Your trusted neighbourhood pharmacy, open 24x7.', count: 8 },
+  { noun: 'Salon & Spa', imgs: ['1521590832167-7bcbfaa6381f'], cta: 'Book Now', body: 'Haircuts, styling and spa packages — book your slot today.', bio: 'Unisex salon and spa for the whole family.', count: 8 },
+  { noun: 'Fitness Studio', imgs: ['1534438327276-14e5300c3a48'], cta: 'Join Now', body: 'Strength, cardio and yoga classes — first session free.', bio: 'Neighbourhood gym and fitness studio with certified trainers.', count: 9 },
+  { noun: 'Bookstore', imgs: ['1495446815901-a7297e633e8d', '1512820790803-83ca734da794'], cta: 'Shop Now', body: 'New arrivals, textbooks and stationery for every age.', bio: 'Books, stationery and a cosy corner to read in.', count: 8 },
+  { noun: 'Furniture Store', imgs: ['1567538096630-e0c55bd6374c', '1519947486511-46149fa0a254'], cta: 'Shop Now', body: 'Sofas, beds and dining sets — festive discounts this month.', bio: 'Home and office furniture, custom orders welcome.', count: 9 },
+  { noun: 'Mobile Repair', imgs: ['1511707171634-5f897ff02aa9'], cta: 'Visit Us', body: 'Screen repairs and servicing while you wait.', bio: 'Mobile sales, repairs and accessories.', count: 8 },
+  { noun: 'Jewellery', imgs: ['1515562141207-7a88fb7ce338'], cta: 'Shop Now', body: 'Gold, silver and custom designs for every occasion.', bio: 'Trusted neighbourhood jeweller since generations.', count: 9 },
+  { noun: 'Footwear Store', imgs: ['1560769629-975ec94e6a86', '1542291026-7eec264c27ff'], cta: 'Shop Now', body: 'Everyday and sports shoes for the whole family.', bio: 'Footwear for every age, brands and budgets.', count: 8 },
+  { noun: 'Florist', imgs: ['1487070183336-b863922373d4'], cta: 'Order Now', body: 'Fresh flowers and bouquets, same-day delivery in HSR.', bio: 'Fresh flowers, bouquets and event decor.', count: 8 },
+  { noun: 'Pet Store', imgs: ['1548199973-03cce0bbc87b'], cta: 'Visit Us', body: 'Pet food, grooming and supplies for every companion.', bio: 'Everything for your pet — food, grooming and supplies.', count: 8 },
+  { noun: 'Sweets', imgs: ['1516684732162-798a0062be99'], cta: 'Order Now', body: 'Fresh mithai and namkeen, made daily in-house.', bio: 'Traditional sweets and namkeen, a HSR favourite.', count: 9 },
+  { noun: 'Tailors', imgs: ['1594938298603-c8148c4dae35'], cta: 'Visit Us', body: 'Alterations and custom stitching, ready in 3 days.', bio: 'Custom tailoring and alterations for men and women.', count: 8 },
+  { noun: 'Photo Studio', imgs: ['1516035069371-29a1b244cc32'], cta: 'Book Now', body: 'Portraits, events and passport photos — book a slot today.', bio: 'Photography studio for portraits, events and passport photos.', count: 8 },
+  { noun: 'Ice Cream Parlour', imgs: ['1497034825429-c343d7c6a68a'], cta: 'Order Now', body: 'Handmade ice cream and shakes, new flavours every week.', bio: 'Handmade ice creams, shakes and sundaes.', count: 8 },
+  { noun: 'Auto Service', imgs: ['1486262715619-67b85e0b08d3'], cta: 'Book Now', body: 'Car and bike servicing, doorstep pickup available.', bio: 'Car and bike servicing, repairs and doorstep pickup.', count: 8 },
+];
+
+type Business = { id: string; name: string; category: string; img: string; body: string; bio: string; cta: string };
+
+const businesses: Business[] = [];
+BIZ_CATEGORIES.forEach((cat) => {
+  for (let i = 0; i < cat.count; i++) {
+    businesses.push({
+      id: `biz${businesses.length + 1}`,
+      name: `${BIZ_PREFIXES[i % BIZ_PREFIXES.length]} ${cat.noun}`,
+      category: cat.noun,
+      img: IMG(cat.imgs[i % cat.imgs.length]),
+      body: cat.body,
+      bio: cat.bio,
+      cta: cat.cta,
+    });
+  }
+});
+
+// Matches the ServedAd shape shared/api/ads.ts exposes to SponsoredCard, plus
+// page_id so tapping an ad can open that business's page.
+export const ads = businesses.map((b) => ({
+  campaign_id: `ad_${b.id}`,
+  page_id: `bp_${b.id}`,
+  headline: b.name,
+  body: b.body,
+  image_url: b.img,
+  cta_text: b.cta,
+}));
+
+const businessPages = businesses.map((b, i) => ({
+  id: `bp_${b.id}`,
+  owner_id: `owner_${b.id}`,
+  neighbourhood_id: NBHD_ID,
+  page_type: 'business' as const,
+  name: b.name,
+  bio: b.bio,
+  ngo_approval_status: 'not_applicable',
+  gst_number: `29AAAAA${1000 + i}A1Z${i % 10}`,
+  address: `Sector ${(i % 9) + 1}, HSR Layout`,
+  geocode_status: 'verified',
+  profession: null as string | null,
+  darpan_id: null as string | null,
+  avatar_url: b.img,
+  created_at: ago(2000 + i * 17),
+  owner: { name: b.name, avatar_url: b.img as string | null, created_at: ago(2000 + i * 17) },
+}));
+
+// One reel per business — same vertical-card format as the person reels
+// below, backed by that business's own photo instead of a flat gradient.
+// `colors` is only used as a scrim fallback if the photo fails to load.
+const business_reels = businesses.map((b, i) => ({
+  id: `br${i + 1}`,
+  ownerType: 'business' as const,
+  pageId: `bp_${b.id}` as string | undefined,
+  userId: undefined as string | undefined,
+  name: b.name,
+  avatarUrl: b.img as string | null,
+  img: b.img as string | null,
+  caption: `${b.body} 📍 Sector ${(i % 9) + 1}, HSR Layout`,
+  likes: 40 + ((i * 37) % 900),
+  comments: 2 + (i % 40),
+  colors: ['#0B3350', '#0B72A8'] as readonly [string, string],
+}));
+
+// The original 4 person reels — same shape as business_reels so ReelsScreen
+// can render one mixed, data-driven list instead of a separate hardcoded array.
+const PERSON_REEL_DATA = [
+  { id: 'pr1', userId: 'u_priya', caption: 'Sunday sourdough, fresh out of the oven 🍞', likes: 214, comments: 18, colors: ['#0B3350', '#0B72A8'] as const },
+  { id: 'pr2', userId: 'u_arjun', caption: 'Morning ride around Agara Lake 🚴 who’s in next week?', likes: 132, comments: 9, colors: ['#063355', '#0EA5B7'] as const },
+  { id: 'pr3', userId: 'u_ravi', caption: 'Tree-planting drive — 40 saplings down 🌳', likes: 486, comments: 41, colors: ['#0E4F3C', '#0EA5B7'] as const },
+  { id: 'pr4', userId: 'u_fatima', caption: 'New monstera leaf unfurling 🌿 slow TV, HSR edition', likes: 97, comments: 6, colors: ['#3B2E5A', '#7DD3FC'] as const },
+];
+
+const person_reels = PERSON_REEL_DATA.map((r) => {
+  const a = authorOf(r.userId);
+  return {
+    id: r.id,
+    ownerType: 'user' as const,
+    pageId: undefined as string | undefined,
+    userId: r.userId as string | undefined,
+    name: a.name,
+    avatarUrl: a.avatar_url as string | null,
+    img: null as string | null,
+    caption: r.caption,
+    likes: r.likes,
+    comments: r.comments,
+    colors: r.colors as readonly [string, string],
+  };
+});
+
+// A lightweight, deterministic "engagement" shuffle (not a literal chronological
+// list, not a real ML ranking either) — mixes person and business reels rather
+// than grouping all 200 business ones before/after the 4 person ones.
+function seededReelShuffle<T>(arr: T[], seed: number): T[] {
+  const out = [...arr];
+  let s = seed;
+  for (let i = out.length - 1; i > 0; i--) {
+    s = (s * 9301 + 49297) % 233280;
+    const j = Math.floor((s / 233280) * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
+export const reels = seededReelShuffle([...person_reels, ...business_reels], 42);
+export type SeedReel = (typeof reels)[number];
+
 // page_type / bio / ngo_approval_status match what MyPagesScreen and
 // PageDetailScreen query for (the old type/description/verified shape crashed
 // the card renderer because page_type was undefined).
@@ -667,6 +810,7 @@ export const pages = [
     created_at: ago(3000),
     owner: authorOf('u_priya'),
   },
+  ...businessPages,
 ];
 
 export const society_memberships = [
