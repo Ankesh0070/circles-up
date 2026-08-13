@@ -113,7 +113,7 @@ const authorOf = (id: string) => {
 // Every post carries a photo — image_urls and media_urls both set (different
 // screens read different names, see the `listing()` helper's comment below
 // for the same pattern). Photo ids are verified-resolving.
-const POST_IMG = (id: string) => `https://images.unsplash.com/photo-${id}?w=800&q=80&auto=format&fit=crop`;
+const POST_IMG = (id: string) => `https://images.unsplash.com/photo-${id}?w=1400&q=90&auto=format&fit=crop`;
 
 const basePosts = [
   {
@@ -249,7 +249,7 @@ const basePosts = [
 // Each photo id is verified-resolving; captions carry the HSR-neighbourhood
 // voice. Reused across every profile's generated posts (see below).
 // ---------------------------------------------------------------------------
-const IMG = (id: string) => `https://images.unsplash.com/photo-${id}?w=800&q=80&auto=format&fit=crop`;
+const IMG = (id: string) => `https://images.unsplash.com/photo-${id}?w=1400&q=90&auto=format&fit=crop`;
 
 const ACTIVITIES: { img: string; cat: string; cap: string }[] = [
   { img: '1509440159596-0249088772ff', cat: 'recommend', cap: 'Fresh cinnamon rolls straight out of the oven 🥐 DM to reserve a box — Sector 2 pickup.' },
@@ -344,64 +344,68 @@ const NAMED_PROFILES: { id: string; gender: 'men' | 'women'; k: number }[] = [
   ...MALE_DATA.map((row, k) => ({ id: row[0], gender: 'men' as const, k })),
 ];
 
-const namedPosts: Record<string, any>[] = [];
-let npCounter = 0;
-NAMED_PROFILES.forEach(({ id: authorId, gender, k }, profileIndex) => {
-  const selfies = [0, 1, 2, 3, 4].map((n) => RANDOMUSER(gender, k * 5 + n));
+// Tiny seeded LCG shuffle — deterministic (same output every load, so the
+// demo doesn't re-scramble on every refresh) but different per profile.
+function seededShuffle<T>(arr: T[], seed: number): T[] {
+  const out = [...arr];
+  let s = seed;
+  for (let i = out.length - 1; i > 0; i--) {
+    s = (s * 9301 + 49297) % 233280;
+    const j = Math.floor((s / 233280) * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
 
-  selfies.forEach((img, i) => {
-    const id = `pp${npCounter + 1}`;
-    namedPosts.push({
-      id,
-      author_id: authorId,
-      neighbourhood_id: NBHD_ID,
-      category: 'recommend',
-      caption: SELFIE_CAPTIONS[(profileIndex + i) % SELFIE_CAPTIONS.length],
-      media_urls: [img],
-      image_urls: [img],
-      created_at: ago(40 + npCounter * 17),
-      reactions: genReactions(id, 2 + (npCounter % 18), npCounter % 5 === 0),
-      comments: [] as { id: string }[],
-    });
-    npCounter++;
+type PostDraft = { category: string; caption: string; img: string };
+
+// Each profile's 30 posts (5 selfies + 2 friend photos + 23 activity posts),
+// pre-shuffled so a profile's own grid isn't "all selfies, then all
+// activities" in a fixed block either.
+const profileDrafts: PostDraft[][] = NAMED_PROFILES.map(({ gender, k }, profileIndex) => {
+  const drafts: PostDraft[] = [];
+  [0, 1, 2, 3, 4].forEach((n, i) => {
+    drafts.push({ category: 'recommend', caption: SELFIE_CAPTIONS[(profileIndex + i) % SELFIE_CAPTIONS.length], img: RANDOMUSER(gender, k * 5 + n) });
   });
-
   [0, 1].forEach((i) => {
     const key = FRIEND_KEYS[(profileIndex * 2 + i) % FRIEND_KEYS.length];
-    const id = `pp${npCounter + 1}`;
-    namedPosts.push({
-      id,
-      author_id: authorId,
-      neighbourhood_id: NBHD_ID,
-      category: 'general',
-      caption: FRIEND_CAPTIONS[(profileIndex + i) % FRIEND_CAPTIONS.length],
-      media_urls: [FRIEND_PHOTOS[key]],
-      image_urls: [FRIEND_PHOTOS[key]],
-      created_at: ago(45 + npCounter * 17),
-      reactions: genReactions(id, 2 + (npCounter % 18), npCounter % 5 === 0),
-      comments: [] as { id: string }[],
-    });
-    npCounter++;
+    drafts.push({ category: 'general', caption: FRIEND_CAPTIONS[(profileIndex + i) % FRIEND_CAPTIONS.length], img: FRIEND_PHOTOS[key] });
   });
-
   for (let j = 0; j < 23; j++) {
     const a = ACTIVITIES[(profileIndex * 7 + j) % ACTIVITIES.length];
+    drafts.push({ category: a.cat, caption: a.cap, img: IMG(a.img) });
+  }
+  return seededShuffle(drafts, profileIndex * 13 + 7);
+});
+
+// Deterministic shuffle of profile visiting order (i*17 mod 40 is a fixed
+// permutation since gcd(17, 40) = 1) — round-robinned below so the
+// created_at-sorted feed never shows two posts from the same person back to
+// back: every "round" touches all 40 profiles once before repeating anyone.
+const PROFILE_VISIT_ORDER = NAMED_PROFILES.map((_, i) => (i * 17) % NAMED_PROFILES.length);
+
+const namedPosts: Record<string, any>[] = [];
+let npCounter = 0;
+for (let round = 0; round < 30; round++) {
+  for (const profileIndex of PROFILE_VISIT_ORDER) {
+    const authorId = NAMED_PROFILES[profileIndex].id;
+    const draft = profileDrafts[profileIndex][round];
     const id = `pp${npCounter + 1}`;
     namedPosts.push({
       id,
       author_id: authorId,
       neighbourhood_id: NBHD_ID,
-      category: a.cat,
-      caption: a.cap,
-      media_urls: [IMG(a.img)],
-      image_urls: [IMG(a.img)],
-      created_at: ago(50 + npCounter * 17),
-      reactions: genReactions(id, 2 + (npCounter % 18), npCounter % 6 === 0),
+      category: draft.category,
+      caption: draft.caption,
+      media_urls: [draft.img],
+      image_urls: [draft.img],
+      created_at: ago(40 + npCounter * 6),
+      reactions: genReactions(id, 2 + (npCounter % 18), npCounter % 5 === 0),
       comments: [] as { id: string }[],
     });
     npCounter++;
   }
-});
+}
 
 // ME gets activity-only posts — no fabricated selfie/friend photos for the
 // real signed-in user, just the same neutral activity pool everyone else draws on.
@@ -423,7 +427,33 @@ for (let j = 0; j < 12; j++) {
   });
 }
 
-export const posts = [...basePosts, ...namedPosts, ...mePosts];
+// Merge, sort newest-first, then guarantee no two ADJACENT posts (i.e. as
+// the created_at-sorted feed actually renders them) share an author.
+// basePosts' hand-picked timestamps can otherwise land right next to a
+// namedPost by the same person purely by coincidence, even though the
+// round-robin above already keeps namedPosts themselves well spread out.
+// Timestamps are regenerated to match the final order afterwards, so
+// HomeFeed's own `.order('created_at', ...)` reproduces this order exactly
+// rather than silently undoing the fix.
+function deinterleaveAuthors<T extends { author_id: string }>(list: T[]): T[] {
+  const arr = [...list];
+  for (let i = 1; i < arr.length; i++) {
+    if (arr[i].author_id !== arr[i - 1].author_id) continue;
+    for (let j = i + 1; j < arr.length; j++) {
+      if (arr[j].author_id !== arr[i - 1].author_id) {
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+        break;
+      }
+    }
+  }
+  return arr;
+}
+
+const mergedByTime = [...basePosts, ...namedPosts, ...mePosts].sort(
+  (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+);
+
+export const posts = deinterleaveAuthors(mergedByTime).map((p, i) => ({ ...p, created_at: ago(35 + i * 4) }));
 
 // Reactions live in their own table (mirrors the real schema) so that a
 // reaction the user adds at runtime merges with the seeded ones — the mock
@@ -664,10 +694,17 @@ export const discover_nearby = [
   { user_id: 'u_ravi', name: 'Ravi Kulkarni', tower: '1', distance_km: 1.2 },
 ].map((p) => ({ ...p, avatar_url: profiles.find((x) => x.id === p.user_id)?.avatar_url ?? null }));
 
+// Names here are deliberately distinct from the 40 HSR profiles above — these
+// are "from your city" people in other neighbourhoods, and reusing a name
+// already in use (e.g. the real Sneha Iyer / Ananya Das) made it look like
+// the same person had two different faces. Portraits come from Unsplash
+// (via IMG), not randomuser.me — the 40 HSR profiles already claim every
+// index 0–99 for their own selfies (20 profiles × 5 each per gender), so any
+// randomuser index here would silently reuse one of their photos too.
 export const discover_city = [
-  { user_id: 'u_city1', name: 'Sneha Iyer', neighbourhood_name: 'Koramangala', shared_vibes_count: 3, avatar_url: 'https://randomuser.me/api/portraits/women/58.jpg' },
-  { user_id: 'u_city2', name: 'Karthik Rao', neighbourhood_name: 'Indiranagar', shared_vibes_count: 2, avatar_url: 'https://randomuser.me/api/portraits/men/23.jpg' },
-  { user_id: 'u_city3', name: 'Ananya Das', neighbourhood_name: 'Koramangala', shared_vibes_count: 1, avatar_url: 'https://randomuser.me/api/portraits/women/81.jpg' },
+  { user_id: 'u_city1', name: 'Meenal Kulkarni', neighbourhood_name: 'Koramangala', shared_vibes_count: 3, avatar_url: IMG('1517841905240-472988babdf9') },
+  { user_id: 'u_city2', name: 'Karthik Rao', neighbourhood_name: 'Indiranagar', shared_vibes_count: 2, avatar_url: IMG('1520975954732-35dd22299614') },
+  { user_id: 'u_city3', name: 'Trisha Menon', neighbourhood_name: 'Koramangala', shared_vibes_count: 1, avatar_url: IMG('1524504388940-b1c1722653e1') },
 ];
 
 // Chat uses the chats / chat_members / messages schema. Members embed a `user`

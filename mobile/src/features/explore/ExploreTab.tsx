@@ -29,13 +29,14 @@ type Person = {
   avatar_url: string | null;
 };
 
-// Bazaar and Guard are bottom-tabs now, so their cards switch tabs rather
-// than pushing a modal (`tab: true`). The rest are modal routes.
+// Guard is a bottom-tab now, so its card switches tabs rather than pushing a
+// modal (`tab: true`). Bazaar moved the other way — it used to be a tab, now
+// it's a modal route opened from a card inside Guard. The rest are modal routes.
 const FEATURE_CARDS = [
-  { key: 'Bazaar' as const, label: 'Bazaar', icon: ShoppingBag, color: '#F59E0B', tab: true },
+  { key: 'Bazaar' as const, label: 'Bazaar', icon: ShoppingBag, color: '#F59E0B' },
   { key: 'Scenes' as const, label: 'Scenes', icon: PartyPopper, color: SECONDARY },
   { key: 'Genie' as const, label: 'Genie', icon: Sparkles, color: PRIMARY },
-  { key: 'Guard' as const, label: 'Guard', icon: Shield, color: SOS_RED },
+  { key: 'Guard' as const, label: 'Guard', icon: Shield, color: SOS_RED, tab: true },
   // Group I: pages hub (Personal/Business/NGO) — landing on MyPages rather
   // than the type-selector directly, since most taps after the first visit
   // are "manage what I already have", not "create a new one".

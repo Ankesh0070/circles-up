@@ -3,20 +3,21 @@ import BottomNav from './BottomNav';
 import HomeFeed from '../features/feed/HomeFeed';
 import ReelsScreen from '../features/reels/ReelsScreen';
 import ChatsTab from '../features/chat/ChatsTab';
-import BazaarScreen from '../features/bazaar/BazaarScreen';
+import GuardScreen from '../features/guard/GuardScreen';
 import ProfileScreen from '../features/profile/ProfileScreen';
 import type { MainTabsParamList } from './types';
 
 const Tab = createBottomTabNavigator<MainTabsParamList>();
 
-// Nav redesign (Circle Up Nav Redesign): Home / Reels / Chat / Bazaar /
+// Nav redesign (Circle Up Nav Redesign): Home / Reels / Chat / Guard /
 // Profile, with Chat as the raised centre button (see BottomNav), opening on
 // Home.
 //
-// Explore and Guard left the tab bar. Both are still one tap away as pushed
-// screens — Explore from the compass in the Home header, Guard from the SOS
-// pill (see TopBar) — so discovery (Scenes / Genie / Pages / people) and the
-// safety hub keep their entry points without crowding the five-slot bar.
+// Explore left the tab bar and is still one tap away as a pushed screen (the
+// compass in the Home header) — discovery (Scenes / Genie / Pages / people)
+// keeps its entry point without crowding the five-slot bar. Guard took
+// Bazaar's old slot; Bazaar itself now opens from a card inside Guard rather
+// than sitting in the tab bar directly.
 export default function MainTabs() {
   return (
     <Tab.Navigator
@@ -27,7 +28,7 @@ export default function MainTabs() {
       <Tab.Screen name="Home" component={HomeFeed} />
       <Tab.Screen name="Reels" component={ReelsScreen} />
       <Tab.Screen name="Chat" component={ChatsTab} />
-      <Tab.Screen name="Bazaar" component={BazaarScreen} />
+      <Tab.Screen name="Guard" component={GuardScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );

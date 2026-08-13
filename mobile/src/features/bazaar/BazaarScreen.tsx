@@ -49,9 +49,10 @@ export default function BazaarScreen() {
 
   return (
     <View className="flex-1 bg-[#F6F9FF]">
-      {/* Bazaar is a bottom tab now (it used to be a modal, which supplied
-          this title bar for free) — so it owns its own header and
-          status-bar inset. */}
+      {/* Bazaar is a modal route again (opened from a card inside Guard —
+          see GuardScreen), same as Explore in this same Stack.Group: the
+          native header is just a back chevron (title: ''), so the screen
+          still owns its own richly-styled title block below it. */}
       <View style={{ paddingHorizontal: 20, paddingTop: 52, paddingBottom: 12, backgroundColor: '#FFFFFF' }}>
         <Text style={{ fontSize: 24, fontWeight: '700', color: '#181C20' }}>Bazaar</Text>
         <Text style={{ fontSize: 13, color: '#6F7881', marginTop: 2 }}>Buy and sell with verified neighbours</Text>

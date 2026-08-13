@@ -12,16 +12,16 @@ export type AuthStackParamList = {
   ProfileSetup: undefined;
 };
 
-// Nav Redesign tab set: Home / Reels / Chat(centre) / Bazaar / Profile. Chat is
+// Nav Redesign tab set: Home / Reels / Chat(centre) / Guard / Profile. Chat is
 // a first-class centre tab (a raised gradient button — see BottomNav). Explore
-// and Guard left the tab bar and are pushed screens now (Explore from the Home
-// header compass, Guard from the SOS pill) — both registered on the modal stack
-// below.
+// left the tab bar and is a pushed screen (from the Home header compass).
+// Bazaar now lives inside Guard (opened from a card on GuardScreen) rather
+// than having its own tab — registered on the modal stack below.
 export type MainTabsParamList = {
   Home: undefined;
   Reels: undefined;
   Chat: undefined;
-  Bazaar: undefined;
+  Guard: undefined;
   Profile: undefined;
 };
 
@@ -29,10 +29,10 @@ export type MainTabsParamList = {
 // `subScreen` state machine — see architecture.md §4.2).
 export type ModalStackParamList = {
   CreatePost: undefined;
-  // Explore and Guard left the bottom tab bar in the nav redesign; they're
-  // pushed screens now (Explore from the Home header, Guard from the SOS pill).
+  // Explore left the bottom tab bar in the nav redesign; it's a pushed
+  // screen now (from the Home header compass).
   Explore: undefined;
-  Guard: undefined;
+  Bazaar: undefined;
   Genie: undefined;
   Notifications: undefined;
   PostDetail: { postId: string };

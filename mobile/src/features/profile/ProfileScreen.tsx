@@ -5,6 +5,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Settings as SettingsIcon, Plus, Link as LinkIcon, Trophy, MessageSquare } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Avatar from '../../shared/components/Avatar';
+import PhotoViewerModal from '../../shared/components/PhotoViewerModal';
 import Card from '../../shared/components/Card';
 import { supabase } from '../../shared/api/supabase';
 import { categoryMeta } from '../../shared/data/categories';
@@ -44,6 +45,7 @@ export default function ProfileScreen() {
   const [posts, setPosts] = useState<PostThumb[] | null>(null);
   const [streak, setStreak] = useState(0);
   const [achievements, setAchievements] = useState<{ total_points: number; city_rank: number } | null>(null);
+  const [photoOpen, setPhotoOpen] = useState(false);
 
   const load = useCallback(async () => {
     const {
@@ -125,7 +127,10 @@ export default function ProfileScreen() {
             {/* Hero card — the design groups identity, stats, actions and
                 vibes into one raised card rather than stacking bare rows. */}
             <Card radius={RADIUS.hero} style={{ alignItems: 'center', paddingVertical: 24 }}>
-              <Avatar name={profile.name ?? '?'} size={92} uri={profile.avatar_url} />
+              <Pressable onPress={() => profile.avatar_url && setPhotoOpen(true)} disabled={!profile.avatar_url}>
+                <Avatar name={profile.name ?? '?'} size={92} uri={profile.avatar_url} />
+              </Pressable>
+              <PhotoViewerModal visible={photoOpen} uri={profile.avatar_url} onClose={() => setPhotoOpen(false)} />
               <Text style={{ fontSize: 23, fontWeight: '700', color: ON_SURFACE, marginTop: 14 }}>{profile.name}</Text>
               {profile.pronouns && (
                 <Text style={{ fontSize: 13, color: ON_SURFACE_MUTED, marginTop: 2 }}>{profile.pronouns}</Text>

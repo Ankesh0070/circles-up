@@ -18,7 +18,7 @@ import FakeCallScreen from '../features/guard/FakeCallScreen';
 import SilentPhraseScreen from '../features/guard/SilentPhraseScreen';
 import HeaderBackButton from './HeaderBackButton';
 import ExploreTab from '../features/explore/ExploreTab';
-import GuardScreen from '../features/guard/GuardScreen';
+import BazaarScreen from '../features/bazaar/BazaarScreen';
 import UserProfileScreen from '../features/explore/UserProfileScreen';
 import NeighbourhoodSheet from '../features/explore/NeighbourhoodSheet';
 import AddNeighbourhoodScreen from '../features/explore/AddNeighbourhoodScreen';
@@ -181,19 +181,19 @@ export default function RootNavigator({
       <Stack.Group
         screenOptions={{ presentation: 'modal', headerShown: true, headerLeft: () => <HeaderBackButton /> }}
       >
-        {/* Explore and Guard left the tab bar in the nav redesign — they're
-            pushed here now (Explore from the Home header compass, Guard from the
-            SOS pill). Empty title = just a back chevron over each screen's own
-            header. */}
+        {/* Explore left the tab bar in the nav redesign — it's pushed here now
+            (from the Home header compass). Empty title = just a back chevron
+            over each screen's own header. Bazaar now opens from a card inside
+            Guard (a tab — see MainTabs) rather than being a tab itself. */}
         <Stack.Screen name="Explore" component={ExploreTab} options={{ title: '' }} />
-        <Stack.Screen name="Guard" component={GuardScreen} options={{ title: '' }} />
+        <Stack.Screen name="Bazaar" component={BazaarScreen} options={{ title: '' }} />
         <Stack.Screen name="CreatePost" component={CreatePostSheet} options={{ title: 'New post' }} />
         <Stack.Screen name="PostDetail" component={PostDetailScreen} options={{ title: 'Post' }} />
         <Stack.Screen name="Chats" component={ChatsTab} options={{ title: 'Chats' }} />
         <Stack.Screen name="NewChat" component={NewChatScreen} options={{ title: 'New chat' }} />
         <Stack.Screen name="ChatDetail" component={ChatDetailScreen} options={{ headerShown: false }} />
-        {/* Guard and Bazaar are TABS now (see MainTabs), not modals — keeping
-            duplicate routes here would shadow the tabs, because a
+        {/* Guard is a TAB now (see MainTabs), not a modal — keeping a
+            duplicate route here would shadow the tab, because a
             navigate('Guard') from a tab screen bubbles up to this stack and
             opens the modal copy instead of switching tabs. */}
         <Stack.Screen name="TrustedContacts" component={TrustedContactsScreen} options={{ title: 'Trusted Contacts' }} />

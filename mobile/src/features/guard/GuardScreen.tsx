@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { AlertTriangle, PhoneCall, Mic, MapPinned, Users, BellRing } from 'lucide-react-native';
+import { AlertTriangle, PhoneCall, Mic, MapPinned, Users, BellRing, ChevronRight } from 'lucide-react-native';
 import Card from '../../shared/components/Card';
+import BazaarIllustration from '../../shared/components/BazaarIllustration';
 import { supabase } from '../../shared/api/supabase';
 import SosFlow from './SosFlow';
 import SafetyAlertsFeed from './SafetyAlertsFeed';
@@ -15,6 +16,7 @@ import {
   SECONDARY,
   TERTIARY,
   SOS_RED,
+  SURFACE,
   FLOAT_SHADOW,
 } from '../../shared/theme/tokens';
 import type { RootStackParamList } from '../../navigation/types';
@@ -104,7 +106,35 @@ export default function GuardScreen() {
         ))}
       </View>
 
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 32, marginBottom: 12 }}>
+      {/* Bazaar moved here from the tab bar (see navigation/MainTabs.tsx) —
+          this card is its only entry point now. */}
+      <Pressable
+        onPress={() => navigation.navigate('Bazaar')}
+        style={({ pressed }) => [
+          {
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 14,
+            marginTop: 28,
+            padding: 16,
+            borderRadius: 20,
+            backgroundColor: SURFACE,
+            transform: [{ scale: pressed ? 0.99 : 1 }],
+          },
+          FLOAT_SHADOW,
+        ]}
+      >
+        <BazaarIllustration size={56} />
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 16, fontWeight: '700', color: ON_SURFACE }}>Bazaar</Text>
+          <Text style={{ fontSize: 12.5, color: ON_SURFACE_MUTED, marginTop: 2 }}>
+            Buy, sell and give away with your neighbours
+          </Text>
+        </View>
+        <ChevronRight size={20} color={ON_SURFACE_MUTED} />
+      </Pressable>
+
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 28, marginBottom: 12 }}>
         <BellRing size={19} color={SOS_RED} strokeWidth={2.2} />
         <Text style={{ fontSize: 18, fontWeight: '700', color: ON_SURFACE }}>Safety Alerts in Area</Text>
       </View>

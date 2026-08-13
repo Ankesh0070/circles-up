@@ -1,7 +1,7 @@
 import { View, Text, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { Home, Film, MessageCircle, Store, User, type LucideIcon } from 'lucide-react-native';
+import { Home, Film, MessageCircle, ShieldAlert, User, type LucideIcon } from 'lucide-react-native';
 import {
   SURFACE,
   NAV_GRADIENT_COLORS,
@@ -13,7 +13,7 @@ const ICONS: Record<string, LucideIcon> = {
   Home: Home,
   Reels: Film,
   Chat: MessageCircle,
-  Bazaar: Store,
+  Guard: ShieldAlert,
   Profile: User,
 };
 

@@ -8,8 +8,10 @@ import { supabase } from '../../shared/api/supabase';
 import { SURFACE, ON_SURFACE_MUTED, ON_SURFACE, SOS_RED, OUTLINE_VARIANT } from '../../shared/theme/tokens';
 import type { RootStackParamList } from '../../navigation/types';
 
-// Stitch design system top bar: create button, gradient wordmark, and an
-// outlined SOS pill on the right.
+// Stitch design system top bar: create button and gradient wordmark. The SOS
+// pill that used to live here moved down into the bottom tab bar as the
+// Guard tab (see MainTabs / BottomNav) — it's always one tap away now
+// instead of only from the header, so it doesn't need a duplicate shortcut.
 //
 // Chats sits here too. The design's tab bar is Explore/Feed/Guard/Bazaar/
 // Profile, which drops Chats — but chat is a fully-built feature, so rather
@@ -84,23 +86,6 @@ export default function TopBar({ hasUnread = false }: { hasUnread?: boolean }) {
                 }}
               />
             )}
-          </Pressable>
-
-          {/* Outlined, not filled — the design keeps solid safety red for the
-              Guard screen's own SOS button so this stays a shortcut, not a
-              trigger. */}
-          <Pressable
-            onPress={() => navigation.navigate('Guard')}
-            hitSlop={8}
-            style={{
-              paddingHorizontal: 13,
-              paddingVertical: 5,
-              borderRadius: 999,
-              borderWidth: 1.5,
-              borderColor: SOS_RED,
-            }}
-          >
-            <Text style={{ fontSize: 11.5, fontWeight: '800', color: SOS_RED, letterSpacing: 0.3 }}>SOS</Text>
           </Pressable>
         </View>
       </View>
