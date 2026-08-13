@@ -11,6 +11,7 @@ import Avatar from '../../shared/components/Avatar';
 type Reel = {
   id: string;
   username: string;
+  avatarUrl: string;
   caption: string;
   likes: number;
   comments: number;
@@ -18,10 +19,10 @@ type Reel = {
 };
 
 const REELS: Reel[] = [
-  { id: 'r1', username: 'priyas', caption: 'Sunday sourdough, fresh out of the oven 🍞', likes: 214, comments: 18, colors: ['#0B3350', '#0B72A8'] },
-  { id: 'r2', username: 'arjunm', caption: 'Morning ride around Agara Lake 🚴 who’s in next week?', likes: 132, comments: 9, colors: ['#063355', '#0EA5B7'] },
-  { id: 'r3', username: 'ravik', caption: 'Tree-planting drive — 40 saplings down 🌳', likes: 486, comments: 41, colors: ['#0E4F3C', '#0EA5B7'] },
-  { id: 'r4', username: 'fatimak', caption: 'New monstera leaf unfurling 🌿 slow TV, HSR edition', likes: 97, comments: 6, colors: ['#3B2E5A', '#7DD3FC'] },
+  { id: 'r1', username: 'priyas', avatarUrl: 'https://randomuser.me/api/portraits/women/44.jpg', caption: 'Sunday sourdough, fresh out of the oven 🍞', likes: 214, comments: 18, colors: ['#0B3350', '#0B72A8'] },
+  { id: 'r2', username: 'arjunm', avatarUrl: 'https://randomuser.me/api/portraits/men/32.jpg', caption: 'Morning ride around Agara Lake 🚴 who’s in next week?', likes: 132, comments: 9, colors: ['#063355', '#0EA5B7'] },
+  { id: 'r3', username: 'ravik', avatarUrl: 'https://randomuser.me/api/portraits/men/76.jpg', caption: 'Tree-planting drive — 40 saplings down 🌳', likes: 486, comments: 41, colors: ['#0E4F3C', '#0EA5B7'] },
+  { id: 'r4', username: 'fatimak', avatarUrl: 'https://randomuser.me/api/portraits/women/68.jpg', caption: 'New monstera leaf unfurling 🌿 slow TV, HSR edition', likes: 97, comments: 6, colors: ['#3B2E5A', '#7DD3FC'] },
 ];
 
 export default function ReelsScreen() {
@@ -117,7 +118,7 @@ export default function ReelsScreen() {
               {/* Author + caption */}
               <View style={{ position: 'absolute', left: 16, right: 76, bottom: 120 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 9, marginBottom: 8 }}>
-                  <Avatar name={item.username} size={34} />
+                  <Avatar name={item.username} size={34} uri={item.avatarUrl} />
                   <Text style={{ color: '#fff', fontSize: 14.5, fontWeight: '700' }}>@{item.username}</Text>
                 </View>
                 <Text style={{ color: 'rgba(255,255,255,0.94)', fontSize: 13.5, lineHeight: 19 }}>{item.caption}</Text>

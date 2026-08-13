@@ -34,7 +34,7 @@ type Comment = {
   text: string;
   created_at: string;
   parent_comment_id: string | null;
-  author: { name: string | null } | null;
+  author: { name: string | null; avatar_url: string | null } | null;
   likeCount: number;
   likedByMe: boolean;
 };
@@ -82,7 +82,7 @@ export default function PostDetailScreen({ route, navigation }: Props) {
       supabase.from('saved_posts').select('post_id').eq('user_id', user.id).eq('post_id', postId).maybeSingle(),
       supabase
         .from('comments')
-        .select('id, author_id, text, created_at, parent_comment_id, author:profiles!comments_author_id_fkey(name), comment_likes(user_id)')
+        .select('id, author_id, text, created_at, parent_comment_id, author:profiles!comments_author_id_fkey(name, avatar_url), comment_likes(user_id)')
         .eq('post_id', postId)
         .order('created_at', { ascending: true }),
     ]);
@@ -219,7 +219,7 @@ export default function PostDetailScreen({ route, navigation }: Props) {
       <Card padded={false} style={{ padding: 16, borderRadius: 0, borderBottomWidth: 1, borderBottomColor: OUTLINE_VARIANT }}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Pressable onPress={() => openProfile(post.author_id)} style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-            <Avatar name={post.author?.name ?? '?'} size={42} />
+            <Avatar name={post.author?.name ?? '?'} size={42} uri={post.author?.avatar_url} />
             <View style={{ marginLeft: 12, flex: 1 }}>
               <Text style={{ fontSize: 15, fontWeight: '700', color: ON_SURFACE }}>{post.author?.name ?? 'Neighbour'}</Text>
               <Text style={{ fontSize: 12.5, color: ON_SURFACE_MUTED, marginTop: 1 }}>{postAge === 'now' ? 'just now' : `${postAge} ago`}</Text>
@@ -310,7 +310,7 @@ export default function PostDetailScreen({ route, navigation }: Props) {
         renderItem={({ item }) => (
           <Card style={{ flexDirection: 'row', gap: 12, marginHorizontal: 16, marginTop: 10, marginLeft: item.parent_comment_id ? 40 : 16 }}>
             <Pressable onPress={() => openProfile(item.author_id)} hitSlop={4}>
-              <Avatar name={item.author?.name ?? '?'} size={34} />
+              <Avatar name={item.author?.name ?? '?'} size={34} uri={item.author?.avatar_url} />
             </Pressable>
             <View style={{ flex: 1 }}>
               {item.parent_comment_id && (

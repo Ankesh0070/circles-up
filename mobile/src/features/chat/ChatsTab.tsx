@@ -24,6 +24,7 @@ type ChatRow = {
   emoji: string | null;
   displayName: string;
   displayEmoji: string | null;
+  displayAvatar: string | null;
   lastMessage: string | null;
   lastAt: string | null;
 };
@@ -59,7 +60,7 @@ export default function ChatsTab() {
     // batched into a single IN() query.
     const { data: chats } = await supabase
       .from('chats')
-      .select('id, is_group, name, emoji, chat_members(user_id, user:profiles!chat_members_user_id_fkey(name))');
+      .select('id, is_group, name, emoji, chat_members(user_id, user:profiles!chat_members_user_id_fkey(name, avatar_url))');
 
     if (!chats || chats.length === 0) {
       setRows([]);
@@ -81,14 +82,16 @@ export default function ChatsTab() {
     }
 
     const mapped: ChatRow[] = chats.map((c) => {
-      const members = (c.chat_members ?? []) as { user_id: string; user: { name: string | null } | null | { name: string | null }[] }[];
+      const members = (c.chat_members ?? []) as { user_id: string; user: { name: string | null; avatar_url: string | null } | null | { name: string | null; avatar_url: string | null }[] }[];
       let displayName = c.name ?? 'Chat';
       let displayEmoji: string | null = c.emoji ?? null;
+      let displayAvatar: string | null = null;
       if (!c.is_group) {
         const otherMember = members.find((m) => m.user_id !== user.id);
         const other = Array.isArray(otherMember?.user) ? otherMember?.user[0] : otherMember?.user;
         displayName = other?.name ?? 'Neighbour';
         displayEmoji = null;
+        displayAvatar = other?.avatar_url ?? null;
       }
       const last = lastByChat.get(c.id);
       return {
@@ -98,6 +101,7 @@ export default function ChatsTab() {
         emoji: c.emoji,
         displayName,
         displayEmoji,
+        displayAvatar,
         lastMessage: last?.text ?? null,
         lastAt: last?.created_at ?? null,
       };
@@ -189,7 +193,7 @@ export default function ChatsTab() {
                   <Text style={{ fontSize: 24 }}>{item.displayEmoji}</Text>
                 </View>
               ) : (
-                <Avatar name={item.displayName} size={50} />
+                <Avatar name={item.displayName} size={50} uri={item.displayAvatar} />
               )}
               <View style={{ flex: 1 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>

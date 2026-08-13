@@ -38,6 +38,7 @@ type Message = {
 type ChatMeta = {
   isGroup: boolean;
   displayName: string;
+  displayAvatar: string | null;
   otherUserId: string | null;
 };
 
@@ -72,21 +73,23 @@ export default function ChatDetailScreen({ route, navigation }: Props) {
 
       const { data: chat } = await supabase
         .from('chats')
-        .select('is_group, name, emoji, chat_members(user_id, user:profiles!chat_members_user_id_fkey(name))')
+        .select('is_group, name, emoji, chat_members(user_id, user:profiles!chat_members_user_id_fkey(name, avatar_url))')
         .eq('id', chatId)
         .single();
       if (!chat || cancelled) return;
 
-      const members = (chat.chat_members ?? []) as { user_id: string; user: { name: string | null } | null | { name: string | null }[] }[];
+      const members = (chat.chat_members ?? []) as { user_id: string; user: { name: string | null; avatar_url: string | null } | null | { name: string | null; avatar_url: string | null }[] }[];
       let displayName = chat.name ?? 'Chat';
+      let displayAvatar: string | null = null;
       let otherUserId: string | null = null;
       if (!chat.is_group) {
         const otherMember = members.find((m) => m.user_id !== user.id);
         const other = Array.isArray(otherMember?.user) ? otherMember?.user[0] : otherMember?.user;
         displayName = other?.name ?? 'Neighbour';
+        displayAvatar = other?.avatar_url ?? null;
         otherUserId = otherMember?.user_id ?? null;
       }
-      setMeta({ isGroup: chat.is_group, displayName, otherUserId });
+      setMeta({ isGroup: chat.is_group, displayName, displayAvatar, otherUserId });
 
       const { data: msgs } = await supabase
         .from('messages')
@@ -228,7 +231,7 @@ export default function ChatDetailScreen({ route, navigation }: Props) {
           disabled={!meta.otherUserId}
           style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 }}
         >
-          <Avatar name={meta.displayName} size={40} />
+          <Avatar name={meta.displayName} size={40} uri={meta.displayAvatar} />
           <Text style={{ flex: 1, fontSize: 16, fontWeight: '700', color: ON_SURFACE }}>{meta.displayName}</Text>
         </Pressable>
         {!meta.isGroup && (
@@ -360,7 +363,7 @@ export default function ChatDetailScreen({ route, navigation }: Props) {
       {callActive && (
         <Modal visible transparent={false}>
           <View className="flex-1 bg-black items-center justify-center gap-6">
-            <Avatar name={meta.displayName} size={120} />
+            <Avatar name={meta.displayName} size={120} uri={meta.displayAvatar} />
             <Text className="text-white text-[22px] font-semibold">{meta.displayName}</Text>
             <Text className="text-ink-muted text-[13px]">
               {callActive === 'voice' ? 'Voice calling…' : 'Video calling…'}

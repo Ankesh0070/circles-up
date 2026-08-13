@@ -80,7 +80,7 @@ export default function StoryViewer({
         </View>
 
         <View className="flex-row items-center gap-2.5 px-3 mt-3">
-          <Avatar name={group.authorName} size={32} />
+          <Avatar name={group.authorName} size={32} uri={group.avatarUrl} />
           <Text className="text-white font-semibold text-[13px]">{group.authorName}</Text>
           <Pressable onPress={onClose} className="ml-auto p-2">
             <Text className="text-white text-[18px]">✕</Text>

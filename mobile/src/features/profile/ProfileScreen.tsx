@@ -125,7 +125,7 @@ export default function ProfileScreen() {
             {/* Hero card — the design groups identity, stats, actions and
                 vibes into one raised card rather than stacking bare rows. */}
             <Card radius={RADIUS.hero} style={{ alignItems: 'center', paddingVertical: 24 }}>
-              <Avatar name={profile.name ?? '?'} size={92} />
+              <Avatar name={profile.name ?? '?'} size={92} uri={profile.avatar_url} />
               <Text style={{ fontSize: 23, fontWeight: '700', color: ON_SURFACE, marginTop: 14 }}>{profile.name}</Text>
               {profile.pronouns && (
                 <Text style={{ fontSize: 13, color: ON_SURFACE_MUTED, marginTop: 2 }}>{profile.pronouns}</Text>

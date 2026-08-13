@@ -12,7 +12,7 @@ import type { ReactionId } from '../feed/ReactionPicker';
 type Props = NativeStackScreenProps<RootStackParamList, 'Topic'>;
 type Tab = 'top' | 'recent' | 'people';
 
-type Person = { user_id: string; name: string; subtitle: string };
+type Person = { user_id: string; name: string; subtitle: string; avatar_url: string | null };
 
 // Ported from the prototype's TopicScreen (lines 4147–4227) — Top/Recent/
 // People tabs. Real interpretation: "topic" is a keyword matched against
@@ -75,12 +75,12 @@ export default function TopicScreen({ route }: Props) {
       const memberIds = (memberRows ?? []).map((r) => r.user_id).filter((id) => !blockedIds.has(id));
 
       const { data: profileRows } = memberIds.length
-        ? await supabase.from('profiles').select('id, name, vibes').in('id', memberIds)
-        : { data: [] as { id: string; name: string | null; vibes: string[] }[] };
+        ? await supabase.from('profiles').select('id, name, vibes, avatar_url').in('id', memberIds)
+        : { data: [] as { id: string; name: string | null; vibes: string[]; avatar_url: string | null }[] };
 
       const matched: Person[] = (profileRows ?? [])
         .filter((p) => (p.vibes ?? []).some((v: string) => v.toLowerCase().includes(topic.toLowerCase())))
-        .map((p) => ({ user_id: p.id, name: p.name ?? 'Neighbour', subtitle: 'Shares this interest' }));
+        .map((p) => ({ user_id: p.id, name: p.name ?? 'Neighbour', subtitle: 'Shares this interest', avatar_url: p.avatar_url ?? null }));
       setPeople(matched);
     } else {
       setPeople([]);
@@ -115,7 +115,7 @@ export default function TopicScreen({ route }: Props) {
             keyExtractor={(p) => p.user_id}
             contentContainerStyle={{ padding: 16, gap: 8 }}
             renderItem={({ item }) => (
-              <CircleCard userId={item.user_id} name={item.name} subtitle={item.subtitle} alreadyConnected={false} onConnected={load} />
+              <CircleCard userId={item.user_id} name={item.name} avatarUrl={item.avatar_url} subtitle={item.subtitle} alreadyConnected={false} onConnected={load} />
             )}
             ListEmptyComponent={<Text className="text-center text-ink-muted text-[13px] mt-6">No one in your circle shares this vibe yet.</Text>}
           />

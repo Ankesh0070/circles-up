@@ -26,6 +26,7 @@ type Person = {
   user_id: string;
   name: string;
   subtitle: string;
+  avatar_url: string | null;
 };
 
 // Bazaar and Guard are bottom-tabs now, so their cards switch tabs rather
@@ -94,10 +95,11 @@ export default function ExploreTab() {
         p_lng: myMembership.lng,
       });
       setPeople(
-        (data ?? []).map((p: { user_id: string; name: string; tower: string | null; distance_km: number }) => ({
+        (data ?? []).map((p: { user_id: string; name: string; tower: string | null; distance_km: number; avatar_url: string | null }) => ({
           user_id: p.user_id,
           name: p.name,
           subtitle: `${p.distance_km.toFixed(1)} km away${p.tower ? ` · Tower ${p.tower}` : ''}`,
+          avatar_url: p.avatar_url ?? null,
         }))
       );
     } else {
@@ -110,10 +112,11 @@ export default function ExploreTab() {
         p_exclude_neighbourhood_id: activeNeighbourhoodId,
       });
       setPeople(
-        (data ?? []).map((p: { user_id: string; name: string; neighbourhood_name: string; shared_vibes_count: number }) => ({
+        (data ?? []).map((p: { user_id: string; name: string; neighbourhood_name: string; shared_vibes_count: number; avatar_url: string | null }) => ({
           user_id: p.user_id,
           name: p.name,
           subtitle: `${p.neighbourhood_name} · ${p.shared_vibes_count} shared vibe${p.shared_vibes_count === 1 ? '' : 's'}`,
+          avatar_url: p.avatar_url ?? null,
         }))
       );
     }
@@ -210,6 +213,7 @@ export default function ExploreTab() {
             <CircleCard
               userId={item.user_id}
               name={item.name}
+              avatarUrl={item.avatar_url}
               subtitle={item.subtitle}
               alreadyConnected={connectedIds.has(item.user_id)}
               onConnected={() => setConnectedIds((prev) => new Set(prev).add(item.user_id))}

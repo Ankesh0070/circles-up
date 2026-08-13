@@ -15,12 +15,14 @@ import type { RootStackParamList } from '../../navigation/types';
 export default function CircleCard({
   userId,
   name,
+  avatarUrl,
   subtitle,
   alreadyConnected,
   onConnected,
 }: {
   userId: string;
   name: string;
+  avatarUrl?: string | null;
   subtitle: string;
   alreadyConnected: boolean;
   onConnected: () => void;
@@ -46,7 +48,7 @@ export default function CircleCard({
       className="flex-row items-center gap-3 bg-white rounded-2xl p-3"
       style={{ shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 6, shadowOffset: { width: 0, height: 2 } }}
     >
-      <Avatar name={name} size={48} />
+      <Avatar name={name} size={48} uri={avatarUrl} />
       <View className="flex-1">
         <Text className="text-[14px] font-semibold text-[#181C20]" numberOfLines={1}>
           {name}

@@ -27,7 +27,7 @@ function timeAgo(iso: string): string {
 function SourceRow({ source }: { source: GenieSource }) {
   return (
     <View className="flex-row items-start px-4 py-3 border-b border-outline-variant">
-      <Avatar name={source.authorName} size={32} />
+      <Avatar name={source.authorName} size={32} uri={source.authorAvatarUrl} />
       <View className="ml-2.5 flex-1">
         <View className="flex-row items-center gap-1.5">
           <Text className="text-[13px] font-semibold text-[#181C20]">{source.authorName}</Text>
@@ -147,7 +147,7 @@ export default function GenieScreen() {
                 <View className="flex-row">
                   {uniqueNeighbours.slice(0, 5).map((s, i) => (
                     <View key={s.postId} style={{ marginLeft: i === 0 ? 0 : -8 }}>
-                      <Avatar name={s.authorName} size={24} />
+                      <Avatar name={s.authorName} size={24} uri={s.authorAvatarUrl} />
                     </View>
                   ))}
                 </View>

@@ -37,7 +37,7 @@ export const profiles = [
     name: 'Priya Sharma',
     username: 'priyas',
     bio: 'Home baker · Sector 2',
-    avatar_url: null,
+    avatar_url: 'https://randomuser.me/api/portraits/women/44.jpg',
     vibes: ['Foodie', 'Baker', 'Chai Lover'],
     active_neighbourhood_id: NBHD_ID,
     onboarding_completed: true,
@@ -50,7 +50,7 @@ export const profiles = [
     name: 'Arjun Menon',
     username: 'arjunm',
     bio: 'Cyclist · Coffee snob · Tower B',
-    avatar_url: null,
+    avatar_url: 'https://randomuser.me/api/portraits/men/32.jpg',
     vibes: ['Cyclist', 'Coffee Snob', 'Runner'],
     active_neighbourhood_id: NBHD_ID,
     onboarding_completed: true,
@@ -63,7 +63,7 @@ export const profiles = [
     name: 'Fatima Khan',
     username: 'fatimak',
     bio: 'Plant mom 🌿 · Sector 7',
-    avatar_url: null,
+    avatar_url: 'https://randomuser.me/api/portraits/women/68.jpg',
     vibes: ['Gardener', 'Reader', 'Tea Person'],
     active_neighbourhood_id: NBHD_ID,
     onboarding_completed: true,
@@ -76,7 +76,7 @@ export const profiles = [
     name: 'Ravi Kulkarni',
     username: 'ravik',
     bio: 'RWA volunteer · Founder, Green HSR',
-    avatar_url: null,
+    avatar_url: 'https://randomuser.me/api/portraits/men/76.jpg',
     vibes: ['Volunteer', 'Runner', 'Gardener'],
     active_neighbourhood_id: NBHD_ID,
     onboarding_completed: true,
@@ -85,18 +85,18 @@ export const profiles = [
     neighbourhood: { id: NBHD_ID, name: 'HSR Layout', city: 'Bengaluru' },
   },
   ...([
-    ['u_sneha', 'Sneha Iyer', 'snehai', 'Yoga teacher · Sector 4', ['Yogi', 'Reader', 'Tea Person']],
-    ['u_karan', 'Karan Reddy', 'karanr', 'Weekend cyclist · Photographer', ['Cyclist', 'Photographer', 'Coffee Snob']],
-    ['u_ananya', 'Ananya Das', 'ananyad', 'Potter & painter · Tower 9', ['Artist', 'Potter', 'Foodie']],
-    ['u_vikram', 'Vikram Nair', 'vikramn', 'Dad of two · Cricket on Sundays', ['Cricketer', 'Dad', 'Runner']],
-    ['u_deepa', 'Deepa Rao', 'deepar', 'Home chef · Loves farmers markets', ['Chef', 'Baker', 'Gardener']],
-    ['u_imran', 'Imran Sheikh', 'imrans', 'Musician · Guitar teacher', ['Musician', 'Guitarist', 'Foodie']],
-  ] as const).map(([id, name, username, bio, vibes], i) => ({
+    ['u_sneha', 'Sneha Iyer', 'snehai', 'Yoga teacher · Sector 4', ['Yogi', 'Reader', 'Tea Person'], 'https://randomuser.me/api/portraits/women/21.jpg'],
+    ['u_karan', 'Karan Reddy', 'karanr', 'Weekend cyclist · Photographer', ['Cyclist', 'Photographer', 'Coffee Snob'], 'https://randomuser.me/api/portraits/men/54.jpg'],
+    ['u_ananya', 'Ananya Das', 'ananyad', 'Potter & painter · Tower 9', ['Artist', 'Potter', 'Foodie'], 'https://randomuser.me/api/portraits/women/33.jpg'],
+    ['u_vikram', 'Vikram Nair', 'vikramn', 'Dad of two · Cricket on Sundays', ['Cricketer', 'Dad', 'Runner'], 'https://randomuser.me/api/portraits/men/91.jpg'],
+    ['u_deepa', 'Deepa Rao', 'deepar', 'Home chef · Loves farmers markets', ['Chef', 'Baker', 'Gardener'], 'https://randomuser.me/api/portraits/women/12.jpg'],
+    ['u_imran', 'Imran Sheikh', 'imrans', 'Musician · Guitar teacher', ['Musician', 'Guitarist', 'Foodie'], 'https://randomuser.me/api/portraits/men/45.jpg'],
+  ] as const).map(([id, name, username, bio, vibes, avatarUrl], i) => ({
     id,
     name,
     username,
     bio,
-    avatar_url: null as string | null,
+    avatar_url: avatarUrl as string | null,
     vibes: vibes as unknown as string[],
     active_neighbourhood_id: NBHD_ID,
     onboarding_completed: true,
@@ -271,7 +271,7 @@ const ACTIVITIES: { img: string; cat: string; cap: string }[] = [
   { img: '1452587925148-ce544e77e70d', cat: 'general', cap: 'Golden hour on the terrace 📷 HSR skies have been showing off lately.' },
   { img: '1551632811-561732d1e306', cat: 'event', cap: 'Weekend trek to Nandi Hills — sunrise above the clouds ⛰️ planning another soon.' },
   { img: '1544787219-7f47ccb76574', cat: 'general', cap: 'Perfect evening for a cup of adrak chai 🍵 monsoon vibes finally here.' },
-  { img: '1504674900247-0877df9cc836', cat: 'recommend', cap: 'Street food crawl through the block was a win 🌮 that dosa cart near Gate 3, wow.' },
+  { img: '1668236543090-82eba5ee5976', cat: 'recommend', cap: 'Street food crawl through the block was a win 🌮 that dosa cart near Gate 3, wow.' },
   { img: '1531415074968-036ba1b575da', cat: 'event', cap: 'Sunday gully cricket got competitive 🏏 rematch next week, bring your A game.' },
   { img: '1530103862676-de8c9debad1d', cat: 'general', cap: 'Little one turned five today 🎂 thank you to everyone who dropped by!' },
   { img: '1506126613408-eca07ce68773', cat: 'general', cap: 'Quiet morning meditation before the city wakes up 🧘‍♀️ ten minutes changes the day.' },
@@ -331,7 +331,101 @@ for (const author_id of POST_AUTHORS) {
   }
 }
 
-export const posts = [...basePosts, ...generatedPosts];
+// ---------------------------------------------------------------------------
+// Selfies + friend photos — every named neighbour (not ME, whose real photo
+// we don't know) gets 5 selfie-style posts (grabbing a bite / asking for a
+// recommendation) and 2 "with friends" photos. Selfie faces are gender-
+// matched to that profile's avatar; every image below is used in exactly one
+// profile's slot, so no photo repeats across posts.
+// ---------------------------------------------------------------------------
+const SELFIE_CAPTIONS = [
+  'Grabbing a quick vada pav before work 😋 anyone know a better stall nearby?',
+  'Trying the new filter coffee spot down the road ☕ good, but open to better recommendations!',
+  "Lunch break selfie 🍛 what's everyone's go-to comfort food around here?",
+  'Snack attack while working from the balcony 🍪 recommend your favourite bakery!',
+  'Grabbing chai before the evening walk ☕ know a better tea stall nearby?',
+  'Weekend breakfast mood 🥞 where do you all go for a good breakfast around here?',
+  'Midday munchies 🥪 any hidden-gem cafés I should try?',
+  'Post-workout smoothie o’clock 🥤 suggest a good healthy spot nearby!',
+  'Evening street-food run 🌽 any must-try stalls I’m missing?',
+  'Ice cream break on a hot day 🍦 recommend your favourite flavour spot!',
+];
+
+const FRIEND_CAPTIONS = [
+  'Catching up with the gang over coffee ☕ good times.',
+  'Weekend hangout with these two 🤍 missed this.',
+  'Sunday brunch with my favourite people 🥂',
+  'Evening out with the crew, as always too many laughs 😂',
+  'Best part of the week — time with these two 💛',
+];
+
+const RANDOMUSER = (gender: 'men' | 'women', n: number) => `https://randomuser.me/api/portraits/${gender}/${n}.jpg`;
+
+const FRIEND_PHOTOS = {
+  f1: IMG('1529156069898-49953e39b3ac'), // group of friends, backs turned, viewpoint
+  f2: IMG('1529333166437-7750a6dd5a70'), // three women, arms raised at sunset
+  f3: IMG('1517457373958-b7bdd4587205'), // friends at an evening gathering
+  f4: IMG('1528605248644-14dd04022da1'), // big group dinner around a table
+  f5: IMG('1521737604893-d14cc237f11d'), // friends working/hanging out together
+  f6: IMG('1523240795612-9a054b0db644'), // friends laughing together
+  f7: IMG('1528605105345-5344ea20e269'), // group hangout, friend presenting
+  f8: IMG('1573497491208-6b1acb260507'), // two friends chatting over a table
+} as const;
+
+const PROFILE_PHOTO_PLAN: Record<string, { gender: 'men' | 'women'; selfieNums: number[]; friends: [keyof typeof FRIEND_PHOTOS, keyof typeof FRIEND_PHOTOS] }> = {
+  u_priya: { gender: 'women', selfieNums: [1, 2, 3, 4, 6], friends: ['f1', 'f2'] },
+  u_fatima: { gender: 'women', selfieNums: [7, 8, 10, 11, 13], friends: ['f2', 'f4'] },
+  u_sneha: { gender: 'women', selfieNums: [15, 16, 18, 19, 20], friends: ['f7', 'f8'] },
+  u_ananya: { gender: 'women', selfieNums: [24, 26, 27, 28, 30], friends: ['f6', 'f8'] },
+  u_deepa: { gender: 'women', selfieNums: [35, 36, 37, 39, 40], friends: ['f2', 'f6'] },
+  u_arjun: { gender: 'men', selfieNums: [1, 2, 3, 4, 5], friends: ['f3', 'f4'] },
+  u_ravi: { gender: 'men', selfieNums: [7, 8, 9, 10, 11], friends: ['f5', 'f6'] },
+  u_karan: { gender: 'men', selfieNums: [13, 14, 15, 16, 17], friends: ['f1', 'f3'] },
+  u_vikram: { gender: 'men', selfieNums: [19, 20, 21, 22, 24], friends: ['f5', 'f7'] },
+  u_imran: { gender: 'men', selfieNums: [26, 27, 28, 29, 30], friends: ['f1', 'f5'] },
+};
+
+const profilePosts: Record<string, any>[] = [];
+let ppCounter = 0;
+Object.entries(PROFILE_PHOTO_PLAN).forEach(([authorId, plan], profileIndex) => {
+  plan.selfieNums.forEach((n, i) => {
+    const id = `sf${ppCounter + 1}`;
+    const img = RANDOMUSER(plan.gender, n);
+    profilePosts.push({
+      id,
+      author_id: authorId,
+      neighbourhood_id: NBHD_ID,
+      category: 'recommend',
+      caption: SELFIE_CAPTIONS[(profileIndex + i) % SELFIE_CAPTIONS.length],
+      media_urls: [img],
+      image_urls: [img],
+      created_at: ago(50 + ppCounter * 41),
+      reactions: genReactions(id, 2 + ((ppCounter * 5) % 20), ppCounter % 5 === 0),
+      comments: [] as { id: string }[],
+    });
+    ppCounter++;
+  });
+
+  plan.friends.forEach((key, i) => {
+    const id = `sf${ppCounter + 1}`;
+    const img = FRIEND_PHOTOS[key];
+    profilePosts.push({
+      id,
+      author_id: authorId,
+      neighbourhood_id: NBHD_ID,
+      category: 'general',
+      caption: FRIEND_CAPTIONS[(profileIndex + i) % FRIEND_CAPTIONS.length],
+      media_urls: [img],
+      image_urls: [img],
+      created_at: ago(60 + ppCounter * 41),
+      reactions: genReactions(id, 2 + ((ppCounter * 5) % 20), ppCounter % 5 === 0),
+      comments: [] as { id: string }[],
+    });
+    ppCounter++;
+  });
+});
+
+export const posts = [...basePosts, ...generatedPosts, ...profilePosts];
 
 // Reactions live in their own table (mirrors the real schema) so that a
 // reaction the user adds at runtime merges with the seeded ones — the mock
@@ -551,18 +645,21 @@ export const discover_nearby = [
   { user_id: 'u_arjun', name: 'Arjun Menon', tower: 'B', distance_km: 0.6 },
   { user_id: 'u_fatima', name: 'Fatima Khan', tower: '7', distance_km: 0.9 },
   { user_id: 'u_ravi', name: 'Ravi Kulkarni', tower: '1', distance_km: 1.2 },
-];
+].map((p) => ({ ...p, avatar_url: profiles.find((x) => x.id === p.user_id)?.avatar_url ?? null }));
 
 export const discover_city = [
-  { user_id: 'u_city1', name: 'Sneha Iyer', neighbourhood_name: 'Koramangala', shared_vibes_count: 3 },
-  { user_id: 'u_city2', name: 'Karthik Rao', neighbourhood_name: 'Indiranagar', shared_vibes_count: 2 },
-  { user_id: 'u_city3', name: 'Ananya Das', neighbourhood_name: 'Koramangala', shared_vibes_count: 1 },
+  { user_id: 'u_city1', name: 'Sneha Iyer', neighbourhood_name: 'Koramangala', shared_vibes_count: 3, avatar_url: 'https://randomuser.me/api/portraits/women/58.jpg' },
+  { user_id: 'u_city2', name: 'Karthik Rao', neighbourhood_name: 'Indiranagar', shared_vibes_count: 2, avatar_url: 'https://randomuser.me/api/portraits/men/23.jpg' },
+  { user_id: 'u_city3', name: 'Ananya Das', neighbourhood_name: 'Koramangala', shared_vibes_count: 1, avatar_url: 'https://randomuser.me/api/portraits/women/81.jpg' },
 ];
 
 // Chat uses the chats / chat_members / messages schema. Members embed a `user`
 // object the way the nested `chat_members(user:profiles(...))` select expects;
 // message authors are resolved from profiles by the mock client.
-const member = (id: string) => ({ user_id: id, user: { name: profiles.find((p) => p.id === id)?.name ?? null } });
+const member = (id: string) => ({
+  user_id: id,
+  user: { name: profiles.find((p) => p.id === id)?.name ?? null, avatar_url: profiles.find((p) => p.id === id)?.avatar_url ?? null },
+});
 
 export const chats = [
   { id: 'chat1', is_group: false, name: null as string | null, emoji: null as string | null, chat_members: [member(ME_ID), member('u_priya')] },

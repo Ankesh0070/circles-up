@@ -114,7 +114,7 @@ export default function StoriesBar() {
           {groups.map((g) => (
             <Pressable key={g.authorId} onPress={() => setViewerGroup(g)} style={{ alignItems: 'center', marginRight: 16, width: 66 }}>
               <GradientRing size={64} active={!g.allViewed}>
-                <Avatar name={g.authorName} size={58} />
+                <Avatar name={g.authorName} size={58} uri={g.avatarUrl} />
               </GradientRing>
               <Text
                 style={{ fontSize: 11.5, color: g.allViewed ? ON_SURFACE_MUTED : ON_SURFACE, marginTop: 6 }}

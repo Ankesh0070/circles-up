@@ -20,7 +20,7 @@ type Listing = {
   image_urls: string[];
   status: 'active' | 'sold' | 'flagged';
   updated_at: string;
-  seller: { name: string | null } | null;
+  seller: { name: string | null; avatar_url: string | null } | null;
 };
 
 // Phase 71's CRUD "R"/"U": view any visible listing, mark-as-sold when
@@ -44,7 +44,7 @@ export default function ListingDetailScreen({ route, navigation }: Props) {
 
     const { data } = await supabase
       .from('bazaar_listings')
-      .select('id, seller_id, category, title, description, price, image_urls, status, updated_at, seller:profiles!bazaar_listings_seller_id_fkey(name)')
+      .select('id, seller_id, category, title, description, price, image_urls, status, updated_at, seller:profiles!bazaar_listings_seller_id_fkey(name, avatar_url)')
       .eq('id', listingId)
       .single();
     setListing(data as unknown as Listing);
@@ -126,7 +126,7 @@ export default function ListingDetailScreen({ route, navigation }: Props) {
         <Text className="text-[14px] text-ink-muted mt-3 leading-5">{listing.description}</Text>
 
         <Pressable onPress={openSellerProfile} className="flex-row items-center gap-2.5 mt-5 pt-4 border-t border-outline-variant">
-          <Avatar name={listing.seller?.name ?? '?'} size={36} />
+          <Avatar name={listing.seller?.name ?? '?'} size={36} uri={listing.seller?.avatar_url} />
           <View>
             <Text className="text-[13px] font-semibold text-[#181C20]">{listing.seller?.name ?? 'Neighbour'}</Text>
             {/* edgecase.md §6.4: deliberately "verified neighbour", never

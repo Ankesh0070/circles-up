@@ -14,6 +14,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'UserProfile'>;
 type Profile = {
   name: string;
   bio: string | null;
+  avatar_url: string | null;
   vibes: string[];
   neighbourhood_name: string;
   tower: string | null;
@@ -103,7 +104,7 @@ export default function UserProfileScreen({ route }: Props) {
   return (
     <ScrollView className="flex-1 bg-white px-6 pt-8" contentContainerStyle={{ paddingBottom: 40 }}>
       <View className="items-center">
-        <Avatar name={profile.name} size={88} />
+        <Avatar name={profile.name} size={88} uri={profile.avatar_url} />
         <Text className="text-[20px] font-bold text-[#181C20] mt-3">{profile.name}</Text>
         <Text className="text-[12px] text-ink-muted mt-1">
           {profile.neighbourhood_name}

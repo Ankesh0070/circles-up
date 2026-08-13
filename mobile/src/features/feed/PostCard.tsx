@@ -136,7 +136,7 @@ export default function PostCard({ post, onChanged }: { post: FeedPost; onChange
     <Card padded={false} style={{ padding: 16 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Pressable onPress={openAuthorProfile} style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-          <Avatar name={post.author?.name ?? '?'} size={42} />
+          <Avatar name={post.author?.name ?? '?'} size={42} uri={post.author?.avatar_url} />
           <View style={{ marginLeft: 12, flex: 1 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
               <Text style={{ fontSize: 15, fontWeight: '700', color: ON_SURFACE }}>

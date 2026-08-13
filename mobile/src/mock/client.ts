@@ -20,7 +20,7 @@ const AUTH_KEY = 'mock_user';
 // a stale snapshot always wins over fresh seed defaults by design (that's
 // the whole point of persisting), so without this, someone who visited
 // before a seed fix landed would keep seeing the old data forever.
-const PERSIST_KEY = 'mock_db_v2';
+const PERSIST_KEY = 'mock_db_v3';
 
 export interface MockUser {
   id: string;
@@ -671,6 +671,7 @@ async function rpc(name: string, params?: any) {
           data: {
             name: p.name,
             bio: p.bio ?? null,
+            avatar_url: p.avatar_url ?? null,
             vibes: p.vibes ?? [],
             neighbourhood_name: p.neighbourhood?.name ?? 'HSR Layout',
             tower: membership?.tower ?? null,
@@ -686,6 +687,7 @@ async function rpc(name: string, params?: any) {
           data: {
             name: city.name,
             bio: null,
+            avatar_url: city.avatar_url ?? null,
             vibes: [],
             neighbourhood_name: city.neighbourhood_name,
             tower: null,

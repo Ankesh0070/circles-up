@@ -24,7 +24,7 @@ type EventDetail = {
   host: { name: string | null } | null;
 };
 
-type Rsvp = { user_id: string; status: RsvpStatus; guest: { name: string | null } | null };
+type Rsvp = { user_id: string; status: RsvpStatus; guest: { name: string | null; avatar_url: string | null } | null };
 
 function formatWhen(iso: string): string {
   const d = new Date(iso);
@@ -60,7 +60,7 @@ export default function EventDetailScreen({ route, navigation }: Props) {
 
     const { data: rsvpData } = await supabase
       .from('event_rsvps')
-      .select('user_id, status, guest:profiles!event_rsvps_user_id_fkey(name)')
+      .select('user_id, status, guest:profiles!event_rsvps_user_id_fkey(name, avatar_url)')
       .eq('event_id', eventId);
     setRsvps((rsvpData ?? []) as unknown as Rsvp[]);
   }, [eventId]);
@@ -189,7 +189,7 @@ export default function EventDetailScreen({ route, navigation }: Props) {
         </View>
         {rsvps.map((r) => (
           <Pressable key={r.user_id} onPress={() => openProfile(r.user_id)} className="flex-row items-center gap-2.5 py-1.5">
-            <Avatar name={r.guest?.name ?? '?'} size={28} />
+            <Avatar name={r.guest?.name ?? '?'} size={28} uri={r.guest?.avatar_url} />
             <Text className="text-[13px] text-[#181C20] flex-1">{r.guest?.name ?? 'Neighbour'}</Text>
             <Text className="text-[11px] text-ink-muted capitalize">{r.status}</Text>
           </Pressable>

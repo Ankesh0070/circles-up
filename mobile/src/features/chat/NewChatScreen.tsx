@@ -86,7 +86,7 @@ export default function NewChatScreen() {
               disabled={opening === item.id}
               className="flex-row items-center gap-3 px-4 py-3 border-b border-outline-variant"
             >
-              <Avatar name={item.name ?? '?'} size={42} />
+              <Avatar name={item.name ?? '?'} size={42} uri={item.avatar_url} />
               <Text className="flex-1 text-[14px] font-medium text-[#181C20]">{item.name ?? 'Neighbour'}</Text>
               {opening === item.id && <ActivityIndicator color="#006290" />}
             </Pressable>
